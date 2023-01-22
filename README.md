@@ -2,7 +2,7 @@
 An modified MCDzienny (12.0.0) which add dual-heartbeat functionality, and some features that (may/may not) coming soon.
 
 ## Contributing
-You can ask icanttellyou to fix all the bugs and errors caused by the decompilation process by making a pull request.
+You can ask icanttellyou to fix all the bugs and errors caused by the decompilation process by making a pull request on their repository.
 
 ## Compiling
 You need VS2010 or newer, the MCDzienny zip file and a working brain.
