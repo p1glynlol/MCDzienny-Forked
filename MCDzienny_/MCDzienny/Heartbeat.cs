@@ -126,7 +126,7 @@ namespace MCDzienny
                     {
                         var stringBuilder2 = new StringBuilder();
                         stringBuilder2.AppendFormat(
-                            "public={0}&max={1}&users={2}&port={3}&version={4}&salt={5}&name={6}&software=MCDzienny",
+                            "public={0}&max={1}&users={2}&port={3}&version={4}&salt={5}&name={6}&software=MCDzienny 12.0.0",
                             Server.isPublic, Server.players, Player.number - num2, Server.port, 7,
                             Server.SaltClassiCube, UrlEncode(Server.name));
                         text = stringBuilder2.ToString();
