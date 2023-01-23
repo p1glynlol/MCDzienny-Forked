@@ -111,6 +111,7 @@ namespace MCDzienny
             all.Add(new CmdGun());
             all.Add(new CmdHacks());
             all.Add(new CmdHasirc());
+            all.Add(new CmdHeartbeat());
             all.Add(new CmdHelp());
             all.Add(new CmdHide());
             all.Add(new CmdHighlight());
