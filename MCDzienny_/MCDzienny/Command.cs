@@ -3,75 +3,52 @@ using MCDzienny.Commands;
 
 namespace MCDzienny
 {
-    // Token: 0x0200000F RID: 15
+    
     public abstract class Command
     {
-        // Token: 0x04000040 RID: 64
+        
         public static CommandList all = new CommandList();
-
-        // Token: 0x04000041 RID: 65
+        
         public static CommandList core = new CommandList();
 
-        // Token: 0x17000003 RID: 3
-        // (get) Token: 0x06000044 RID: 68
         public abstract string name { get; }
 
-        // Token: 0x17000004 RID: 4
-        // (get) Token: 0x06000045 RID: 69
         public abstract string shortcut { get; }
 
-        // Token: 0x17000005 RID: 5
-        // (get) Token: 0x06000046 RID: 70
         public abstract string type { get; }
-
-        // Token: 0x17000006 RID: 6
-        // (get) Token: 0x06000047 RID: 71
+        
         public abstract bool museumUsable { get; }
 
-        // Token: 0x17000007 RID: 7
-        // (get) Token: 0x06000048 RID: 72
         public abstract LevelPermission defaultRank { get; }
-
-        // Token: 0x17000008 RID: 8
-        // (get) Token: 0x0600004B RID: 75 RVA: 0x000036EC File Offset: 0x000018EC
+        
         public virtual bool ConsoleAccess
         {
             get { return true; }
         }
-
-        // Token: 0x17000009 RID: 9
-        // (get) Token: 0x0600004C RID: 76 RVA: 0x000036F0 File Offset: 0x000018F0
+        
         public virtual CommandScope Scope
         {
             get { return CommandScope.All; }
         }
 
-        // Token: 0x1700000A RID: 10
-        // (get) Token: 0x0600004D RID: 77 RVA: 0x000036F4 File Offset: 0x000018F4
         public virtual bool HighSecurity
         {
             get { return false; }
         }
 
-        // Token: 0x1700000B RID: 11
-        // (get) Token: 0x0600004E RID: 78 RVA: 0x000036F8 File Offset: 0x000018F8
         public virtual string CustomName
         {
             get { return null; }
         }
 
-        // Token: 0x06000049 RID: 73
         public abstract void Use(Player p, string message);
 
-        // Token: 0x0600004A RID: 74
         public abstract void Help(Player p);
 
-        // Token: 0x0600004F RID: 79 RVA: 0x000036FC File Offset: 0x000018FC
         public virtual void Init()
         {
         }
 
-        // Token: 0x06000050 RID: 80 RVA: 0x00003700 File Offset: 0x00001900
         protected bool StopConsoleUse(Player p)
         {
             if (p == null)
@@ -83,7 +60,6 @@ namespace MCDzienny
             return false;
         }
 
-        // Token: 0x06000051 RID: 81 RVA: 0x00003714 File Offset: 0x00001914
         public bool IsWithinScope(Player p)
         {
             return Scope == CommandScope.All ||
@@ -94,8 +70,7 @@ namespace MCDzienny
                    p.level.mapType == MapType.Home && (Scope & CommandScope.Home) == CommandScope.Home ||
                    p.level.mapType == MapType.MyMap && (Scope & CommandScope.MyMap) == CommandScope.MyMap;
         }
-
-        // Token: 0x06000052 RID: 82 RVA: 0x000037D4 File Offset: 0x000019D4
+        
         public static void InitAll()
         {
             all.Add(new CmdAbort());
