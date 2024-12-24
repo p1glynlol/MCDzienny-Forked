@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -7,57 +7,53 @@ using Mono.Data.Sqlite;
 
 namespace MCDzienny
 {
-    // Token: 0x02000028 RID: 40
-    internal static class SQLiteMono
+    static class SQLiteMono
     {
-        // Token: 0x0400009F RID: 159
-        private const string DbPath = "./Database/database.db";
+        const string DbPath = "./Database/database.db";
 
-        // Token: 0x040000A0 RID: 160
-        private static readonly string connString = "URI=file:Database/database.db";
+        static readonly string connString = "URI=file:Database/database.db";
 
-        // Token: 0x040000A1 RID: 161
-        private static readonly object syncObject = new object();
+        static readonly object syncObject = new object();
 
-        // Token: 0x040000A2 RID: 162
-        private static SqliteConnection Connection;
+        static SqliteConnection transConnection;
 
-        // Token: 0x040000A3 RID: 163
-        private static SqliteTransaction transaction;
+        static SqliteTransaction transaction;
 
-        // Token: 0x060000F1 RID: 241 RVA: 0x00006860 File Offset: 0x00004A60
         public static bool Transaction(string commandText, string[] parameters)
         {
-            bool result;
+            //IL_0015: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001b: Expected O, but got Unknown
             lock (syncObject)
             {
-                var num = 0;
-                for (;;)
+                int num = 0;
+                while (true)
+                {
                     try
                     {
-                        using (var sqliteConnection = new SqliteConnection(connString))
+                        SqliteConnection val = new SqliteConnection(connString);
+                        try
                         {
-                            sqliteConnection.Open();
-                            using (IDbTransaction dbTransaction = sqliteConnection.BeginTransaction())
+                            val.Open();
+                            using (IDbTransaction dbTransaction = val.BeginTransaction())
                             {
-                                using (IDbCommand dbCommand = sqliteConnection.CreateCommand())
+                                using (IDbCommand dbCommand = val.CreateCommand())
                                 {
                                     dbCommand.Transaction = dbTransaction;
-                                    for (var i = 0; i < parameters.Length; i++)
+                                    for (int i = 0; i < parameters.Length; i++)
                                     {
                                         dbCommand.CommandText = commandText + parameters[i];
                                         dbCommand.ExecuteNonQuery();
                                     }
-
                                     dbTransaction.Commit();
                                 }
                             }
-
-                            sqliteConnection.Close();
+                            val.Close();
                         }
-
-                        result = true;
-                        break;
+                        finally
+                        {
+                            val.Dispose();
+                        }
+                        return true;
                     }
                     catch (Exception ex)
                     {
@@ -67,43 +63,53 @@ namespace MCDzienny
                             Server.ErrorLog(ex);
                             File.WriteAllText("SQLite_error.log", commandText + " " + string.Join(",", parameters));
                             Server.s.Log("SQLite error: " + commandText + " " + string.Join(",", parameters));
-                            result = false;
-                            break;
+                            return false;
                         }
-
                         Thread.Sleep(10);
                     }
+                }
             }
-
-            return result;
         }
 
-        // Token: 0x060000F2 RID: 242 RVA: 0x000069B4 File Offset: 0x00004BB4
         public static bool ExecuteQuery(string queryString, Dictionary<string, object> parameters)
         {
-            bool result;
+            //IL_0015: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001b: Expected O, but got Unknown
             lock (syncObject)
             {
-                var num = 0;
-                for (;;)
+                int num = 0;
+                while (true)
+                {
                     try
                     {
-                        using (var sqliteConnection = new SqliteConnection(connString))
+                        SqliteConnection val = new SqliteConnection(connString);
+                        try
                         {
-                            sqliteConnection.Open();
-                            using (var sqliteCommand = sqliteConnection.CreateCommand())
+                            val.Open();
+                            SqliteCommand val2 = val.CreateCommand();
+                            try
                             {
-                                sqliteCommand.CommandText = queryString;
-                                foreach (var keyValuePair in parameters)
-                                    sqliteCommand.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
-                                sqliteCommand.ExecuteNonQuery();
+                                val2.CommandText = queryString;
+                                foreach (KeyValuePair<string, object> parameter in parameters)
+                                {
+                                    val2.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                                }
+                                val2.ExecuteNonQuery();
                             }
-
-                            sqliteConnection.Close();
+                            finally
+                            {
+                                if (val2 != null)
+                                {
+                                    val2.Dispose();
+                                }
+                            }
+                            val.Close();
                         }
-
-                        result = true;
-                        break;
+                        finally
+                        {
+                            val.Dispose();
+                        }
+                        return true;
                     }
                     catch
                     {
@@ -114,81 +120,94 @@ namespace MCDzienny
                             Server.s.Log("SQLite error: " + queryString);
                             throw;
                         }
-
                         Thread.Sleep(10);
                     }
+                }
             }
-
-            return result;
         }
 
-        // Token: 0x060000F3 RID: 243 RVA: 0x00006AE4 File Offset: 0x00004CE4
-        public static DataTable fillData(string queryString, Dictionary<string, object> parameters,
-            bool skipError = false)
+        public static DataTable fillData(string queryString, Dictionary<string, object> parameters, bool skipError = false)
         {
-            DataTable result;
+            //IL_001b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0021: Expected O, but got Unknown
+            //IL_0029: Unknown result type (might be due to invalid IL or missing references)
+            //IL_002f: Expected O, but got Unknown
+            //IL_0076: Unknown result type (might be due to invalid IL or missing references)
+            //IL_007d: Expected O, but got Unknown
             lock (syncObject)
             {
-                var num = 0;
-                var dataTable = new DataTable();
-                for (;;)
+                int num = 0;
+                DataTable dataTable = new DataTable();
+                while (true)
                 {
                     try
                     {
-                        using (var sqliteConnection = new SqliteConnection(connString))
+                        SqliteConnection val = new SqliteConnection(connString);
+                        try
                         {
-                            sqliteConnection.Open();
-                            using (var sqliteCommand = new SqliteCommand(queryString, sqliteConnection))
+                            val.Open();
+                            SqliteCommand val2 = new SqliteCommand(queryString, val);
+                            try
                             {
-                                foreach (var keyValuePair in parameters)
-                                    sqliteCommand.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
-                                using (var sqliteDataAdapter = new SqliteDataAdapter(sqliteCommand))
+                                foreach (KeyValuePair<string, object> parameter in parameters)
                                 {
-                                    sqliteDataAdapter.Fill(dataTable);
+                                    val2.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                                }
+                                SqliteDataAdapter val3 = new SqliteDataAdapter(val2);
+                                try
+                                {
+                                    val3.Fill(dataTable);
+                                }
+                                finally
+                                {
+                                    val3.Dispose();
                                 }
                             }
-
-                            sqliteConnection.Close();
+                            finally
+                            {
+                                val2.Dispose();
+                            }
+                            val.Close();
+                        }
+                        finally
+                        {
+                            val.Dispose();
                         }
                     }
                     catch
                     {
                         num++;
-                        if (num <= 10)
+                        if (num > 10)
                         {
-                            Thread.Sleep(10);
-                            continue;
-                        }
-
-                        if (!skipError)
-                        {
+                            if (skipError)
+                            {
+                                break;
+                            }
                             File.WriteAllText("SQLite_error.log", queryString);
                             Server.s.Log("SQLite error: " + queryString);
                             throw;
                         }
+                        Thread.Sleep(10);
+                        continue;
                     }
-
                     break;
                 }
-
-                result = dataTable;
+                return dataTable;
             }
-
-            return result;
         }
 
-        // Token: 0x060000F4 RID: 244 RVA: 0x00006C40 File Offset: 0x00004E40
         public static void BeginTransaction()
         {
+            //IL_0011: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001b: Expected O, but got Unknown
             lock (syncObject)
             {
-                Connection = new SqliteConnection(connString);
-                Connection.Open();
-                transaction = Connection.BeginTransaction();
+                transConnection = new SqliteConnection(connString);
+                transConnection.Open();
+                transaction = transConnection.BeginTransaction();
             }
         }
 
-        // Token: 0x060000F5 RID: 245 RVA: 0x00006C9C File Offset: 0x00004E9C
         public static void CommitTransaction()
         {
             lock (syncObject)
@@ -197,22 +216,20 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x060000F6 RID: 246 RVA: 0x00006CD8 File Offset: 0x00004ED8
         public static void EndTransaction()
         {
             lock (syncObject)
             {
                 transaction.Dispose();
-                Connection.Dispose();
+                transConnection.Dispose();
             }
         }
 
-        // Token: 0x060000F7 RID: 247 RVA: 0x00006D20 File Offset: 0x00004F20
         public static void TransQuery(string query)
         {
             lock (syncObject)
             {
-                using (IDbCommand dbCommand = Connection.CreateCommand())
+                using (IDbCommand dbCommand = transConnection.CreateCommand())
                 {
                     dbCommand.Transaction = transaction;
                     dbCommand.CommandText = query;

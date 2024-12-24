@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Reflection;
@@ -6,50 +7,61 @@ using System.Windows.Forms;
 
 namespace MCDzienny
 {
-    // Token: 0x020001BC RID: 444
-    public partial class MsgBox : Form
+    public class MsgBox : Form
     {
-        // Token: 0x04000684 RID: 1668
-        private static readonly int scale = 3;
 
-        // Token: 0x04000683 RID: 1667
-        private bool announcement;
+        static readonly int scale = 3;
+        readonly Image img;
 
-        // Token: 0x04000682 RID: 1666
-        private readonly Image img;
+        bool announcement;
 
-        // Token: 0x06000C99 RID: 3225 RVA: 0x00048E28 File Offset: 0x00047028
-        private MsgBox(bool isOpen)
+        IContainer components;
+
+        MsgBox(bool isOpen)
         {
+            //IL_0030: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0036: Expected O, but got Unknown
+            //IL_006f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0079: Expected O, but got Unknown
             InitializeComponent();
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            Stream manifestResourceStream;
-            if (isOpen)
-                manifestResourceStream = executingAssembly.GetManifestResourceStream("MCDzienny.icon_ok.png");
-            else
-                manifestResourceStream = executingAssembly.GetManifestResourceStream("MCDzienny.icon_wrong.png");
-            var bitmap = new Bitmap(manifestResourceStream);
-            img = bitmap;
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+            Stream stream = !isOpen ? executingAssembly.GetManifestResourceStream("MCDzienny.icon_wrong.png")
+                : executingAssembly.GetManifestResourceStream("MCDzienny.icon_ok.png");
+            Bitmap val = (Bitmap)(img = new Bitmap(stream));
             announcement = isOpen;
-            ClientSize = new Size(bitmap.Width * scale, bitmap.Height * scale);
+            ClientSize = new Size(val.Width * scale, val.Height * scale);
             Paint += msgBox_Paint;
             Invalidate();
         }
 
-        // Token: 0x06000C9A RID: 3226 RVA: 0x00048EB4 File Offset: 0x000470B4
         public static void ShowBox(bool isOpen)
         {
-            new MsgBox(isOpen)
-            {
-                StartPosition = FormStartPosition.CenterScreen
-            }.ShowDialog();
+            //IL_000f: Unknown result type (might be due to invalid IL or missing references)
+            MsgBox msgBox = new MsgBox(isOpen);
+            msgBox.StartPosition = (FormStartPosition)1;
+            msgBox.ShowDialog();
         }
 
-        // Token: 0x06000C9B RID: 3227 RVA: 0x00048ED8 File Offset: 0x000470D8
-        private void msgBox_Paint(object sender, PaintEventArgs e)
+        void msgBox_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            e.Graphics.InterpolationMode = (InterpolationMode)7;
             e.Graphics.DrawImage(img, new Rectangle(0, 0, img.Width * scale, img.Height * scale));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        void InitializeComponent()
+        {
+            components = new Container();
+            AutoScaleMode = (AutoScaleMode)1;
+            Text = "MsgBox";
         }
     }
 }

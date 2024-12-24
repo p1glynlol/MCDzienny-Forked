@@ -1,8 +1,9 @@
-# MCDzienny Forked
-An modified MCDzienny (12.2.0.0) which add dual-heartbeat functionality for BetaCraft.
+# MCDzienny Decompilation
+An open source decompilation of MCDzienny (Version 12.2.0.0) which was the choice if you wanted a lava survival server. This server software wasn't updated for quite some time, and it wont be updated at all due to it's closed source nature.
 
 ## Contributing
-You can ask icanttellyou to fix all the bugs and errors caused by the decompilation process by making a pull request on their repository.
+
+You can help me fix all the bugs and errors caused by the decompilation process by making a pull request.
 
 ## Compiling
 You need VS2010 or newer, the MCDzienny zip file and a working brain.

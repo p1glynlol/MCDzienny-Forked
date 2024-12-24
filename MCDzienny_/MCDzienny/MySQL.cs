@@ -1,43 +1,60 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using MySql.Data.MySqlClient;
 
 namespace MCDzienny
 {
-    // Token: 0x02000343 RID: 835
-    internal static class MySQL
+    static class MySQL
     {
-        // Token: 0x04000C4B RID: 3147
-        private static readonly string connString = string.Concat("Data Source=", Server.MySQLHost, ";Port=",
-            Server.MySQLPort, ";User ID=", Server.MySQLUsername, ";Password=", Server.MySQLPassword, ";Pooling=",
-            Server.MySQLPooling);
+        static readonly string connString = "Data Source=" + Server.MySQLHost + ";Port=" + Server.MySQLPort + ";User ID=" + Server.MySQLUsername + ";Password=" +
+            Server.MySQLPassword + ";Pooling=" + Server.MySQLPooling;
 
-        // Token: 0x06001809 RID: 6153 RVA: 0x000A0FFC File Offset: 0x0009F1FC
-        public static void ExecuteQuery(string queryString, Dictionary<string, object> parameters,
-            bool createDB = false)
+        public static void ExecuteQuery(string queryString, Dictionary<string, object> parameters, bool createDB = false)
         {
-            if (!Server.useMySQL) return;
-            var num = 0;
+            //IL_000f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0015: Expected O, but got Unknown
+            //IL_002b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0031: Expected O, but got Unknown
+            if (!Server.useMySQL)
+            {
+                return;
+            }
+            int num = 0;
             while (true)
+            {
                 try
                 {
-                    using (var mySqlConnection = new MySqlConnection(connString))
+                    MySqlConnection val = new MySqlConnection(connString);
+                    try
                     {
-                        mySqlConnection.Open();
-                        if (!createDB) mySqlConnection.ChangeDatabase(Server.MySQLDatabaseName);
-                        using (var mySqlCommand = new MySqlCommand(queryString, mySqlConnection))
+                        ((DbConnection)(object)val).Open();
+                        if (!createDB)
                         {
-                            foreach (var parameter in parameters)
-                                mySqlCommand.Parameters.AddWithValue(parameter.Key, parameter.Value);
-                            mySqlCommand.ExecuteNonQuery();
+                            ((DbConnection)(object)val).ChangeDatabase(Server.MySQLDatabaseName);
                         }
-
-                        mySqlConnection.Close();
+                        MySqlCommand val2 = new MySqlCommand(queryString, val);
+                        try
+                        {
+                            foreach (KeyValuePair<string, object> parameter in parameters)
+                            {
+                                val2.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                            }
+                            ((DbCommand)(object)val2).ExecuteNonQuery();
+                        }
+                        finally
+                        {
+                            val2.Dispose();
+                        }
+                        ((DbConnection)(object)val).Close();
+                        break;
                     }
-
-                    return;
+                    finally
+                    {
+                        val.Dispose();
+                    }
                 }
                 catch (Exception)
                 {
@@ -50,40 +67,62 @@ namespace MCDzienny
                             Server.s.Log("MySQL error: " + queryString);
                             throw;
                         }
-
                         continue;
                     }
-
                     throw;
                 }
+            }
         }
 
-        // Token: 0x0600180A RID: 6154 RVA: 0x000A1114 File Offset: 0x0009F314
-        public static DataTable fillData(string queryString, Dictionary<string, object> parameters,
-            bool skipError = false)
+        public static DataTable fillData(string queryString, Dictionary<string, object> parameters, bool skipError = false)
         {
-            var dataTable = new DataTable();
-            if (!Server.useMySQL) return dataTable;
-            var num = 0;
+            //IL_0016: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001c: Expected O, but got Unknown
+            //IL_002f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0035: Expected O, but got Unknown
+            //IL_007c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0083: Expected O, but got Unknown
+            DataTable dataTable = new DataTable();
+            if (!Server.useMySQL)
+            {
+                return dataTable;
+            }
+            int num = 0;
             while (true)
+            {
                 try
                 {
-                    using (var mySqlConnection = new MySqlConnection(connString))
+                    MySqlConnection val = new MySqlConnection(connString);
+                    try
                     {
-                        mySqlConnection.Open();
-                        mySqlConnection.ChangeDatabase(Server.MySQLDatabaseName);
-                        using (var mySqlCommand = new MySqlCommand(queryString, mySqlConnection))
+                        ((DbConnection)(object)val).Open();
+                        ((DbConnection)(object)val).ChangeDatabase(Server.MySQLDatabaseName);
+                        MySqlCommand val2 = new MySqlCommand(queryString, val);
+                        try
                         {
-                            foreach (var parameter in parameters)
-                                mySqlCommand.Parameters.AddWithValue(parameter.Key, parameter.Value);
-                            using (var mySqlDataAdapter = new MySqlDataAdapter(mySqlCommand))
+                            foreach (KeyValuePair<string, object> parameter in parameters)
                             {
-                                mySqlDataAdapter.Fill(dataTable);
+                                val2.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                            }
+                            MySqlDataAdapter val3 = new MySqlDataAdapter(val2);
+                            try
+                            {
+                                ((DbDataAdapter)(object)val3).Fill(dataTable);
+                            }
+                            finally
+                            {
+                                val3.Dispose();
                             }
                         }
-
-                        mySqlConnection.Close();
-                        return dataTable;
+                        finally
+                        {
+                            val2.Dispose();
+                        }
+                        ((DbConnection)(object)val).Close();
+                    }
+                    finally
+                    {
+                        val.Dispose();
                     }
                 }
                 catch (Exception)
@@ -91,16 +130,19 @@ namespace MCDzienny
                     num++;
                     if (num > 10)
                     {
-                        if (!skipError)
+                        if (skipError)
                         {
-                            File.WriteAllText("MySQL_error.log", queryString);
-                            Server.s.Log("MySQL error: " + queryString);
-                            throw;
+                            break;
                         }
-
-                        return dataTable;
+                        File.WriteAllText("MySQL_error.log", queryString);
+                        Server.s.Log("MySQL error: " + queryString);
+                        throw;
                     }
+                    continue;
                 }
+                break;
+            }
+            return dataTable;
         }
     }
 }

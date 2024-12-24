@@ -1,97 +1,102 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 
 namespace MCDzienny
 {
-    // Token: 0x02000342 RID: 834
     public static class ConvertDat
     {
-        // Token: 0x06001807 RID: 6151 RVA: 0x000A0CC0 File Offset: 0x0009EEC0
         public static Level Load(Stream lvlStream, string fileName)
         {
-            var array = new byte[8];
-            var level = new Level(fileName, 0, 0, 0, "empty");
+            byte[] array = new byte[8];
+            Level level = new Level(fileName, 0, 0, 0, "empty");
             try
             {
                 lvlStream.Seek(-4L, SeekOrigin.End);
                 lvlStream.Read(array, 0, 4);
                 lvlStream.Seek(0L, SeekOrigin.Begin);
-                var num = BitConverter.ToInt32(array, 0);
-                var array2 = new byte[num];
-                using (var gzipStream = new GZipStream(lvlStream, CompressionMode.Decompress, true))
+                int num = BitConverter.ToInt32(array, 0);
+                byte[] array2 = new byte[num];
+                using (GZipStream gZipStream = new GZipStream(lvlStream, CompressionMode.Decompress, leaveOpen: true))
                 {
-                    gzipStream.Read(array2, 0, num);
+                    gZipStream.Read(array2, 0, num);
                 }
-
-                var i = 0;
-                while (i < num - 1)
-                    if (array2[i] == 172 && array2[i + 1] == 237)
+                for (int i = 0; i < num - 1; i++)
+                {
+                    if (array2[i] != 172 || array2[i + 1] != 237)
                     {
-                        var j = i + 6;
-                        Array.Copy(array2, j, array, 0, 2);
-                        j += IPAddress.HostToNetworkOrder(BitConverter.ToInt16(array, 0));
-                        j += 13;
-                        int k;
-                        for (k = j; k < array2.Length - 1; k++)
-                            if (array2[k] == 120 && array2[k + 1] == 112)
-                            {
-                                k += 2;
-                                break;
-                            }
-
-                        var num2 = 0;
-                        while (j < k)
+                        continue;
+                    }
+                    int num2 = i + 6;
+                    Array.Copy(array2, num2, array, 0, 2);
+                    num2 += IPAddress.HostToNetworkOrder(BitConverter.ToInt16(array, 0));
+                    num2 += 13;
+                    int num3 = 0;
+                    for (num3 = num2; num3 < array2.Length - 1; num3++)
+                    {
+                        if (array2[num3] == 120 && array2[num3 + 1] == 112)
                         {
-                            if (array2[j] == 90)
-                                num2++;
-                            else if (array2[j] == 73 || array2[j] == 70)
-                                num2 += 4;
-                            else if (array2[j] == 74) num2 += 8;
-                            j++;
-                            Array.Copy(array2, j, array, 0, 2);
-                            var num3 = IPAddress.HostToNetworkOrder(BitConverter.ToInt16(array, 0));
-                            j += 2;
-                            Array.Copy(array2, k + num2 - 4, array, 0, 4);
-                            if (MemCmp(array2, j, "width"))
-                                level.width = (ushort) IPAddress.HostToNetworkOrder(BitConverter.ToInt32(array, 0));
-                            else if (MemCmp(array2, j, "depth"))
-                                level.height = (ushort) IPAddress.HostToNetworkOrder(BitConverter.ToInt32(array, 0));
-                            else if (MemCmp(array2, j, "height"))
-                                level.depth = (ushort) IPAddress.HostToNetworkOrder(BitConverter.ToInt32(array, 0));
-                            j += num3;
-                        }
-
-                        level.spawnx = (ushort) (level.width / 1.3);
-                        level.spawny = (ushort) (level.height / 1.3);
-                        level.spawnz = (ushort) (level.depth / 1.3);
-                        var flag = false;
-                        num2 = Array.IndexOf<byte>(array2, 0, k);
-                        while (num2 != -1 && num2 < array2.Length - 2)
-                        {
-                            if (array2[num2] == 0 && array2[num2 + 1] == 120 && array2[num2 + 2] == 112)
-                            {
-                                flag = true;
-                                j = num2 + 7;
-                            }
-
-                            num2 = Array.IndexOf<byte>(array2, 0, num2 + 1);
-                        }
-
-                        if (flag)
-                        {
-                            level.CopyBlocks(array2, j);
-                            level.Save(true);
+                            num3 += 2;
                             break;
                         }
-
-                        throw new Exception("Could not locate block array.");
                     }
-                    else
+                    int num4 = 0;
+                    while (num2 < num3)
                     {
-                        i++;
+                        if (array2[num2] == 90)
+                        {
+                            num4++;
+                        }
+                        else if (array2[num2] == 73 || array2[num2] == 70)
+                        {
+                            num4 += 4;
+                        }
+                        else if (array2[num2] == 74)
+                        {
+                            num4 += 8;
+                        }
+                        num2++;
+                        Array.Copy(array2, num2, array, 0, 2);
+                        short num5 = IPAddress.HostToNetworkOrder(BitConverter.ToInt16(array, 0));
+                        num2 += 2;
+                        Array.Copy(array2, num3 + num4 - 4, array, 0, 4);
+                        if (MemCmp(array2, num2, "width"))
+                        {
+                            level.width = (ushort)IPAddress.HostToNetworkOrder(BitConverter.ToInt32(array, 0));
+                        }
+                        else if (MemCmp(array2, num2, "depth"))
+                        {
+                            level.height = (ushort)IPAddress.HostToNetworkOrder(BitConverter.ToInt32(array, 0));
+                        }
+                        else if (MemCmp(array2, num2, "height"))
+                        {
+                            level.depth = (ushort)IPAddress.HostToNetworkOrder(BitConverter.ToInt32(array, 0));
+                        }
+                        num2 += num5;
                     }
+                    level.spawnx = (ushort)(level.width / 1.3);
+                    level.spawny = (ushort)(level.height / 1.3);
+                    level.spawnz = (ushort)(level.depth / 1.3);
+                    bool flag = false;
+                    num4 = Array.IndexOf(array2, (byte)0, num3);
+                    while (num4 != -1 && num4 < array2.Length - 2)
+                    {
+                        if (array2[num4] == 0 && array2[num4 + 1] == 120 && array2[num4 + 2] == 112)
+                        {
+                            flag = true;
+                            num2 = num4 + 7;
+                        }
+                        num4 = Array.IndexOf(array2, (byte)0, num4 + 1);
+                    }
+                    if (flag)
+                    {
+                        level.CopyBlocks(array2, num2);
+                        level.Save(Override: true);
+                        break;
+                    }
+                    throw new Exception("Could not locate block array.");
+                }
             }
             catch (Exception ex)
             {
@@ -99,16 +104,18 @@ namespace MCDzienny
                 Server.ErrorLog(ex);
                 return null;
             }
-
             return level;
         }
 
-        // Token: 0x06001808 RID: 6152 RVA: 0x000A0FC4 File Offset: 0x0009F1C4
-        private static bool MemCmp(byte[] data, int offset, string value)
+        static bool MemCmp(byte[] data, int offset, string value)
         {
-            for (var i = 0; i < value.Length; i++)
-                if (offset + i >= data.Length || (char) data[offset + i] != value[i])
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (offset + i >= data.Length || data[offset + i] != value[i])
+                {
                     return false;
+                }
+            }
             return true;
         }
     }

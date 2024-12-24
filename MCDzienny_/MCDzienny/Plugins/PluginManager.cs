@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Linq;
@@ -10,133 +10,137 @@ using MCDzienny.Script;
 
 namespace MCDzienny.Plugins
 {
-    // Token: 0x020001ED RID: 493
     public class PluginManager
     {
-        // Token: 0x0400072F RID: 1839
+
         public readonly string PluginsPath = "plugins";
+        AvailablePluginCollection availablePlugins = new AvailablePluginCollection();
 
-        // Token: 0x0400072E RID: 1838
-        private AvailablePluginCollection availablePlugins = new AvailablePluginCollection();
+        public AvailablePluginCollection AvailablePlugins { get { return availablePlugins; } set { availablePlugins = value; } }
 
-        // Token: 0x17000513 RID: 1299
-        // (get) Token: 0x06000DA4 RID: 3492 RVA: 0x0004D668 File Offset: 0x0004B868
-        // (set) Token: 0x06000DA5 RID: 3493 RVA: 0x0004D670 File Offset: 0x0004B870
-        public AvailablePluginCollection AvailablePlugins
-        {
-            get { return availablePlugins; }
-            set { availablePlugins = value; }
-        }
-
-        // Token: 0x06000DA7 RID: 3495 RVA: 0x0004D69C File Offset: 0x0004B89C
         public void LoadPlugins()
         {
             LoadPlugins(PluginsPath);
         }
 
-        // Token: 0x06000DA8 RID: 3496 RVA: 0x0004D6AC File Offset: 0x0004B8AC
         public void LoadPlugins(string path)
         {
             availablePlugins.Clear();
-            foreach (var text in Directory.GetFiles(path))
+            string[] files = Directory.GetFiles(path);
+            foreach (string text in files)
             {
-                var fileInfo = new FileInfo(text);
-                if (fileInfo.Extension.Equals(".dll")) AddPluginFromString(text);
+                FileInfo fileInfo = new FileInfo(text);
+                if (fileInfo.Extension.Equals(".dll"))
+                {
+                    AddPluginFromString(text);
+                }
             }
         }
 
-        // Token: 0x06000DA9 RID: 3497 RVA: 0x0004D700 File Offset: 0x0004B900
         public void ClosePlugins()
         {
-            foreach (var availablePlugin in availablePlugins) availablePlugin.Instance.Terminate();
+            foreach (AvailablePlugin availablePlugin in availablePlugins)
+            {
+                availablePlugin.Instance.Terminate();
+            }
             availablePlugins.Clear();
         }
 
-        // Token: 0x06000DAA RID: 3498 RVA: 0x0004D764 File Offset: 0x0004B964
         public void RemovePluginByName(string name)
         {
-            var availablePlugin = availablePlugins.SingleOrDefault(p => p.Instance.Name == name);
+            AvailablePlugin availablePlugin = availablePlugins.SingleOrDefault(p => p.Instance.Name == name);
             if (availablePlugin != null)
             {
                 availablePlugin.Instance.Terminate();
                 availablePlugins.Remove(availablePlugin);
             }
-
             Window.thisWindow.RemoveNodeFromPluginList(name);
         }
 
-        // Token: 0x06000DAB RID: 3499 RVA: 0x0004D7C0 File Offset: 0x0004B9C0
         public void AddPluginFromString(string sourceCode)
         {
-            var compilerResults = CompilerManager.Default.CompileFromString(sourceCode);
-            if (compilerResults.Errors.Count > 0)
+            //IL_0039: Unknown result type (might be due to invalid IL or missing references)
+            //IL_003f: Expected O, but got Unknown
+            //IL_01e9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01f0: Expected O, but got Unknown
+            //IL_0195: Unknown result type (might be due to invalid IL or missing references)
+            //IL_019a: Invalid comparison between I4 and Unknown
+            CompilerResults val = CompilerManager.Default.CompileFromString(sourceCode);
+            if (val.Errors.Count > 0)
             {
-                var stringBuilder = new StringBuilder();
-                foreach (var obj in compilerResults.Errors)
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (CompilerError item in val.Errors)
                 {
-                    var compilerError = (CompilerError) obj;
+                    CompilerError val2 = item;
                     stringBuilder.AppendLine();
                     stringBuilder.AppendLine(new string('-', 25));
                     stringBuilder.AppendLine();
-                    stringBuilder.AppendLine("Error #" + compilerError.ErrorNumber);
-                    stringBuilder.AppendLine("Message: " + compilerError.ErrorText);
-                    stringBuilder.AppendLine("Line: " + compilerError.Line);
+                    stringBuilder.AppendLine("Error #" + val2.ErrorNumber);
+                    stringBuilder.AppendLine("Message: " + val2.ErrorText);
+                    stringBuilder.AppendLine("Line: " + val2.Line);
                 }
-
                 ShowErrorBox(stringBuilder);
                 return;
             }
-
-            var compiledAssembly = compilerResults.CompiledAssembly;
-            foreach (var type in compiledAssembly.GetTypes())
-                if (type.IsPublic && !type.IsAbstract)
+            Assembly compiledAssembly = val.CompiledAssembly;
+            Type[] types = compiledAssembly.GetTypes();
+            foreach (Type type in types)
+            {
+                if (!type.IsPublic || type.IsAbstract)
                 {
-                    var baseType = type.BaseType;
-                    if (baseType.FullName == "MCDzienny.Plugins.Plugin")
-                    {
-                        var newPlugin = new AvailablePlugin();
-                        newPlugin.Instance =
-                            (Plugin) Activator.CreateInstance(compiledAssembly.GetType(type.ToString()));
-                        if (availablePlugins.Any(p => p.Instance.Name == newPlugin.Instance.Name))
-                        {
-                            if (DialogResult.Yes !=
-                                MessageBox.Show("Override existing plugin named " + newPlugin.Instance.Name,
-                                    "Duplicate", MessageBoxButtons.YesNo)) break;
-                            RemovePluginByName(newPlugin.Instance.Name);
-                        }
-
-                        newPlugin.Instance.Initialize();
-                        availablePlugins.Add(newPlugin);
-                        var node = new TreeNode(newPlugin.Instance.Name);
-                        Window.thisWindow.AddNodeToPluginList(node);
-                    }
+                    continue;
                 }
+                Type baseType = type.BaseType;
+                if (!(baseType.FullName == "MCDzienny.Plugins.Plugin"))
+                {
+                    continue;
+                }
+                AvailablePlugin newPlugin = new AvailablePlugin();
+                newPlugin.Instance = (Plugin)Activator.CreateInstance(compiledAssembly.GetType(type.ToString()));
+                if (availablePlugins.Any(p => p.Instance.Name == newPlugin.Instance.Name))
+                {
+                    if (6 != (int)MessageBox.Show("Override existing plugin named " + newPlugin.Instance.Name, "Duplicate", (MessageBoxButtons)4))
+                    {
+                        break;
+                    }
+                    RemovePluginByName(newPlugin.Instance.Name);
+                }
+                newPlugin.Instance.Initialize();
+                availablePlugins.Add(newPlugin);
+                TreeNode node = new TreeNode(newPlugin.Instance.Name);
+                Window.thisWindow.AddNodeToPluginList(node);
+            }
         }
 
-        // Token: 0x06000DAC RID: 3500 RVA: 0x0004D9EC File Offset: 0x0004BBEC
-        private static void ShowErrorBox(StringBuilder sb)
+        static void ShowErrorBox(StringBuilder sb)
         {
-            if (!Server.mono && !Server.CLI && Window.thisWindow.WindowState != FormWindowState.Minimized)
+            //IL_0013: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0019: Invalid comparison between Unknown and I4
+            if (!Server.mono && !Server.CLI && (int)Window.thisWindow.WindowState != 1)
+            {
                 new PopUpMessage(sb.ToString(), "Error Box", "Compiler errors:").Show();
+            }
         }
 
-        // Token: 0x06000DAD RID: 3501 RVA: 0x0004DA24 File Offset: 0x0004BC24
-        private void AddPlugin(string FileName)
+        void AddPlugin(string FileName)
         {
-            var assembly = Assembly.LoadFrom(FileName);
-            foreach (var type in assembly.GetTypes())
+            Assembly assembly = Assembly.LoadFrom(FileName);
+            Type[] types = assembly.GetTypes();
+            foreach (Type type in types)
+            {
                 if (type.IsPublic && !type.IsAbstract)
                 {
-                    var @interface = type.GetInterface("MCDzienny.Plugin", true);
+                    Type @interface = type.GetInterface("MCDzienny.Plugin", ignoreCase: true);
                     if (@interface != null)
                     {
-                        var availablePlugin = new AvailablePlugin();
+                        AvailablePlugin availablePlugin = new AvailablePlugin();
                         availablePlugin.AssemblyPath = FileName;
-                        availablePlugin.Instance = (Plugin) Activator.CreateInstance(assembly.GetType(type.ToString()));
+                        availablePlugin.Instance = (Plugin)Activator.CreateInstance(assembly.GetType(type.ToString()));
                         availablePlugin.Instance.Initialize();
                         availablePlugins.Add(availablePlugin);
                     }
                 }
+            }
         }
     }
 }

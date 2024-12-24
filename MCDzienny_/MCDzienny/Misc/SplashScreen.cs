@@ -1,24 +1,55 @@
-﻿using System.Threading;
+using System.ComponentModel;
+using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
+using MCDzienny_.Properties;
 
 namespace MCDzienny.Misc
 {
-    // Token: 0x020001C7 RID: 455
-    public partial class SplashScreen : Form
+    public class SplashScreen : Form
     {
-        // Token: 0x06000CBC RID: 3260 RVA: 0x000499E4 File Offset: 0x00047BE4
+        IContainer components;
+
         public SplashScreen()
         {
             AllowTransparency = true;
             InitializeComponent();
         }
 
-        // Token: 0x06000CBD RID: 3261 RVA: 0x000499FC File Offset: 0x00047BFC
         public void FadeOut()
         {
             Thread.Sleep(100);
-            for (var i = 0; i < 10; i++) Opacity -= 0.10000000149011612;
+            for (int i = 0; i < 10; i++)
+            {
+                Opacity = Opacity - 0.10000000149011612;
+            }
             Close();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        void InitializeComponent()
+        {
+            SuspendLayout();
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = (AutoScaleMode)1;
+            BackColor = Color.White;
+            BackgroundImage = Resources.splashScreen;
+            ClientSize = new Size(520, 260);
+            FormBorderStyle = 0;
+            Name = "SplashScreen";
+            ShowIcon = false;
+            ShowInTaskbar = false;
+            StartPosition = (FormStartPosition)1;
+            Text = "SplashScreen";
+            ResumeLayout(false);
         }
     }
 }

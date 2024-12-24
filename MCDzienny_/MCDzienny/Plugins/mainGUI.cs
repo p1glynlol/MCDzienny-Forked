@@ -1,50 +1,52 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace MCDzienny.Plugins
 {
-    // Token: 0x020001F5 RID: 501
     public class mainGUI : UserControl
     {
-        // Token: 0x04000745 RID: 1861
-        private IContainer components;
 
-        // Token: 0x04000744 RID: 1860
+        IContainer components;
         public stuffWithGui g;
 
-        // Token: 0x04000749 RID: 1865
         public TextBox intervalTextBox;
 
-        // Token: 0x04000747 RID: 1863
-        private Label label1;
+        Label label1;
 
-        // Token: 0x04000748 RID: 1864
-        private Label label2;
+        Label label2;
 
-        // Token: 0x04000746 RID: 1862
         public TextBox msgTextBox;
 
-        // Token: 0x0400074A RID: 1866
         public Timer timer;
 
-        // Token: 0x06000DD7 RID: 3543 RVA: 0x0004DDAC File Offset: 0x0004BFAC
         public mainGUI()
         {
             InitializeComponent();
             g = new stuffWithGui(timer, msgTextBox, intervalTextBox);
         }
 
-        // Token: 0x06000DD8 RID: 3544 RVA: 0x0004DDD8 File Offset: 0x0004BFD8
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null) components.Dispose();
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
             base.Dispose(disposing);
         }
 
-        // Token: 0x06000DD9 RID: 3545 RVA: 0x0004DDF8 File Offset: 0x0004BFF8
-        private void InitializeComponent()
+        void InitializeComponent()
         {
+            //IL_000c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0016: Expected O, but got Unknown
+            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0021: Expected O, but got Unknown
+            //IL_0022: Unknown result type (might be due to invalid IL or missing references)
+            //IL_002c: Expected O, but got Unknown
+            //IL_002d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0037: Expected O, but got Unknown
+            //IL_003e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0048: Expected O, but got Unknown
             components = new Container();
             msgTextBox = new TextBox();
             label1 = new Label();
@@ -73,7 +75,7 @@ namespace MCDzienny.Plugins
             intervalTextBox.Size = new Size(204, 20);
             intervalTextBox.TabIndex = 3;
             AutoScaleDimensions = new SizeF(6f, 13f);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = (AutoScaleMode)1;
             ClientSize = new Size(284, 262);
             Controls.Add(intervalTextBox);
             Controls.Add(label2);

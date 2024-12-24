@@ -1,7 +1,8 @@
-﻿using System.Reflection;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("2.2.0.0")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -11,3 +12,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("0c22ab73-66be-4351-a928-a45e534ebf5f")]
+[assembly: AssemblyVersion("2.2.0.0")]

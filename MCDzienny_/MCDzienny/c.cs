@@ -1,6 +1,5 @@
-﻿namespace MCDzienny
+namespace MCDzienny
 {
-    // Token: 0x02000246 RID: 582
     public static class c
     {
         public const string black = "&0";

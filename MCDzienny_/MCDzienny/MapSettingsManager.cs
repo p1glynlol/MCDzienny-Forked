@@ -1,216 +1,234 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
 namespace MCDzienny
 {
-    // Token: 0x020001AB RID: 427
     public class MapSettingsManager
     {
-        // Token: 0x04000661 RID: 1633
+
         internal List<CommandBlock> commandBlocks;
+        string settingsPath;
 
-        // Token: 0x04000660 RID: 1632
-        private string settingsPath;
-
-        // Token: 0x06000C46 RID: 3142 RVA: 0x000475D8 File Offset: 0x000457D8
         public MapSettingsManager(string settingsPath)
         {
             Load(settingsPath);
         }
 
-        // Token: 0x06000C47 RID: 3143 RVA: 0x000475E8 File Offset: 0x000457E8
         public void Save()
         {
             Save(settingsPath);
         }
 
-        // Token: 0x06000C48 RID: 3144 RVA: 0x000475F8 File Offset: 0x000457F8
         public void Save(string newPath)
         {
+            //IL_0007: Unknown result type (might be due to invalid IL or missing references)
+            //IL_000d: Expected O, but got Unknown
+            //IL_026f: Unknown result type (might be due to invalid IL or missing references)
             settingsPath = newPath;
-            var xmlDocument = new XmlDocument();
-            XmlNode xmlNode = xmlDocument.CreateElement("MapSettings");
-            xmlDocument.AppendChild(xmlNode);
+            XmlDocument val = new XmlDocument();
+            XmlNode val2 = val.CreateElement("MapSettings");
+            val.AppendChild(val2);
             if (commandBlocks != null)
             {
-                XmlNode xmlNode2 = xmlDocument.CreateElement("CommandBlocks");
-                foreach (var commandBlock in commandBlocks)
+                XmlNode val3 = val.CreateElement("CommandBlocks");
+                foreach (CommandBlock commandBlock in commandBlocks)
                 {
-                    var xmlElement = xmlDocument.CreateElement("CommandBlock");
-                    xmlElement.SetAttribute("x", commandBlock.x.ToString());
-                    xmlElement.SetAttribute("y", commandBlock.y.ToString());
-                    xmlElement.SetAttribute("z", commandBlock.z.ToString());
-                    xmlElement.SetAttribute("block", commandBlock.blockType);
+                    XmlElement val4 = val.CreateElement("CommandBlock");
+                    val4.SetAttribute("x", commandBlock.x.ToString());
+                    val4.SetAttribute("y", commandBlock.y.ToString());
+                    val4.SetAttribute("z", commandBlock.z.ToString());
+                    val4.SetAttribute("block", commandBlock.blockType);
                     if (commandBlock.changeAction.IsExplicit)
-                        xmlElement.SetAttribute("onChange", commandBlock.changeAction.Value.ToString());
+                    {
+                        val4.SetAttribute("onChange", commandBlock.changeAction.Value.ToString());
+                    }
                     if (commandBlock.commandElements != null)
-                        foreach (var commandElement in commandBlock.commandElements)
+                    {
+                        foreach (CommandElement commandElement in commandBlock.commandElements)
                         {
-                            var xmlElement2 = xmlDocument.CreateElement("Command");
+                            XmlElement val5 = val.CreateElement("Command");
                             if (commandElement.blockTrigger.IsExplicit)
-                                xmlElement2.SetAttribute("trigger", commandElement.blockTrigger.ToString());
+                            {
+                                val5.SetAttribute("trigger", commandElement.blockTrigger.ToString());
+                            }
                             if (commandElement.consoleUse.IsExplicit)
-                                xmlElement2.SetAttribute("console", commandElement.consoleUse.ToString());
+                            {
+                                val5.SetAttribute("console", commandElement.consoleUse.ToString());
+                            }
                             if (commandElement.cooldown.IsExplicit)
-                                xmlElement2.SetAttribute("cooldown", commandElement.cooldown.ToString());
-                            xmlElement2.InnerText = commandElement.commandString;
-                            xmlElement.AppendChild(xmlElement2);
+                            {
+                                val5.SetAttribute("cooldown", commandElement.cooldown.ToString());
+                            }
+                            val5.InnerText = commandElement.commandString;
+                            val4.AppendChild(val5);
                         }
-
+                    }
                     if (commandBlock.actionElements != null)
-                        foreach (var actionElement in commandBlock.actionElements)
+                    {
+                        foreach (ActionElement actionElement in commandBlock.actionElements)
                         {
-                            var xmlElement3 = xmlDocument.CreateElement("Action");
+                            XmlElement val6 = val.CreateElement("Action");
                             if (actionElement.blockTrigger.IsExplicit)
-                                xmlElement3.SetAttribute("trigger", actionElement.blockTrigger.ToString());
-                            xmlElement3.InnerText = actionElement.actionString;
-                            xmlElement.AppendChild(xmlElement3);
+                            {
+                                val6.SetAttribute("trigger", actionElement.blockTrigger.ToString());
+                            }
+                            val6.InnerText = actionElement.actionString;
+                            val4.AppendChild(val6);
                         }
-
-                    if (xmlElement.ChildNodes.Count == 0)
+                    }
+                    if (val4.ChildNodes.Count == 0)
+                    {
                         throw new XmlException("No commands or actions are assigned to command block.");
-                    xmlNode2.AppendChild(xmlElement);
+                    }
+                    val3.AppendChild(val4);
                 }
-
-                xmlNode.AppendChild(xmlNode2);
+                val2.AppendChild(val3);
             }
-
-            xmlDocument.AppendChild(xmlNode);
-            xmlDocument.Save(settingsPath);
+            val.AppendChild(val2);
+            val.Save(settingsPath);
         }
 
-        // Token: 0x06000C49 RID: 3145 RVA: 0x00047908 File Offset: 0x00045B08
         public void Reload()
         {
             Load(settingsPath);
         }
 
-        // Token: 0x06000C4A RID: 3146 RVA: 0x00047918 File Offset: 0x00045B18
         public void Load(string settingsPath)
         {
+            //IL_004b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0051: Expected O, but got Unknown
+            //IL_009d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00a4: Expected O, but got Unknown
+            //IL_01bf: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01c6: Expected O, but got Unknown
+            //IL_0389: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0390: Expected O, but got Unknown
             this.settingsPath = settingsPath;
             if (!File.Exists(settingsPath))
-                using (var fileStream = File.Create(settingsPath))
+            {
+                using (FileStream stream = File.Create(settingsPath))
                 {
-                    using (var streamWriter = new StreamWriter(fileStream))
+                    using (StreamWriter streamWriter = new StreamWriter(stream))
                     {
                         streamWriter.WriteLine("<MapSettings>");
                         streamWriter.Write("</MapSettings>");
                     }
                 }
-
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(settingsPath);
-            var documentElement = xmlDocument.DocumentElement;
-            var xmlNode = documentElement.SelectSingleNode("CommandBlocks");
-            if (xmlNode != null)
+            }
+            XmlDocument val = new XmlDocument();
+            val.Load(settingsPath);
+            XmlElement documentElement = val.DocumentElement;
+            XmlNode val2 = documentElement.SelectSingleNode("CommandBlocks");
+            if (val2 == null)
             {
-                commandBlocks = new List<CommandBlock>();
-                foreach (var obj in xmlNode.SelectNodes("CommandBlock"))
+                return;
+            }
+            commandBlocks = new List<CommandBlock>();
+            foreach (XmlNode item in val2.SelectNodes("CommandBlock"))
+            {
+                XmlNode val3 = item;
+                CommandBlock commandBlock = new CommandBlock();
+                commandBlock.x = int.Parse(val3.Attributes["x"].Value);
+                commandBlock.y = int.Parse(val3.Attributes["y"].Value);
+                commandBlock.z = int.Parse(val3.Attributes["z"].Value);
+                commandBlock.blockType = val3.Attributes["block"].Value;
+                if (val3.Attributes["onChange"] != null)
                 {
-                    var xmlNode2 = (XmlNode) obj;
-                    var commandBlock = new CommandBlock();
-                    commandBlock.x = int.Parse(xmlNode2.Attributes["x"].Value);
-                    commandBlock.y = int.Parse(xmlNode2.Attributes["y"].Value);
-                    commandBlock.z = int.Parse(xmlNode2.Attributes["z"].Value);
-                    commandBlock.blockType = xmlNode2.Attributes["block"].Value;
-                    if (xmlNode2.Attributes["onChange"] != null)
+                    commandBlock.changeAction.Value = (ChangeAction)Enum.Parse(typeof(ChangeAction), val3.Attributes["onChange"].Value);
+                    commandBlock.changeAction.IsExplicit = true;
+                }
+                else
+                {
+                    commandBlock.changeAction.Value = ChangeAction.Restore;
+                    commandBlock.changeAction.IsExplicit = false;
+                }
+                foreach (XmlNode item2 in val3.SelectNodes("Command"))
+                {
+                    XmlNode val4 = item2;
+                    CommandElement commandElement = new CommandElement();
+                    if (val4.Attributes["trigger"] != null)
                     {
-                        commandBlock.changeAction.Value = (ChangeAction) Enum.Parse(typeof(ChangeAction),
-                            xmlNode2.Attributes["onChange"].Value);
-                        commandBlock.changeAction.IsExplicit = true;
+                        commandElement.blockTrigger.Value = (BlockTrigger)Enum.Parse(typeof(BlockTrigger), val4.Attributes["trigger"].Value);
+                        commandElement.blockTrigger.IsExplicit = true;
                     }
                     else
                     {
-                        commandBlock.changeAction.Value = ChangeAction.Restore;
-                        commandBlock.changeAction.IsExplicit = false;
+                        if (Block.Walkthrough(Block.Byte(commandBlock.blockType)))
+                        {
+                            commandElement.blockTrigger.Value = BlockTrigger.Walk;
+                        }
+                        else
+                        {
+                            commandElement.blockTrigger.Value = BlockTrigger.Hit;
+                        }
+                        commandElement.blockTrigger.IsExplicit = false;
                     }
-
-                    foreach (var obj2 in xmlNode2.SelectNodes("Command"))
+                    if (val4.Attributes["asConsole"] != null)
                     {
-                        var xmlNode3 = (XmlNode) obj2;
-                        var commandElement = new CommandElement();
-                        if (xmlNode3.Attributes["trigger"] != null)
-                        {
-                            commandElement.blockTrigger.Value = (BlockTrigger) Enum.Parse(typeof(BlockTrigger),
-                                xmlNode3.Attributes["trigger"].Value);
-                            commandElement.blockTrigger.IsExplicit = true;
-                        }
-                        else
-                        {
-                            if (Block.Walkthrough(Block.Byte(commandBlock.blockType)))
-                                commandElement.blockTrigger.Value = BlockTrigger.Walk;
-                            else
-                                commandElement.blockTrigger.Value = BlockTrigger.Hit;
-                            commandElement.blockTrigger.IsExplicit = false;
-                        }
-
-                        if (xmlNode3.Attributes["asConsole"] != null)
-                        {
-                            commandElement.consoleUse.Value = bool.Parse(xmlNode3.Attributes["asConsole"].Value);
-                            commandElement.consoleUse.IsExplicit = true;
-                        }
-                        else
-                        {
-                            commandElement.consoleUse.Value = false;
-                            commandElement.consoleUse.IsExplicit = false;
-                        }
-
-                        if (xmlNode3.Attributes["cooldown"] != null)
-                        {
-                            commandElement.cooldown.Value = float.Parse(xmlNode3.Attributes["cooldown"].Value);
-                            commandElement.cooldown.IsExplicit = true;
-                        }
-                        else
-                        {
-                            commandElement.cooldown.Value = 1f;
-                            commandElement.cooldown.IsExplicit = false;
-                        }
-
-                        commandElement.commandString = xmlNode3.InnerText;
-                        commandBlock.commandElements.Add(commandElement);
+                        commandElement.consoleUse.Value = bool.Parse(val4.Attributes["asConsole"].Value);
+                        commandElement.consoleUse.IsExplicit = true;
                     }
-
-                    foreach (var obj3 in xmlNode2.SelectNodes("Action"))
+                    else
                     {
-                        var xmlNode4 = (XmlNode) obj3;
-                        var actionElement = new ActionElement();
-                        if (xmlNode4.Attributes["trigger"] != null)
-                        {
-                            actionElement.blockTrigger.Value = (BlockTrigger) Enum.Parse(typeof(BlockTrigger),
-                                xmlNode4.Attributes["trigger"].Value);
-                            actionElement.blockTrigger.IsExplicit = true;
-                        }
-                        else
-                        {
-                            if (Block.Walkthrough(Block.Byte(commandBlock.blockType)))
-                                actionElement.blockTrigger.Value = BlockTrigger.Walk;
-                            else
-                                actionElement.blockTrigger.Value = BlockTrigger.Hit;
-                            actionElement.blockTrigger.IsExplicit = false;
-                        }
-
-                        actionElement.actionString = xmlNode4.InnerText;
-                        commandBlock.actionElements.Add(actionElement);
+                        commandElement.consoleUse.Value = false;
+                        commandElement.consoleUse.IsExplicit = false;
                     }
-
-                    commandBlocks.Add(commandBlock);
+                    if (val4.Attributes["cooldown"] != null)
+                    {
+                        commandElement.cooldown.Value = float.Parse(val4.Attributes["cooldown"].Value);
+                        commandElement.cooldown.IsExplicit = true;
+                    }
+                    else
+                    {
+                        commandElement.cooldown.Value = 1f;
+                        commandElement.cooldown.IsExplicit = false;
+                    }
+                    commandElement.commandString = val4.InnerText;
+                    commandBlock.commandElements.Add(commandElement);
                 }
+                foreach (XmlNode item3 in val3.SelectNodes("Action"))
+                {
+                    XmlNode val5 = item3;
+                    ActionElement actionElement = new ActionElement();
+                    if (val5.Attributes["trigger"] != null)
+                    {
+                        actionElement.blockTrigger.Value = (BlockTrigger)Enum.Parse(typeof(BlockTrigger), val5.Attributes["trigger"].Value);
+                        actionElement.blockTrigger.IsExplicit = true;
+                    }
+                    else
+                    {
+                        if (Block.Walkthrough(Block.Byte(commandBlock.blockType)))
+                        {
+                            actionElement.blockTrigger.Value = BlockTrigger.Walk;
+                        }
+                        else
+                        {
+                            actionElement.blockTrigger.Value = BlockTrigger.Hit;
+                        }
+                        actionElement.blockTrigger.IsExplicit = false;
+                    }
+                    actionElement.actionString = val5.InnerText;
+                    commandBlock.actionElements.Add(actionElement);
+                }
+                commandBlocks.Add(commandBlock);
             }
         }
 
-        // Token: 0x06000C4B RID: 3147 RVA: 0x00047E3C File Offset: 0x0004603C
         public void DeployBlocks(Level level)
         {
-            if (commandBlocks == null) return;
-            foreach (var commandBlock in commandBlocks)
+            if (commandBlocks == null)
             {
-                var b = Block.Byte(commandBlock.blockType);
-                if (b != 255)
-                    level.Blockchange((ushort) commandBlock.x, (ushort) commandBlock.y, (ushort) commandBlock.z, b,
-                        true);
+                return;
+            }
+            foreach (CommandBlock commandBlock in commandBlocks)
+            {
+                byte b = Block.Byte(commandBlock.blockType);
+                if (b != byte.MaxValue)
+                {
+                    level.Blockchange((ushort)commandBlock.x, (ushort)commandBlock.y, (ushort)commandBlock.z, b, overRide: true);
+                }
             }
         }
     }

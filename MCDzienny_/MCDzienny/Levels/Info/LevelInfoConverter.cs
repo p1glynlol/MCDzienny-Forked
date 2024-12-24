@@ -1,64 +1,56 @@
-﻿using System;
+using System;
 
 namespace MCDzienny.Levels.Info
 {
-    // Token: 0x0200003A RID: 58
     public class LevelInfoConverter
     {
-        // Token: 0x06000148 RID: 328 RVA: 0x00008624 File Offset: 0x00006824
         public LevelInfoRaw ToRaw(LevelInfo info)
         {
-            if (info == null) throw new NullReferenceException("info");
-            var levelInfoRaw = new LevelInfoRaw();
-            var item = new LevelInfoRawItem
+            if (info == null)
             {
-                Key = "environment",
-                Value = info.Environment
-            };
+                throw new NullReferenceException("info");
+            }
+            LevelInfoRaw levelInfoRaw = new LevelInfoRaw();
+            LevelInfoRawItem levelInfoRawItem = new LevelInfoRawItem();
+            levelInfoRawItem.Key = "environment";
+            levelInfoRawItem.Value = info.Environment;
+            LevelInfoRawItem item = levelInfoRawItem;
             levelInfoRaw.Items.Add(item);
-            item = new LevelInfoRawItem
-            {
-                Key = "weather",
-                Value = info.Weather
-            };
+            LevelInfoRawItem levelInfoRawItem2 = new LevelInfoRawItem();
+            levelInfoRawItem2.Key = "weather";
+            levelInfoRawItem2.Value = info.Weather;
+            item = levelInfoRawItem2;
             levelInfoRaw.Items.Add(item);
-            item = new LevelInfoRawItem
-            {
-                Key = "texture",
-                Value = info.Texture
-            };
+            LevelInfoRawItem levelInfoRawItem3 = new LevelInfoRawItem();
+            levelInfoRawItem3.Key = "texture";
+            levelInfoRawItem3.Value = info.Texture;
+            item = levelInfoRawItem3;
             levelInfoRaw.Items.Add(item);
             return levelInfoRaw;
         }
 
-        // Token: 0x06000149 RID: 329 RVA: 0x000086CC File Offset: 0x000068CC
         public LevelInfo FromRaw(LevelInfoRaw raw)
         {
-            if (raw == null) throw new NullReferenceException("raw");
-            var levelInfo = new LevelInfo();
-            foreach (var levelInfoRawItem in raw.Items)
+            if (raw == null)
             {
-                string a;
-                if ((a = levelInfoRawItem.Key.ToLower()) != null)
+                throw new NullReferenceException("raw");
+            }
+            LevelInfo levelInfo = new LevelInfo();
+            foreach (LevelInfoRawItem item in raw.Items)
+            {
+                switch (item.Key.ToLower())
                 {
-                    if (!(a == "environment"))
-                    {
-                        if (!(a == "weather"))
-                        {
-                            if (a == "texture") levelInfo.Texture = levelInfoRawItem.Value;
-                        }
-                        else
-                        {
-                            levelInfo.Weather = levelInfoRawItem.Value;
-                        }
-                    }
-                    else
-                    {
-                        levelInfo.Environment = levelInfoRawItem.Value;
-                    }
+                    case "environment":
+                        levelInfo.Environment = item.Value;
+                        break;
+                    case "weather":
+                        levelInfo.Weather = item.Value;
+                        break;
+                    case "texture":
+                        levelInfo.Texture = item.Value;
+                        break;
                 }
             }
-
             return levelInfo;
         }
     }

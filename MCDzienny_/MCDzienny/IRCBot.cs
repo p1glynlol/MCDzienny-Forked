@@ -1,50 +1,57 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Meebey.SmartIrc4net;
 
 namespace MCDzienny
 {
-    // Token: 0x02000308 RID: 776
-    internal class IRCBot
+    class IRCBot
     {
-        // Token: 0x04000AEC RID: 2796
-        private static readonly IrcClient irc = new IrcClient();
+        static IrcClient irc = new IrcClient();
 
-        // Token: 0x04000AED RID: 2797
-        private static readonly string server = Server.ircServer;
+        static readonly string server = Server.ircServer;
 
-        // Token: 0x04000AEE RID: 2798
-        private static readonly string channel = Server.ircChannel;
+        static readonly string channel = Server.ircChannel;
 
-        // Token: 0x04000AEF RID: 2799
-        private static readonly string opchannel = Server.ircOpChannel;
+        static readonly string opchannel = Server.ircOpChannel;
 
-        // Token: 0x04000AF0 RID: 2800
-        private static readonly string nick = Server.ircNick;
+        static readonly string nick = Server.ircNick;
 
-        // Token: 0x04000AF1 RID: 2801
-        private static Thread ircThread;
+        static Thread ircThread;
 
-        // Token: 0x04000AF2 RID: 2802
-        private static string[] names;
+        static string[] names;
 
-        // Token: 0x06001666 RID: 5734 RVA: 0x00086BA4 File Offset: 0x00084DA4
         public IRCBot()
         {
-            ircThread = new Thread(delegate()
+            ThreadStart start = delegate
             {
+                //IL_0038: Unknown result type (might be due to invalid IL or missing references)
+                //IL_0042: Expected O, but got Unknown
+                //IL_004e: Unknown result type (might be due to invalid IL or missing references)
+                //IL_0058: Expected O, but got Unknown
+                //IL_0064: Unknown result type (might be due to invalid IL or missing references)
+                //IL_006e: Expected O, but got Unknown
+                //IL_007a: Unknown result type (might be due to invalid IL or missing references)
+                //IL_0084: Expected O, but got Unknown
+                //IL_0090: Unknown result type (might be due to invalid IL or missing references)
+                //IL_009a: Expected O, but got Unknown
+                //IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+                //IL_00c6: Expected O, but got Unknown
+                //IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+                //IL_00dc: Expected O, but got Unknown
+                //IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+                //IL_00f2: Expected O, but got Unknown
                 irc.OnConnecting += OnConnecting;
                 irc.OnConnected += OnConnected;
-                irc.OnChannelMessage += OnChanMessage;
-                irc.OnJoin += OnJoin;
-                irc.OnPart += OnPart;
-                irc.OnQuit += OnQuit;
-                irc.OnNickChange += OnNickChange;
+                irc.OnChannelMessage += new IrcEventHandler(OnChanMessage);
+                irc.OnJoin += new JoinEventHandler(OnJoin);
+                irc.OnPart += new PartEventHandler(OnPart);
+                irc.OnQuit += new QuitEventHandler(OnQuit);
+                irc.OnNickChange += new NickChangeEventHandler(OnNickChange);
                 irc.OnDisconnected += OnDisconnected;
-                irc.OnQueryMessage += OnPrivMsg;
-                irc.OnNames += OnNames;
-                irc.OnChannelAction += OnAction;
+                irc.OnQueryMessage += new IrcEventHandler(OnPrivMsg);
+                irc.OnNames += new NamesEventHandler(OnNames);
+                irc.OnChannelAction += new ActionEventHandler(OnAction);
                 try
                 {
                     irc.Connect(server, Server.ircPort);
@@ -53,43 +60,39 @@ namespace MCDzienny
                 {
                     Console.WriteLine("Unable to connect to IRC server: {0}", ex.Message);
                 }
-            });
+            };
+            ircThread = new Thread(start);
             ircThread.IsBackground = true;
             ircThread.Name = "Irc Thread";
             ircThread.Start();
         }
 
-        // Token: 0x06001667 RID: 5735 RVA: 0x00086BF8 File Offset: 0x00084DF8
-        private void OnConnecting(object sender, EventArgs e)
+        void OnConnecting(object sender, EventArgs e)
         {
             Server.s.Log("Connecting to IRC");
         }
 
-        // Token: 0x06001668 RID: 5736 RVA: 0x00086C0C File Offset: 0x00084E0C
-        private void OnConnected(object sender, EventArgs e)
+        void OnConnected(object sender, EventArgs e)
         {
             Server.s.Log("Connected to IRC");
             irc.Login(nick, nick, 0, nick);
             if (Server.ircIdentify && Server.ircPassword != string.Empty)
             {
                 Server.s.Log("Identifying with Nickserv");
-                irc.SendMessage(SendType.Message, "nickserv", "IDENTIFY " + Server.ircPassword);
+                irc.SendMessage(0, "nickserv", "IDENTIFY " + Server.ircPassword);
             }
-
             Server.s.Log("Joining channels");
             irc.RfcJoin(channel);
             irc.RfcJoin(opchannel);
             irc.Listen();
         }
 
-        // Token: 0x06001669 RID: 5737 RVA: 0x00086CC4 File Offset: 0x00084EC4
-        private void OnNames(object sender, NamesEventArgs e)
+        void OnNames(object sender, NamesEventArgs e)
         {
             names = e.UserList;
         }
 
-        // Token: 0x0600166A RID: 5738 RVA: 0x00086CD4 File Offset: 0x00084ED4
-        private void OnDisconnected(object sender, EventArgs e)
+        void OnDisconnected(object sender, EventArgs e)
         {
             try
             {
@@ -101,286 +104,307 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x0600166B RID: 5739 RVA: 0x00086D14 File Offset: 0x00084F14
-        private void OnChanMessage(object sender, IrcEventArgs e)
+        void OnChanMessage(object sender, IrcEventArgs e)
         {
-            var text = e.Data.Message;
-            var text2 = e.Data.Nick;
-            var text3 = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./!@#$%^*()_+QWERTYUIOPASDFGHJKL:\"ZXCVBNM<>? ";
-            foreach (var value in text)
+            string text = e.Data.Message;
+            string text2 = e.Data.Nick;
+            string text3 = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./!@#$%^*()_+QWERTYUIOPASDFGHJKL:\"ZXCVBNM<>? ";
+            string text4 = text;
+            for (int i = 0; i < text4.Length; i++)
+            {
+                char value = text4[i];
                 if (text3.IndexOf(value) == -1)
+                {
                     text = text.Replace(value.ToString(), "*");
+                }
+            }
             if (e.Data.Channel == opchannel)
             {
                 Server.s.Log("[(Op) IRC] " + e.Data.Nick + ": " + text);
-                Player.GlobalMessageOps(string.Concat(Server.IRCColour, "[(Op) IRC] ", text2, ": &f", text));
-                return;
+                Player.GlobalMessageOps(Server.IRCColour + "[(Op) IRC] " + text2 + ": &f" + text);
             }
-
-            Server.s.Log("[IRC] " + e.Data.Nick + ": " + text);
-            Player.GlobalChat(null, string.Concat(Server.IRCColour, "[IRC] ", text2, ": &f", text), false);
+            else
+            {
+                Server.s.Log("[IRC] " + e.Data.Nick + ": " + text);
+                Player.GlobalChat(null, Server.IRCColour + "[IRC] " + text2 + ": &f" + text, showname: false);
+            }
         }
 
-        // Token: 0x0600166C RID: 5740 RVA: 0x00086E58 File Offset: 0x00085058
-        private void OnJoin(object sender, JoinEventArgs e)
+        void OnJoin(object sender, JoinEventArgs e)
         {
             Server.s.Log(e.Data.Nick + " has joined channel " + e.Data.Channel);
             if (e.Data.Channel == opchannel)
-                Player.GlobalChat(null,
-                    Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has joined the operator channel", false);
+            {
+                Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has joined the operator channel", showname: false);
+            }
             else
-                Player.GlobalChat(null,
-                    Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has joined the channel", false);
+            {
+                Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has joined the channel", showname: false);
+            }
             irc.RfcNames(channel);
             irc.RfcNames(opchannel);
         }
 
-        // Token: 0x0600166D RID: 5741 RVA: 0x00086F14 File Offset: 0x00085114
-        private void OnPart(object sender, PartEventArgs e)
+        void OnPart(object sender, PartEventArgs e)
         {
             Server.s.Log(e.Data.Nick + " has left channel " + e.Data.Channel);
             if (e.Data.Channel == opchannel)
-                Player.GlobalChat(null,
-                    Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has left the operator channel", false);
+            {
+                Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has left the operator channel", showname: false);
+            }
             else
-                Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has left the channel",
-                    false);
+            {
+                Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has left the channel", showname: false);
+            }
             irc.RfcNames(channel);
             irc.RfcNames(opchannel);
         }
 
-        // Token: 0x0600166E RID: 5742 RVA: 0x00086FD0 File Offset: 0x000851D0
-        private void OnQuit(object sender, QuitEventArgs e)
+        void OnQuit(object sender, QuitEventArgs e)
         {
             Server.s.Log(e.Data.Nick + " has left IRC");
-            Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has left IRC", false);
+            Player.GlobalChat(null, Server.IRCColour + e.Data.Nick + Server.DefaultColor + " has left IRC", showname: false);
             irc.RfcNames(channel);
             irc.RfcNames(opchannel);
         }
 
-        // Token: 0x0600166F RID: 5743 RVA: 0x00087044 File Offset: 0x00085244
-        private void OnPrivMsg(object sender, IrcEventArgs e)
+        void OnPrivMsg(object sender, IrcEventArgs e)
         {
             Server.s.Log("IRC RECEIVING MESSAGE");
-            if (Server.ircControllers.Contains(e.Data.Nick))
+            if (!Server.ircControllers.Contains(e.Data.Nick))
             {
-                var num = e.Data.Message.Split(' ').Length;
-                var text = e.Data.Message.Split(' ')[0];
-                string text2;
-                if (num > 1)
-                    text2 = e.Data.Message.Substring(e.Data.Message.IndexOf(' ')).Trim();
-                else
-                    text2 = "";
-                if (text2 != "" || text == "restart" || text == "update")
+                return;
+            }
+            int num = e.Data.Message.Split(new char[1]
+            {
+                ' '
+            }).Length;
+            string text = e.Data.Message.Split(new char[1]
+            {
+                ' '
+            })[0];
+            string text2 = num <= 1 ? "" : e.Data.Message.Substring(e.Data.Message.IndexOf(' ')).Trim();
+            if (text2 != "" || text == "restart" || text == "update")
+            {
+                Server.s.Log(text + " : " + text2);
+                switch (text)
                 {
-                    Server.s.Log(text + " : " + text2);
-                    string key;
-                    switch (key = text)
-                    {
-                        case "kick":
-                            if (Player.Find(text2.Split()[0]) != null)
-                            {
-                                Command.all.Find("kick").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Player not found.");
-                            return;
-                        case "ban":
-                            if (Player.Find(text2) != null)
-                            {
-                                Command.all.Find("ban").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Player not found.");
-                            return;
-                        case "banip":
-                            if (Player.Find(text2) != null)
-                            {
-                                Command.all.Find("banip").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Player not found.");
-                            return;
-                        case "say":
-                            irc.SendMessage(SendType.Message, channel, text2);
-                            return;
-                        case "setrank":
-                            if (Player.Find(text2.Split(' ')[0]) != null)
-                            {
-                                Command.all.Find("setrank").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Player not found.");
-                            return;
-                        case "mute":
-                            if (Player.Find(text2) != null)
-                            {
-                                Command.all.Find("mute").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Player not found.");
-                            return;
-                        case "joker":
-                            if (Player.Find(text2) != null)
-                            {
-                                Command.all.Find("joker").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Player not found.");
-                            return;
-                        case "physics":
-                            if (Level.Find(text2.Split(' ')[0]) != null)
-                            {
-                                Command.all.Find("physics").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Map not found.");
-                            return;
-                        case "load":
-                            if (Level.Find(text2.Split(' ')[0]) != null)
-                            {
-                                Command.all.Find("load").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Map not found.");
-                            return;
-                        case "unload":
-                            if (Level.Find(text2) != null || text2 == "empty")
-                            {
-                                Command.all.Find("unload").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Map not found.");
-                            return;
-                        case "save":
-                            if (Level.Find(text2) != null)
-                            {
-                                Command.all.Find("save").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Map not found.");
-                            return;
-                        case "map":
-                            if (Level.Find(text2.Split(' ')[0]) != null)
-                            {
-                                Command.all.Find("map").Use(null, text2);
-                                return;
-                            }
-
-                            irc.SendMessage(SendType.Message, e.Data.Nick, "Map not found.");
-                            return;
-                        case "restart":
-                            Player.GlobalMessage("Restart initiated by " + e.Data.Nick);
-                            Say("Restart initiated by " + e.Data.Nick);
-                            Command.all.Find("restart").Use(null, "");
-                            return;
-                        case "update":
-                            Player.GlobalMessage("Update check initiated by " + e.Data.Nick);
-                            Say("Update check initiated by " + e.Data.Nick);
-                            Command.all.Find("update").Use(null, "");
-                            return;
-                    }
-
-                    irc.SendMessage(SendType.Message, e.Data.Nick, "Invalid command.");
-                    return;
+                    case "kick":
+                        if (Player.Find(text2.Split()[0]) != null)
+                        {
+                            Command.all.Find("kick").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Player not found.");
+                        }
+                        break;
+                    case "ban":
+                        if (Player.Find(text2) != null)
+                        {
+                            Command.all.Find("ban").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Player not found.");
+                        }
+                        break;
+                    case "banip":
+                        if (Player.Find(text2) != null)
+                        {
+                            Command.all.Find("banip").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Player not found.");
+                        }
+                        break;
+                    case "say":
+                        irc.SendMessage(0, channel, text2);
+                        break;
+                    case "setrank":
+                        if (Player.Find(text2.Split(' ')[0]) != null)
+                        {
+                            Command.all.Find("setrank").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Player not found.");
+                        }
+                        break;
+                    case "mute":
+                        if (Player.Find(text2) != null)
+                        {
+                            Command.all.Find("mute").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Player not found.");
+                        }
+                        break;
+                    case "joker":
+                        if (Player.Find(text2) != null)
+                        {
+                            Command.all.Find("joker").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Player not found.");
+                        }
+                        break;
+                    case "physics":
+                        if (Level.Find(text2.Split(' ')[0]) != null)
+                        {
+                            Command.all.Find("physics").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Map not found.");
+                        }
+                        break;
+                    case "load":
+                        if (Level.Find(text2.Split(' ')[0]) != null)
+                        {
+                            Command.all.Find("load").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Map not found.");
+                        }
+                        break;
+                    case "unload":
+                        if (Level.Find(text2) != null || text2 == "empty")
+                        {
+                            Command.all.Find("unload").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Map not found.");
+                        }
+                        break;
+                    case "save":
+                        if (Level.Find(text2) != null)
+                        {
+                            Command.all.Find("save").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Map not found.");
+                        }
+                        break;
+                    case "map":
+                        if (Level.Find(text2.Split(' ')[0]) != null)
+                        {
+                            Command.all.Find("map").Use(null, text2);
+                        }
+                        else
+                        {
+                            irc.SendMessage(0, e.Data.Nick, "Map not found.");
+                        }
+                        break;
+                    case "restart":
+                        Player.GlobalMessage("Restart initiated by " + e.Data.Nick);
+                        Say("Restart initiated by " + e.Data.Nick);
+                        Command.all.Find("restart").Use(null, "");
+                        break;
+                    case "update":
+                        Player.GlobalMessage("Update check initiated by " + e.Data.Nick);
+                        Say("Update check initiated by " + e.Data.Nick);
+                        Command.all.Find("update").Use(null, "");
+                        break;
+                    default:
+                        irc.SendMessage(0, e.Data.Nick, "Invalid command.");
+                        break;
                 }
-
-                irc.SendMessage(SendType.Message, e.Data.Nick, "Invalid command format.");
+            }
+            else
+            {
+                irc.SendMessage(0, e.Data.Nick, "Invalid command format.");
             }
         }
 
-        // Token: 0x06001670 RID: 5744 RVA: 0x00087644 File Offset: 0x00085844
-        private void OnNickChange(object sender, NickChangeEventArgs e)
+        void OnNickChange(object sender, NickChangeEventArgs e)
         {
-            if (e.NewNickname.Split('|').Length == 2)
-            {
-                var text = e.NewNickname.Split('|')[1];
-                string a;
-                if (text != null && text != "" && (a = text) != null)
+            if (e.NewNickname.Split(new char[1]
                 {
-                    if (!(a == "AFK"))
+                    '|'
+                }).Length == 2)
+            {
+                string text = e.NewNickname.Split(new char[1]
+                {
+                    '|'
+                })[1];
+                if (text != null && text != "")
+                {
+                    switch (text)
                     {
-                        if (a == "Away")
-                        {
-                            Player.GlobalMessage(string.Concat("[IRC] ", Server.IRCColour, e.OldNickname,
-                                Server.DefaultColor, " is Away"));
+                        case "AFK":
+                            Player.GlobalMessage("[IRC] " + Server.IRCColour + e.OldNickname + Server.DefaultColor + " is AFK");
                             Server.afkset.Add(e.OldNickname);
-                        }
-                    }
-                    else
-                    {
-                        Player.GlobalMessage(string.Concat("[IRC] ", Server.IRCColour, e.OldNickname,
-                            Server.DefaultColor, " is AFK"));
-                        Server.afkset.Add(e.OldNickname);
+                            break;
+                        case "Away":
+                            Player.GlobalMessage("[IRC] " + Server.IRCColour + e.OldNickname + Server.DefaultColor + " is Away");
+                            Server.afkset.Add(e.OldNickname);
+                            break;
                     }
                 }
             }
             else if (Server.afkset.Contains(e.NewNickname))
             {
-                Player.GlobalMessage(string.Concat("[IRC] ", Server.IRCColour, e.NewNickname, Server.DefaultColor,
-                    " is no longer away"));
+                Player.GlobalMessage("[IRC] " + Server.IRCColour + e.NewNickname + Server.DefaultColor + " is no longer away");
                 Server.afkset.Remove(e.NewNickname);
             }
             else
             {
-                Player.GlobalMessage(string.Concat("[IRC] ", Server.IRCColour, e.OldNickname, Server.DefaultColor,
-                    " is now known as ", e.NewNickname));
+                Player.GlobalMessage("[IRC] " + Server.IRCColour + e.OldNickname + Server.DefaultColor + " is now known as " + e.NewNickname);
             }
-
             irc.RfcNames(channel);
             irc.RfcNames(opchannel);
         }
 
-        // Token: 0x06001671 RID: 5745 RVA: 0x0008784C File Offset: 0x00085A4C
-        private void OnAction(object sender, ActionEventArgs e)
+        void OnAction(object sender, ActionEventArgs e)
         {
             Player.GlobalMessage("* " + e.Data.Nick + " " + e.ActionMessage);
         }
 
-        // Token: 0x06001672 RID: 5746 RVA: 0x00087874 File Offset: 0x00085A74
         public static void Say(string msg)
         {
-            Say(msg, false);
+            Say(msg, opchat: false);
         }
 
-        // Token: 0x06001673 RID: 5747 RVA: 0x00087880 File Offset: 0x00085A80
         public static void Say(string msg, bool opchat)
         {
-            var regex = new Regex("%[0-9a-f]|&[0-9a-f]");
-            var message = regex.Replace(msg, "");
+            Regex regex = new Regex("%[0-9a-f]|&[0-9a-f]");
+            string text = regex.Replace(msg, "");
             if (irc != null && irc.IsConnected && Server.irc)
             {
                 if (!opchat)
                 {
-                    irc.SendMessage(SendType.Message, channel, message);
-                    return;
+                    irc.SendMessage(0, channel, text);
                 }
-
-                irc.SendMessage(SendType.Message, opchannel, message);
+                else
+                {
+                    irc.SendMessage(0, opchannel, text);
+                }
             }
         }
 
-        // Token: 0x06001674 RID: 5748 RVA: 0x000878E8 File Offset: 0x00085AE8
         public static bool IsConnected()
         {
-            return irc.IsConnected;
+            if (irc.IsConnected)
+            {
+                return true;
+            }
+            return false;
         }
 
-        // Token: 0x06001675 RID: 5749 RVA: 0x000878FC File Offset: 0x00085AFC
         public static void Reset()
         {
-            if (irc.IsConnected) irc.Disconnect();
-            ircThread = new Thread(delegate()
+            if (irc.IsConnected)
+            {
+                irc.Disconnect();
+            }
+            ircThread = new Thread((ThreadStart)delegate
             {
                 try
                 {
@@ -395,13 +419,11 @@ namespace MCDzienny
             ircThread.Start();
         }
 
-        // Token: 0x06001676 RID: 5750 RVA: 0x00087950 File Offset: 0x00085B50
         public static string[] GetConnectedUsers()
         {
             return names;
         }
 
-        // Token: 0x06001677 RID: 5751 RVA: 0x00087958 File Offset: 0x00085B58
         public static void ShutDown()
         {
             irc.Disconnect();
