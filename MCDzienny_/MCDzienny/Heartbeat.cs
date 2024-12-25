@@ -129,7 +129,7 @@ namespace MCDzienny
                     case Beat.ClassiCube:
                     {
                         StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.AppendFormat("public={0}&max={1}&users={2}&port={3}&version={4}&salt={5}&name={6}&software=MCDzienny", Server.isPublic,
+                        stringBuilder.AppendFormat("public={0}&max={1}&users={2}&port={3}&version={4}&salt={5}&name={6}&software=MCDzienny-Forked 12.2.0.0", Server.isPublic,
                                                    Server.players, Player.number - num2, Server.port, (byte)7, Server.SaltClassiCube, UrlEncode(Server.name));
                         text = stringBuilder.ToString();
                         uriString = "http://www.classicube.net/server/heartbeat";

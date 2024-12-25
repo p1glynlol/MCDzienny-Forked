@@ -382,8 +382,8 @@ namespace MCDzienny
             description = "Come and join the fun!";
             autoFlag = true;
             flag = "LAVA";
-            serverRealName = "Minecraft Server(MCDzienny)";
-            name = "Minecraft Server(MCDzienny)";
+            serverRealName = "[MCDzienny-Forked] Default";
+            name = "[MCDzienny-Forked] Default";
             motd = "Welcome! &0 -hax +ophax";
             players = 15;
             maps = 5;
@@ -424,8 +424,8 @@ namespace MCDzienny
             useWhitelist = false;
             forceCuboid = false;
             repeatMessage = false;
-            checkUpdates = true;
-            useMySQL = true;
+            checkUpdates = false;
+            useMySQL = false;
             MySQLHost = "127.0.0.1";
             MySQLPort = "3306";
             MySQLUsername = "root";
