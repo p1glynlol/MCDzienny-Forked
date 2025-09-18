@@ -1,5 +1,5 @@
 # MCDzienny Forked
-An modified MCDzienny (12.2.0.0) which add dual-heartbeat functionality for BetaCraft.
+An modified version of MCDzienny (12.2.0.0) that was decompiled.
 
 ## Contributing
 You can ask icanttellyou to fix all the bugs and errors caused by the decompilation process by making a pull request on their repository.
