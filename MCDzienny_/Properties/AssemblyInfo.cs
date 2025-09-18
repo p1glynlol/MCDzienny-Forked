@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("12.2.0.0")]
 [assembly: AssemblyDescription("Minecraft custom server software.")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyInformationalVersion("")]
@@ -12,3 +11,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCopyright("Copyright © 2011")]
 [assembly: AssemblyTitle("MCDzienny")]
+[assembly: AssemblyVersion("12.2.0.0")]

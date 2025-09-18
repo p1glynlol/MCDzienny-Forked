@@ -10,29 +10,28 @@
     <AssemblyName>Updater</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Updater.ico</ApplicationIcon>
+    <ApplicationIcon>app.ico</ApplicationIcon>
     <StartupObject>Updater.Program</StartupObject>
     <TargetFrameworkProfile />
+    <LangVersion>4</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\Build\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <LangVersion>4</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\Build\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>4</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,32 +43,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <AppDesigner Include="Properties\" />
+    <AppDesigner Include="Updater\Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Include="Updater\Properties\Resources.cs" />
+    <Compile Include="Updater\Properties\Settings.Designer.cs">
       <DependentUpon>Settings.settings</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="UpdaterWindow.cs">
+    <Compile Include="Updater\Program.cs" />
+    <Compile Include="Updater\Properties\Resources.cs" />
+    <Compile Include="Updater\UpdaterWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UpdaterWindow.Designer.cs">
-      <DependentUpon>UpdaterWindow.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resources" />
-    <EmbeddedResource Include="UpdaterWindow.resources" />
+    <EmbeddedResource Include="Updater\UpdaterWindow.resx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
+    <None Include="Updater\Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>

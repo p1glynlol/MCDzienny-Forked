@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -6,86 +6,84 @@ using System.Windows.Forms;
 
 namespace MCDzienny.Updaters
 {
-    // Token: 0x02000398 RID: 920
     public class SupplementaryUpdate
     {
-        // Token: 0x04000E6D RID: 3693
         public const string hashesFileUrl = "http://mcdzienny.cba.pl/download/libraries/hashes.txt";
 
-        // Token: 0x04000E6E RID: 3694
         public readonly Dictionary<string, string> applicationFilesPathUrl = new Dictionary<string, string>
         {
             {
-                "System.Data.SQLite.dll",
-                "http://mcdzienny.cba.pl/download/libraries/System.Data.SQLite.dll"
+                "System.Data.SQLite.dll", "http://mcdzienny.cba.pl/download/libraries/System.Data.SQLite.dll"
             }
         };
 
-        // Token: 0x04000E6F RID: 3695
-        private readonly Dictionary<string, string> hashes = new Dictionary<string, string>();
+        readonly Dictionary<string, string> hashes = new Dictionary<string, string>();
 
-        // Token: 0x06001A35 RID: 6709 RVA: 0x000B8D30 File Offset: 0x000B6F30
         public void DownloadMissingFiles()
         {
+            //IL_0106: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0049: Unknown result type (might be due to invalid IL or missing references)
             ReadHashesFromWebsite();
-            foreach (var keyValuePair in applicationFilesPathUrl)
+            foreach (KeyValuePair<string, string> item in applicationFilesPathUrl)
+            {
                 try
                 {
-                    if (!File.Exists(keyValuePair.Key))
+                    if (File.Exists(item.Key))
                     {
-                        MessageBox.Show(
-                            string.Format("The file: {0} is missing. It will get download shortly.", keyValuePair.Key),
-                            "Missing file", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                        for (var i = 0; i <= 2; i++)
-                        {
-                            using (var webClient = new WebClient())
-                            {
-                                webClient.DownloadFile(keyValuePair.Value, keyValuePair.Key);
-                            }
-
-                            if (!hashes.ContainsKey(keyValuePair.Key) || hashes[keyValuePair.Key].ToLower() ==
-                                Hash.GetMD5Hash(keyValuePair.Key).ToLower()) goto IL_EA;
-                        }
-
-                        File.Delete(keyValuePair.Key);
-                        throw new Exception(string.Format("File: {0} hash doesn't match the expected hash.",
-                            keyValuePair.Key));
+                        continue;
                     }
-
-                    IL_EA: ;
+                    MessageBox.Show(string.Format("The file: {0} is missing. It will get download shortly.", item.Key), "Missing file", 0, (MessageBoxIcon)64);
+                    int num = 0;
+                    while (true)
+                    {
+                        if (num > 2)
+                        {
+                            File.Delete(item.Key);
+                            throw new Exception(string.Format("File: {0} hash doesn't match the expected hash.", item.Key));
+                        }
+                        using (WebClient webClient = new WebClient())
+                        {
+                            webClient.DownloadFile(item.Value, item.Key);
+                        }
+                        if (hashes.ContainsKey(item.Key) && !(hashes[item.Key].ToLower() == Hash.GetMD5Hash(item.Key).ToLower()))
+                        {
+                            num++;
+                            continue;
+                        }
+                        break;
+                    }
                 }
                 catch
                 {
                     MessageBox.Show(
                         string.Format(
                             "Sorry! MCDzienny was unable to download the missing file: {0} You have to download the file manually from http://mcdzienny.cba.pl website.",
-                            keyValuePair.Key), "Fatal error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                            item.Key),
+                        "Fatal error", 0, (MessageBoxIcon)16);
                     throw;
                 }
+            }
         }
 
-        // Token: 0x06001A36 RID: 6710 RVA: 0x000B8EB4 File Offset: 0x000B70B4
-        private void ReadHashesFromWebsite()
+        void ReadHashesFromWebsite()
         {
             try
             {
-                using (var webClient = new WebClient())
+                using (WebClient webClient = new WebClient())
                 {
-                    var text = webClient.DownloadString("http://mcdzienny.cba.pl/download/libraries/hashes.txt");
-                    foreach (var text2 in text.Split(new[]
+                    string text = webClient.DownloadString("http://mcdzienny.cba.pl/download/libraries/hashes.txt");
+                    string[] array = text.Split(new char[2]
                     {
-                        '\r',
-                        '\n'
-                    }, StringSplitOptions.RemoveEmptyEntries))
+                        '\r', '\n'
+                    }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string text2 in array)
                     {
-                        var array2 = text2.Split(' ');
+                        string[] array2 = text2.Split(' ');
                         hashes.Add(array2[0], array2[1]);
                     }
                 }
             }
-            catch
-            {
-            }
+            catch {}
         }
     }
 }

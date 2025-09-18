@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using MCDzienny.Commands;
 
 namespace MCDzienny
 {
-    
     public abstract class Command
     {
-        
         public static CommandList all = new CommandList();
-        
+
         public static CommandList core = new CommandList();
 
         public abstract string name { get; }
@@ -16,38 +14,24 @@ namespace MCDzienny
         public abstract string shortcut { get; }
 
         public abstract string type { get; }
-        
+
         public abstract bool museumUsable { get; }
 
         public abstract LevelPermission defaultRank { get; }
-        
-        public virtual bool ConsoleAccess
-        {
-            get { return true; }
-        }
-        
-        public virtual CommandScope Scope
-        {
-            get { return CommandScope.All; }
-        }
 
-        public virtual bool HighSecurity
-        {
-            get { return false; }
-        }
+        public virtual bool ConsoleAccess { get { return true; } }
 
-        public virtual string CustomName
-        {
-            get { return null; }
-        }
+        public virtual CommandScope Scope { get { return CommandScope.All; } }
+
+        public virtual bool HighSecurity { get { return false; } }
+
+        public virtual string CustomName { get { return null; } }
 
         public abstract void Use(Player p, string message);
 
         public abstract void Help(Player p);
 
-        public virtual void Init()
-        {
-        }
+        public virtual void Init() {}
 
         protected bool StopConsoleUse(Player p)
         {
@@ -56,21 +40,39 @@ namespace MCDzienny
                 Player.SendMessage(p, "You can't use this command from console.");
                 return true;
             }
-
             return false;
         }
 
         public bool IsWithinScope(Player p)
         {
-            return Scope == CommandScope.All ||
-                   p.level.mapType == MapType.Lava && (Scope & CommandScope.Lava) == CommandScope.Lava ||
-                   (p.level.mapType == MapType.Freebuild || p.level.mapType == MapType.Home ||
-                    p.level.mapType == MapType.MyMap) && (Scope & CommandScope.Freebuild) == CommandScope.Freebuild ||
-                   p.level.mapType == MapType.Zombie && (Scope & CommandScope.Zombie) == CommandScope.Zombie ||
-                   p.level.mapType == MapType.Home && (Scope & CommandScope.Home) == CommandScope.Home ||
-                   p.level.mapType == MapType.MyMap && (Scope & CommandScope.MyMap) == CommandScope.MyMap;
+            if (Scope == CommandScope.All)
+            {
+                return true;
+            }
+            if (p.level.mapType == MapType.Lava && (Scope & CommandScope.Lava) == CommandScope.Lava)
+            {
+                return true;
+            }
+            if ((p.level.mapType == MapType.Freebuild || p.level.mapType == MapType.Home || p.level.mapType == MapType.MyMap) &&
+                (Scope & CommandScope.Freebuild) == CommandScope.Freebuild)
+            {
+                return true;
+            }
+            if (p.level.mapType == MapType.Zombie && (Scope & CommandScope.Zombie) == CommandScope.Zombie)
+            {
+                return true;
+            }
+            if (p.level.mapType == MapType.Home && (Scope & CommandScope.Home) == CommandScope.Home)
+            {
+                return true;
+            }
+            if (p.level.mapType == MapType.MyMap && (Scope & CommandScope.MyMap) == CommandScope.MyMap)
+            {
+                return true;
+            }
+            return false;
         }
-        
+
         public static void InitAll()
         {
             all.Add(new CmdAbort());
@@ -111,7 +113,6 @@ namespace MCDzienny
             all.Add(new CmdGun());
             all.Add(new CmdHacks());
             all.Add(new CmdHasirc());
-            all.Add(new CmdHeartbeat());
             all.Add(new CmdHelp());
             all.Add(new CmdHide());
             all.Add(new CmdHighlight());
@@ -208,7 +209,10 @@ namespace MCDzienny
             all.Add(new CmdViewRanks());
             all.Add(new CmdVoice());
             all.Add(new CmdWhisper());
-            if (Server.useWhitelist) all.Add(new CmdWhitelist());
+            if (Server.useWhitelist)
+            {
+                all.Add(new CmdWhitelist());
+            }
             all.Add(new CmdWhoip());
             all.Add(new CmdWhois());
             all.Add(new CmdWhowas());
@@ -285,6 +289,7 @@ namespace MCDzienny
             all.Add(new CmdTest());
             all.Add(new CmdIronman());
             all.Add(new CmdIronwoman());
+            all.Add(new CmdRemote());
             all.Add(new CmdXundo());
             all.Add(new CmdStats());
             all.Add(new CmdSetZombie());

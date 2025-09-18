@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -7,31 +7,52 @@ using MCDzienny.Settings;
 
 namespace MCDzienny.Gui
 {
-    // Token: 0x02000093 RID: 147
-    public partial class ColorChatSettings : Form
+    public class ColorChatSettings : Form
     {
-        // Token: 0x040001EB RID: 491
-        private string chatFont;
 
-        // Token: 0x040001EC RID: 492
-        private float chatFontSize;
+        Button button1;
 
-        // Token: 0x040001E9 RID: 489
-        private string cName;
+        Button button2;
 
-        // Token: 0x040001EA RID: 490
-        private string customCName;
+        string chatFont;
 
-        // Token: 0x040001ED RID: 493
-        private string customDelimiter;
+        ComboBox chatFontCombobox;
 
-        // Token: 0x040001EE RID: 494
-        private bool doNotRestore;
+        float chatFontSize;
 
-        // Token: 0x040001E8 RID: 488
-        private bool useCustomName;
+        ComboBox chatFontSizeCombo;
 
-        // Token: 0x060003E4 RID: 996 RVA: 0x00014E8C File Offset: 0x0001308C
+        string cName;
+
+        IContainer components;
+
+        TextBox consoleName;
+
+        string customCName;
+
+        TextBox customConsoleDelimiter;
+
+        TextBox customConsoleName;
+
+        string customDelimiter;
+
+        bool doNotRestore;
+
+        Label label1;
+
+        Label label2;
+
+        Label label3;
+
+        Label label4;
+
+        Label label5;
+
+        RadioButton radioButton1;
+
+        RadioButton radioButton2;
+        bool useCustomName;
+
         public ColorChatSettings()
         {
             InitializeComponent();
@@ -39,56 +60,41 @@ namespace MCDzienny.Gui
             CacheSettings();
         }
 
-        // Token: 0x060003E5 RID: 997 RVA: 0x00014EA8 File Offset: 0x000130A8
         public void ShowAt(Point location)
         {
-            StartPosition = FormStartPosition.Manual;
-            var x = location.X - Width / 2;
-            var y = location.Y - Height / 2;
+            StartPosition = 0;
+            int x = location.X - Width / 2;
+            int y = location.Y - Height / 2;
             Location = new Point(x, y);
-            base.Show();
+            Show();
         }
 
-        // Token: 0x060003E6 RID: 998 RVA: 0x00014EF4 File Offset: 0x000130F4
-        private void InitUpdateControls()
+        void InitUpdateControls()
         {
-            chatFontSizeCombo.Items.AddRange(new object[]
+            chatFontSizeCombo.Items.AddRange(new object[16]
             {
-                8,
-                9,
-                10,
-                11,
-                12,
-                14,
-                16,
-                18,
-                20,
-                22,
-                24,
-                26,
-                28,
-                36,
-                48,
-                72
+                8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72
             });
             radioButton2.Checked = GeneralSettings.All.UseCustomName;
             radioButton1.Checked = !radioButton2.Checked;
             customConsoleName.Text = GeneralSettings.All.CustomConsoleName;
             chatFontCombobox.Items.AddRange(AvailableFontsNames().ToArray());
-            var font = Window.thisWindow.GetFont();
-            var name = font.FontFamily.Name;
-            var num = chatFontCombobox.FindString(name);
-            if (num != -1) chatFontCombobox.SelectedIndex = num;
-            var size = font.Size;
+            Font font = Window.thisWindow.GetFont();
+            string name = font.FontFamily.Name;
+            int num = chatFontCombobox.FindString(name);
+            if (num != -1)
+            {
+                chatFontCombobox.SelectedIndex = num;
+            }
+            float size = font.Size;
             chatFontSizeCombo.Text = size.ToString();
             consoleName.Text = Server.ConsoleName;
             customConsoleDelimiter.Text = GeneralSettings.All.CustomConsoleNameDelimiter;
         }
 
-        // Token: 0x060003E7 RID: 999 RVA: 0x000150A4 File Offset: 0x000132A4
-        private void CacheSettings()
+        void CacheSettings()
         {
-            var font = Window.thisWindow.GetFont();
+            Font font = Window.thisWindow.GetFont();
             cName = Server.ConsoleName;
             customCName = GeneralSettings.All.CustomConsoleName;
             chatFont = font.FontFamily.Name;
@@ -97,102 +103,112 @@ namespace MCDzienny.Gui
             customDelimiter = GeneralSettings.All.CustomConsoleNameDelimiter;
         }
 
-        // Token: 0x060003E8 RID: 1000 RVA: 0x00015114 File Offset: 0x00013314
-        private List<string> AvailableFontsNames()
+        List<string> AvailableFontsNames()
         {
             var list = new List<string>();
-            foreach (var fontFamily in FontFamily.Families) list.Add(fontFamily.Name);
+            FontFamily[] families = FontFamily.Families;
+            foreach (FontFamily val in families)
+            {
+                list.Add(val.Name);
+            }
             return list;
         }
 
-        // Token: 0x060003E9 RID: 1001 RVA: 0x0001514C File Offset: 0x0001334C
-        private void chatFontSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
+        void chatFontSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var font = Window.thisWindow.GetFont();
+            //IL_0034: Unknown result type (might be due to invalid IL or missing references)
+            //IL_003e: Expected O, but got Unknown
+            Font font = Window.thisWindow.GetFont();
             if (chatFontSizeCombo.SelectedIndex != -1)
+            {
                 Window.thisWindow.SetFont(new Font(font.FontFamily, float.Parse(chatFontSizeCombo.Text)));
+            }
         }
 
-        // Token: 0x060003EA RID: 1002 RVA: 0x00015198 File Offset: 0x00013398
-        private void chatFontSizeCombo_Validating(object sender, CancelEventArgs e)
+        void chatFontSizeCombo_Validating(object sender, CancelEventArgs e)
         {
-            float num;
-            if (!float.TryParse(chatFontSizeCombo.Text, out num))
+            float result;
+            if (!float.TryParse(chatFontSizeCombo.Text, out result))
             {
                 chatFontSizeCombo.Text = Window.thisWindow.GetFont().Size.ToString();
                 e.Cancel = true;
-                return;
             }
-
-            GeneralSettings.All.ChatFontSize = num;
+            else
+            {
+                GeneralSettings.All.ChatFontSize = result;
+            }
         }
 
-        // Token: 0x060003EB RID: 1003 RVA: 0x000151F0 File Offset: 0x000133F0
-        private void consoleName_Validating(object sender, CancelEventArgs e)
+        void consoleName_Validating(object sender, CancelEventArgs e)
         {
             if (!ServerProperties.ValidString(consoleName.Text, "%![]:.,{}~-+()?_/\\ "))
             {
                 consoleName.Text = Server.ConsoleName;
                 e.Cancel = true;
-                return;
             }
-
-            Server.ConsoleName = consoleName.Text;
+            else
+            {
+                Server.ConsoleName = consoleName.Text;
+            }
         }
 
-        // Token: 0x060003EC RID: 1004 RVA: 0x0001523C File Offset: 0x0001343C
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton2.Checked)
             {
                 customConsoleName.ReadOnly = false;
                 GeneralSettings.All.UseCustomName = true;
-                return;
             }
-
-            customConsoleName.ReadOnly = true;
+            else
+            {
+                customConsoleName.ReadOnly = true;
+            }
         }
 
-        // Token: 0x060003ED RID: 1005 RVA: 0x00015270 File Offset: 0x00013470
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton1.Checked)
             {
                 consoleName.ReadOnly = false;
                 GeneralSettings.All.UseCustomName = false;
-                return;
             }
-
-            consoleName.ReadOnly = true;
+            else
+            {
+                consoleName.ReadOnly = true;
+            }
         }
 
-        // Token: 0x060003EE RID: 1006 RVA: 0x000152A4 File Offset: 0x000134A4
-        private void customConsoleName_Validating(object sender, CancelEventArgs e)
+        void customConsoleName_Validating(object sender, CancelEventArgs e)
         {
             if (!ServerProperties.ValidString(customConsoleName.Text, "%![]:.,{}~-+()?_/\\ "))
             {
                 customConsoleName.Text = GeneralSettings.All.CustomConsoleName;
                 e.Cancel = true;
-                return;
             }
-
-            GeneralSettings.All.CustomConsoleName = customConsoleName.Text;
+            else
+            {
+                GeneralSettings.All.CustomConsoleName = customConsoleName.Text;
+            }
         }
 
-        // Token: 0x060003EF RID: 1007 RVA: 0x000152FC File Offset: 0x000134FC
-        private void chatFontCombobox_SelectedIndexChanged(object sender, EventArgs e)
+        void chatFontCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (chatFontCombobox.SelectedIndex == -1) return;
-            var font = Window.thisWindow.GetFont();
-            var text = chatFontCombobox.Items[chatFontCombobox.SelectedIndex].ToString();
-            var font2 = new Font(text, font.Size);
-            Window.thisWindow.SetFont(font2);
-            GeneralSettings.All.ChatFontFamily = text;
+            //IL_0042: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0048: Expected O, but got Unknown
+            if (chatFontCombobox.SelectedIndex != -1)
+            {
+                Font font = Window.thisWindow.GetFont();
+                string text = chatFontCombobox.Items[chatFontCombobox.SelectedIndex].ToString();
+                Font font2 = new Font(text, font.Size);
+                Window.thisWindow.SetFont(font2);
+                GeneralSettings.All.ChatFontFamily = text;
+            }
         }
 
-        // Token: 0x060003F0 RID: 1008 RVA: 0x00015368 File Offset: 0x00013568
-        private void RestoreSettings()
+        void RestoreSettings()
         {
+            //IL_0021: Unknown result type (might be due to invalid IL or missing references)
+            //IL_002b: Expected O, but got Unknown
             GeneralSettings.All.UseCustomName = useCustomName;
             Window.thisWindow.SetFont(new Font(chatFont, chatFontSize));
             Server.ConsoleName = cName;
@@ -200,37 +216,209 @@ namespace MCDzienny.Gui
             GeneralSettings.All.CustomConsoleNameDelimiter = customDelimiter;
         }
 
-        // Token: 0x060003F1 RID: 1009 RVA: 0x000153CC File Offset: 0x000135CC
-        private void button1_Click(object sender, EventArgs e)
+        void button1_Click(object sender, EventArgs e)
         {
             doNotRestore = true;
             Close();
         }
 
-        // Token: 0x060003F2 RID: 1010 RVA: 0x000153DC File Offset: 0x000135DC
-        private void button2_Click(object sender, EventArgs e)
+        void button2_Click(object sender, EventArgs e)
         {
             RestoreSettings();
             Close();
         }
 
-        // Token: 0x060003F3 RID: 1011 RVA: 0x000153EC File Offset: 0x000135EC
-        private void ColorChatSettings_FormClosing(object sender, FormClosingEventArgs e)
+        void ColorChatSettings_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!doNotRestore) RestoreSettings();
+            if (!doNotRestore)
+            {
+                RestoreSettings();
+            }
         }
 
-        // Token: 0x060003F4 RID: 1012 RVA: 0x000153FC File Offset: 0x000135FC
-        private void textBox1_Validating(object sender, CancelEventArgs e)
+        void textBox1_Validating(object sender, CancelEventArgs e)
         {
             if (!ServerProperties.ValidString(consoleName.Text, "%![]:.,{}~-+()?_/\\ "))
             {
                 customConsoleDelimiter.Text = GeneralSettings.All.CustomConsoleNameDelimiter;
                 e.Cancel = true;
-                return;
             }
+            else
+            {
+                GeneralSettings.All.CustomConsoleNameDelimiter = customConsoleDelimiter.Text;
+            }
+        }
 
-            GeneralSettings.All.CustomConsoleNameDelimiter = customConsoleDelimiter.Text;
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        void InitializeComponent()
+        {
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_000b: Expected O, but got Unknown
+            //IL_000c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0016: Expected O, but got Unknown
+            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0021: Expected O, but got Unknown
+            //IL_0022: Unknown result type (might be due to invalid IL or missing references)
+            //IL_002c: Expected O, but got Unknown
+            //IL_002d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0037: Expected O, but got Unknown
+            //IL_0038: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0042: Expected O, but got Unknown
+            //IL_0043: Unknown result type (might be due to invalid IL or missing references)
+            //IL_004d: Expected O, but got Unknown
+            //IL_004e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0058: Expected O, but got Unknown
+            //IL_0059: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0063: Expected O, but got Unknown
+            //IL_0064: Unknown result type (might be due to invalid IL or missing references)
+            //IL_006e: Expected O, but got Unknown
+            //IL_006f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0079: Expected O, but got Unknown
+            //IL_007a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0084: Expected O, but got Unknown
+            //IL_0085: Unknown result type (might be due to invalid IL or missing references)
+            //IL_008f: Expected O, but got Unknown
+            //IL_0090: Unknown result type (might be due to invalid IL or missing references)
+            //IL_009a: Expected O, but got Unknown
+            //IL_07e5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07ef: Expected O, but got Unknown
+            chatFontCombobox = new ComboBox();
+            chatFontSizeCombo = new ComboBox();
+            radioButton1 = new RadioButton();
+            radioButton2 = new RadioButton();
+            customConsoleName = new TextBox();
+            consoleName = new TextBox();
+            customConsoleDelimiter = new TextBox();
+            label1 = new Label();
+            label2 = new Label();
+            label3 = new Label();
+            label4 = new Label();
+            label5 = new Label();
+            button1 = new Button();
+            button2 = new Button();
+            SuspendLayout();
+            chatFontCombobox.DropDownStyle = (ComboBoxStyle)2;
+            chatFontCombobox.FormattingEnabled = true;
+            chatFontCombobox.Location = new Point(21, 38);
+            chatFontCombobox.Name = "chatFontCombobox";
+            chatFontCombobox.Size = new Size(155, 21);
+            chatFontCombobox.TabIndex = 44;
+            chatFontCombobox.SelectedIndexChanged += chatFontCombobox_SelectedIndexChanged;
+            chatFontSizeCombo.FormattingEnabled = true;
+            chatFontSizeCombo.Location = new Point(192, 38);
+            chatFontSizeCombo.Name = "chatFontSizeCombo";
+            chatFontSizeCombo.Size = new Size(74, 21);
+            chatFontSizeCombo.TabIndex = 45;
+            chatFontSizeCombo.SelectedIndexChanged += chatFontSizeCombo_SelectedIndexChanged;
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(15, 99);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(14, 13);
+            radioButton1.TabIndex = 46;
+            radioButton1.TabStop = true;
+            radioButton1.UseVisualStyleBackColor = true;
+            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(15, 140);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(14, 13);
+            radioButton2.TabIndex = 47;
+            radioButton2.TabStop = true;
+            radioButton2.UseVisualStyleBackColor = true;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            customConsoleName.Location = new Point(35, 140);
+            customConsoleName.Name = "customConsoleName";
+            customConsoleName.Size = new Size(144, 20);
+            customConsoleName.TabIndex = 48;
+            customConsoleName.Validating += customConsoleName_Validating;
+            consoleName.Location = new Point(35, 96);
+            consoleName.Name = "consoleName";
+            consoleName.Size = new Size(144, 20);
+            consoleName.TabIndex = 49;
+            consoleName.Validating += consoleName_Validating;
+            customConsoleDelimiter.Location = new Point(195, 140);
+            customConsoleDelimiter.Name = "customConsoleDelimiter";
+            customConsoleDelimiter.Size = new Size(63, 20);
+            customConsoleDelimiter.TabIndex = 50;
+            customConsoleDelimiter.Validating += textBox1_Validating;
+            label1.AutoSize = true;
+            label1.Location = new Point(18, 22);
+            label1.Name = "label1";
+            label1.Size = new Size(31, 13);
+            label1.TabIndex = 51;
+            label1.Text = "Font:";
+            label2.AutoSize = true;
+            label2.Location = new Point(189, 22);
+            label2.Name = "label2";
+            label2.Size = new Size(30, 13);
+            label2.TabIndex = 52;
+            label2.Text = "Size:";
+            label3.AutoSize = true;
+            label3.Location = new Point(32, 80);
+            label3.Name = "label3";
+            label3.Size = new Size(73, 13);
+            label3.TabIndex = 53;
+            label3.Text = "Default name:";
+            label4.AutoSize = true;
+            label4.Location = new Point(32, 124);
+            label4.Name = "label4";
+            label4.Size = new Size(74, 13);
+            label4.TabIndex = 54;
+            label4.Text = "Custom name:";
+            label5.AutoSize = true;
+            label5.Location = new Point(192, 124);
+            label5.Name = "label5";
+            label5.Size = new Size(50, 13);
+            label5.TabIndex = 55;
+            label5.Text = "Delimiter:";
+            button1.Location = new Point(72, 189);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 56;
+            button1.Text = "OK";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            button2.Location = new Point(154, 189);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 57;
+            button2.Text = "Cancel";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = (AutoScaleMode)1;
+            ClientSize = new Size(292, 219);
+            Controls.Add(button2);
+            Controls.Add(button1);
+            Controls.Add(label5);
+            Controls.Add(label4);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(customConsoleDelimiter);
+            Controls.Add(consoleName);
+            Controls.Add(customConsoleName);
+            Controls.Add(radioButton2);
+            Controls.Add(radioButton1);
+            Controls.Add(chatFontSizeCombo);
+            Controls.Add(chatFontCombobox);
+            FormBorderStyle = (FormBorderStyle)3;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "ColorChatSettings";
+            ShowIcon = false;
+            Text = "ColorChatSettings";
+            FormClosing += ColorChatSettings_FormClosing;
+            ResumeLayout(false);
+            PerformLayout();
         }
     }
 }

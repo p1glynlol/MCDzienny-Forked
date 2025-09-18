@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -6,33 +6,42 @@ using System.Xml.Serialization;
 
 namespace MCDzienny.Levels.Info
 {
-    // Token: 0x0200003C RID: 60
     public class LevelInfoManager
     {
-        // Token: 0x06000150 RID: 336 RVA: 0x000087C8 File Offset: 0x000069C8
         public LevelInfoRaw Load(Level level)
         {
-            if (level == null) throw new NullReferenceException("level");
-            var infoPath = GetInfoPath(level);
-            if (!File.Exists(infoPath)) return null;
-            LevelInfoRaw result;
+            //IL_0031: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0037: Expected O, but got Unknown
+            if (level == null)
+            {
+                throw new NullReferenceException("level");
+            }
+            string infoPath = GetInfoPath(level);
+            if (!File.Exists(infoPath))
+            {
+                return null;
+            }
             try
             {
-                LevelInfoRaw levelInfoRaw;
-                using (var xmlReader = XmlReader.Create(infoPath))
+                XmlReader val = XmlReader.Create(infoPath);
+                LevelInfoRaw result;
+                try
                 {
-                    var xmlSerializer = new XmlSerializer(typeof(LevelInfoRaw));
-                    levelInfoRaw = (LevelInfoRaw) xmlSerializer.Deserialize(xmlReader);
+                    XmlSerializer val2 = new XmlSerializer(typeof(LevelInfoRaw));
+                    result = (LevelInfoRaw)val2.Deserialize(val);
                 }
-
-                result = levelInfoRaw;
+                finally
+                {
+                    ((IDisposable)val).Dispose();
+                }
+                return result;
             }
             catch (InvalidOperationException ex)
             {
                 Server.ErrorLog(ex);
                 try
                 {
-                    var text = infoPath + ".old";
+                    string text = infoPath + ".old";
                     File.Delete(text);
                     File.Move(infoPath, text);
                 }
@@ -40,30 +49,40 @@ namespace MCDzienny.Levels.Info
                 {
                     Server.ErrorLog(ex2);
                 }
-
-                result = null;
+                return null;
             }
-
-            return result;
         }
 
-        // Token: 0x06000151 RID: 337 RVA: 0x0000888C File Offset: 0x00006A8C
         public void Save(Level level, LevelInfoRaw info)
         {
-            if (level == null) throw new NullReferenceException("level");
-            if (info == null) throw new NullReferenceException("info");
-            var infoPath = GetInfoPath(level);
+            //IL_0024: Unknown result type (might be due to invalid IL or missing references)
+            //IL_002b: Expected O, but got Unknown
+            //IL_0050: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0056: Expected O, but got Unknown
+            if (level == null)
+            {
+                throw new NullReferenceException("level");
+            }
+            if (info == null)
+            {
+                throw new NullReferenceException("info");
+            }
+            string infoPath = GetInfoPath(level);
             try
             {
-                var settings = new XmlWriterSettings
+                XmlWriterSettings val = new XmlWriterSettings();
+                val.Encoding = Encoding.UTF8;
+                val.Indent = true;
+                XmlWriterSettings val2 = val;
+                XmlWriter val3 = XmlWriter.Create(infoPath, val2);
+                try
                 {
-                    Encoding = Encoding.UTF8,
-                    Indent = true
-                };
-                using (var xmlWriter = XmlWriter.Create(infoPath, settings))
+                    XmlSerializer val4 = new XmlSerializer(info.GetType());
+                    val4.Serialize(val3, info);
+                }
+                finally
                 {
-                    var xmlSerializer = new XmlSerializer(info.GetType());
-                    xmlSerializer.Serialize(xmlWriter, info);
+                    ((IDisposable)val3).Dispose();
                 }
             }
             catch (Exception ex)
@@ -72,8 +91,7 @@ namespace MCDzienny.Levels.Info
             }
         }
 
-        // Token: 0x06000152 RID: 338 RVA: 0x0000892C File Offset: 0x00006B2C
-        private string GetInfoPath(Level level)
+        string GetInfoPath(Level level)
         {
             return level.directoryPath + "/" + level.fileName + ".txt";
         }

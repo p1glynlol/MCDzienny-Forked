@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -7,16 +7,13 @@ using MCDzienny.Settings;
 
 namespace MCDzienny
 {
-    // Token: 0x02000392 RID: 914
-    internal class Store
+    class Store
     {
-        // Token: 0x04000E49 RID: 3657
-        private static int firstPageLimit = 7;
 
-        // Token: 0x04000E4A RID: 3658
-        private static int listedItemsCount;
+        static int firstPageLimit = 7;
 
-        // Token: 0x04000E4B RID: 3659
+        static int listedItemsCount;
+
         public static Item life = new Item
         {
             id = 0,
@@ -27,7 +24,6 @@ namespace MCDzienny
             description = " - gives you one life,"
         };
 
-        // Token: 0x04000E4C RID: 3660
         public static Item armor = new Item
         {
             id = 1,
@@ -38,7 +34,6 @@ namespace MCDzienny
             description = " - gives you full protection from lava for 45seconds,"
         };
 
-        // Token: 0x04000E4D RID: 3661
         public static Item water = new Item
         {
             id = 2,
@@ -49,7 +44,6 @@ namespace MCDzienny
             description = " - to use write /water and place any block,"
         };
 
-        // Token: 0x04000E4E RID: 3662
         public static Item sponge = new Item
         {
             id = 3,
@@ -60,7 +54,6 @@ namespace MCDzienny
             description = " - removes lava around, dissapears quickly,"
         };
 
-        // Token: 0x04000E4F RID: 3663
         public static Item hammer = new Item
         {
             id = 4,
@@ -71,7 +64,6 @@ namespace MCDzienny
             description = " - acts like cuboid, write /hammer to use it,"
         };
 
-        // Token: 0x04000E50 RID: 3664
         public static Item door = new Item
         {
             id = 5,
@@ -82,7 +74,6 @@ namespace MCDzienny
             description = " - use /door command to create steel doors,"
         };
 
-        // Token: 0x04000E51 RID: 3665
         public static Item teleport = new Item
         {
             id = 8,
@@ -93,7 +84,6 @@ namespace MCDzienny
             description = " - use /tp [player] to teleport to the player,"
         };
 
-        // Token: 0x04000E52 RID: 3666
         public static Item color = new Item
         {
             id = 11,
@@ -104,7 +94,6 @@ namespace MCDzienny
             description = " - use /color [color] to set your name color,"
         };
 
-        // Token: 0x04000E53 RID: 3667
         public static Item title = new Item
         {
             id = 6,
@@ -115,7 +104,6 @@ namespace MCDzienny
             description = " - use /title [your title] to set a new title,"
         };
 
-        // Token: 0x04000E54 RID: 3668
         public static Item titleColor = new Item
         {
             id = 12,
@@ -126,7 +114,6 @@ namespace MCDzienny
             description = " - use /titlecolor [color] to set your title color,"
         };
 
-        // Token: 0x04000E55 RID: 3669
         public static Item promotion = new Item
         {
             id = 7,
@@ -135,7 +122,6 @@ namespace MCDzienny
             amount = 1
         };
 
-        // Token: 0x04000E56 RID: 3670
         public static Item welcomeMessage = new Item
         {
             id = 9,
@@ -146,7 +132,6 @@ namespace MCDzienny
             description = " - use /welcome [message] to set your welcome message,"
         };
 
-        // Token: 0x04000E57 RID: 3671
         public static Item farewellMessage = new Item
         {
             id = 10,
@@ -157,13 +142,10 @@ namespace MCDzienny
             description = " - use /farewell [message] to set your farewell message."
         };
 
-        // Token: 0x04000E58 RID: 3672
         public static List<Item> storeItems = new List<Item>();
 
-        // Token: 0x04000E59 RID: 3673
-        private static readonly string storePriceFilePath = "lava\\itemprices.txt";
+        static readonly string storePriceFilePath = "lava\\itemprices.txt";
 
-        // Token: 0x06001A0A RID: 6666 RVA: 0x000B71DC File Offset: 0x000B53DC
         public static void AssignItems()
         {
             life = storeItems.Find(item => item.id == 0);
@@ -176,24 +158,23 @@ namespace MCDzienny
             promotion = storeItems.Find(item => item.id == 7);
         }
 
-        // Token: 0x06001A0B RID: 6667 RVA: 0x000B734C File Offset: 0x000B554C
         public static string GetPromotionPriceString(Player p)
         {
-            var promotionPrice = GetPromotionPrice(p);
-            if (promotionPrice <= 0) return Lang.Store.PromotionNotAvailable;
+            int promotionPrice = GetPromotionPrice(p);
+            if (promotionPrice <= 0)
+            {
+                return Lang.Store.PromotionNotAvailable;
+            }
             return promotionPrice.ToString();
         }
 
-        // Token: 0x06001A0C RID: 6668 RVA: 0x000B7374 File Offset: 0x000B5574
         public static int GetPromotionPrice(Player p)
         {
             if (p == null) return 0;
-            var group = Group.NextGroup(p.group);
-            if (group == null) return 0;
-            return group.promotionPrice;
+            Group group = Group.NextGroup(p.group);
+            return group == null ? 0 : group.promotionPrice;
         }
 
-        // Token: 0x06001A0D RID: 6669 RVA: 0x000B73A0 File Offset: 0x000B55A0
         public static void InitStorePrices()
         {
             storeItems.Add(life);
@@ -210,102 +191,127 @@ namespace MCDzienny
             storeItems.Add(farewellMessage);
         }
 
-        // Token: 0x06001A0E RID: 6670 RVA: 0x000B7464 File Offset: 0x000B5664
-        private static int SortItemsByPositionAndAmount(Item x, Item y)
+        static int SortItemsByPositionAndAmount(Item x, Item y)
         {
-            if (x.amount < 1 && y.amount > 0) return 1;
-            if (y.amount < 1 && x.amount > 0) return -1;
-            if (x.amount < 1 && y.amount < 1) return 0;
-            if (x.position == y.position) return 0;
-            if (x.position > y.position) return 1;
+            if (x.amount < 1 && y.amount > 0)
+            {
+                return 1;
+            }
+            if (y.amount < 1 && x.amount > 0)
+            {
+                return -1;
+            }
+            if (x.amount < 1 && y.amount < 1)
+            {
+                return 0;
+            }
+            if (x.position == y.position)
+            {
+                return 0;
+            }
+            if (x.position > y.position)
+            {
+                return 1;
+            }
             return -1;
         }
 
-        // Token: 0x06001A0F RID: 6671 RVA: 0x000B74D0 File Offset: 0x000B56D0
-        private static void CountListedItems()
+        static void CountListedItems()
         {
             listedItemsCount = 0;
-            for (var i = 0; i < storeItems.Count; i++)
+            for (int i = 0; i < storeItems.Count; i++)
+            {
                 if (storeItems[i].amount > 0)
+                {
                     listedItemsCount++;
+                }
+            }
         }
 
-        // Token: 0x06001A10 RID: 6672 RVA: 0x000B7518 File Offset: 0x000B5718
         public static void RepositionItems()
         {
             storeItems.Sort(SortItemsByPositionAndAmount);
             int i;
             for (i = 1; i <= storeItems.Count; i++)
+            {
                 if (storeItems[i - 1].amount > 0)
+                {
                     storeItems[i - 1].realPosition = i.ToString();
+                }
+            }
             promotion.realPosition = i.ToString();
         }
 
-        // Token: 0x06001A11 RID: 6673 RVA: 0x000B7590 File Offset: 0x000B5790
         public static void PrintList(Player p)
         {
-            var i = 0;
-            var num = 0;
+            int i = 0;
+            int num = 0;
             for (; i < storeItems.Count && i < firstPageLimit; i++)
+            {
                 if (storeItems[i].amount == 1)
                 {
-                    Player.SendMessage2(p,
-                        "%c" + (i + 1) + ": %d" + storeItems[i].name + " - " +
-                        (p.money - storeItems[i].price < 0 ? "%c" : "%a") + storeItems[i].price + " " + Server.moneys +
-                        Server.DefaultColor + storeItems[i].description);
+                    Player.SendMessage2(
+                        p,
+                        "%c" + (i + 1) + ": %d" + storeItems[i].name + " - " + (p.money - storeItems[i].price < 0 ? "%c" : "%a") + storeItems[i].price + " " +
+                        Server.moneys + Server.DefaultColor + storeItems[i].description);
                     num++;
                 }
                 else if (storeItems[i].amount > 1)
                 {
-                    Player.SendMessage2(p,
-                        "%c" + (i + 1) + ": %d" + storeItems[i].name + "(x" + storeItems[i].amount + ") - " +
-                        (p.money - storeItems[i].price < 0 ? "%c" : "%a") + storeItems[i].price + " " + Server.moneys +
-                        Server.DefaultColor + storeItems[i].description);
+                    Player.SendMessage2(
+                        p,
+                        "%c" + (i + 1) + ": %d" + storeItems[i].name + "(x" + storeItems[i].amount + ") - " + (p.money - storeItems[i].price < 0 ? "%c" : "%a") +
+                        storeItems[i].price + " " + Server.moneys + Server.DefaultColor + storeItems[i].description);
                     num++;
                 }
-
-            var num2 = 0;
+            }
+            int num2 = 0;
             num2 = GetPromotionPrice(p) <= 0 ? listedItemsCount : listedItemsCount + 1;
             if (num2 > firstPageLimit)
             {
                 Player.SendMessage(p, Lang.Store.MoreItemsTip);
                 return;
             }
-
             if (GetPromotionPrice(p) > 0)
-                Player.SendMessage2(p,
-                    string.Format(Lang.Store.PromotionItem, listedItemsCount + 1,
-                        (p.money - GetPromotionPrice(p) < 0 ? "%c" : "%a") + GetPromotionPriceString(p),
-                        Server.moneys + Server.DefaultColor,
-                        Group.NextGroup(p.@group).color + Group.NextGroup(p.@group).trueName + Server.DefaultColor));
+            {
+                Player.SendMessage2(
+                    p,
+                    string.Format(Lang.Store.PromotionItem, listedItemsCount + 1, (p.money - GetPromotionPrice(p) < 0 ? "%c" : "%a") + GetPromotionPriceString(p),
+                                  Server.moneys + Server.DefaultColor, Group.NextGroup(p.group).color + Group.NextGroup(p.group).trueName + Server.DefaultColor));
+            }
             promotion.realPosition = (listedItemsCount + 1).ToString();
         }
 
-        // Token: 0x06001A12 RID: 6674 RVA: 0x000B7888 File Offset: 0x000B5A88
         public static void PrintListMore(Player p)
         {
-            var num = 0;
+            int num = 0;
             num = GetPromotionPrice(p) <= 0 ? listedItemsCount : listedItemsCount + 1;
             if (num > firstPageLimit)
             {
-                for (var i = firstPageLimit; i < storeItems.Count; i++)
+                for (int i = firstPageLimit; i < storeItems.Count; i++)
+                {
                     if (storeItems[i].amount == 1)
-                        Player.SendMessage2(p,
-                            "%c" + (i + 1) + ": %d" + storeItems[i].name + " - " +
-                            (p.money - storeItems[i].price < 0 ? "%c" : "%a") + storeItems[i].price + " " +
+                    {
+                        Player.SendMessage2(
+                            p,
+                            "%c" + (i + 1) + ": %d" + storeItems[i].name + " - " + (p.money - storeItems[i].price < 0 ? "%c" : "%a") + storeItems[i].price + " " +
                             Server.moneys + Server.DefaultColor + storeItems[i].description);
+                    }
                     else if (storeItems[i].amount > 1)
-                        Player.SendMessage2(p,
-                            "%c" + (i + 1) + ": %d" + storeItems[i].name + "(x" + storeItems[i].amount + ") - " +
-                            (p.money - storeItems[i].price < 0 ? "%c" : "%a") + storeItems[i].price + " " +
-                            Server.moneys + Server.DefaultColor + storeItems[i].description);
+                    {
+                        Player.SendMessage2(
+                            p,
+                            "%c" + (i + 1) + ": %d" + storeItems[i].name + "(x" + storeItems[i].amount + ") - " + (p.money - storeItems[i].price < 0 ? "%c" : "%a") +
+                            storeItems[i].price + " " + Server.moneys + Server.DefaultColor + storeItems[i].description);
+                    }
+                }
                 if (GetPromotionPrice(p) > 0)
-                    Player.SendMessage2(p,
-                        string.Format(Lang.Store.PromotionItem, listedItemsCount + 1,
-                            (p.money - GetPromotionPrice(p) < 0 ? "%c" : "%a") + GetPromotionPriceString(p),
-                            Server.moneys + Server.DefaultColor,
-                            Group.NextGroup(p.@group).color + Group.NextGroup(p.@group).trueName +
-                            Server.DefaultColor));
+                {
+                    Player.SendMessage2(
+                        p,
+                        string.Format(Lang.Store.PromotionItem, listedItemsCount + 1, (p.money - GetPromotionPrice(p) < 0 ? "%c" : "%a") + GetPromotionPriceString(p),
+                                      Server.moneys + Server.DefaultColor, Group.NextGroup(p.group).color + Group.NextGroup(p.group).trueName + Server.DefaultColor));
+                }
                 promotion.realPosition = (listedItemsCount + 1).ToString();
             }
             else
@@ -314,42 +320,57 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x06001A13 RID: 6675 RVA: 0x000B7B60 File Offset: 0x000B5D60
         public static void LoadPricesXML()
         {
+            //IL_001d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0023: Expected O, but got Unknown
+            //IL_004f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0055: Expected O, but got Unknown
             if (File.Exists(storePriceFilePath))
             {
                 try
                 {
-                    var fileStream = new FileStream(storePriceFilePath, FileMode.Open, FileAccess.Read,
-                        FileShare.ReadWrite);
-                    var xmlDocument = new XmlDocument();
-                    xmlDocument.Load(fileStream);
-                    var firstChild = xmlDocument.FirstChild;
+                    FileStream fileStream = new FileStream(storePriceFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    XmlDocument val = new XmlDocument();
+                    val.Load(fileStream);
+                    XmlNode firstChild = val.FirstChild;
                     if (firstChild.Attributes != null)
-                        foreach (XmlAttribute attribute in firstChild.Attributes)
-                            if (attribute.Name.ToLower() == "first-page-limit")
+                    {
+                        foreach (XmlAttribute item3 in firstChild.Attributes)
+                        {
+                            XmlAttribute val2 = item3;
+                            if (val2.Name.ToLower() == "first-page-limit")
+                            {
                                 try
                                 {
-                                    firstPageLimit = int.Parse(attribute.Value);
+                                    firstPageLimit = int.Parse(val2.Value);
                                 }
                                 catch
                                 {
-                                    Server.s.Log(
-                                        "Incorrect 'firstPageLimit' value in 'itemprices.txt'. Using default.");
+                                    Server.s.Log("Incorrect 'firstPageLimit' value in 'itemprices.txt'. Using default.");
                                 }
-
-                    var elementsByTagName = xmlDocument.GetElementsByTagName("Item");
-                    for (var i = 0; i < elementsByTagName.Count; i++)
+                            }
+                        }
+                    }
+                    XmlNodeList elementsByTagName = val.GetElementsByTagName("Item");
+                    for (int i = 0; i < elementsByTagName.Count; i++)
                     {
-                        var xmlattrc = elementsByTagName[i].Attributes;
-                        var item2 = new Item();
+                        XmlAttributeCollection xmlattrc = elementsByTagName[i].Attributes;
+                        Item item2 = new Item();
                         int ii;
                         for (ii = 0; ii < xmlattrc.Count; ii++)
+                        {
                             if (xmlattrc[ii].Name == "id")
+                            {
                                 item2 = storeItems.Find(item => item.id.ToString() == xmlattrc[ii].Value);
-                        if (item2 == null) continue;
-                        for (var j = 0; j < xmlattrc.Count; j++)
+                            }
+                        }
+                        if (item2 == null)
+                        {
+                            continue;
+                        }
+                        for (int j = 0; j < xmlattrc.Count; j++)
+                        {
                             switch (xmlattrc[j].Name.ToLower())
                             {
                                 case "name":
@@ -365,10 +386,8 @@ namespace MCDzienny
                                     }
                                     catch
                                     {
-                                        Server.s.Log("Wrong value of position in store price file(id=" + item2.id +
-                                                     "\", using default value.");
+                                        Server.s.Log("Wrong value of position in store price file(id=" + item2.id + "\", using default value.");
                                     }
-
                                     break;
                                 case "amount":
                                     try
@@ -377,10 +396,8 @@ namespace MCDzienny
                                     }
                                     catch
                                     {
-                                        Server.s.Log("Wrong value of amount in store price file(id=" + item2.id +
-                                                     "\", using default value.");
+                                        Server.s.Log("Wrong value of amount in store price file(id=" + item2.id + "\", using default value.");
                                     }
-
                                     break;
                                 case "price":
                                     try
@@ -389,14 +406,12 @@ namespace MCDzienny
                                     }
                                     catch
                                     {
-                                        Server.s.Log("Wrong value of price in store price file(id=" + item2.id +
-                                                     "\", using default value.");
+                                        Server.s.Log("Wrong value of price in store price file(id=" + item2.id + "\", using default value.");
                                     }
-
                                     break;
                             }
+                        }
                     }
-
                     fileStream.Close();
                     fileStream.Dispose();
                 }
@@ -404,7 +419,6 @@ namespace MCDzienny
                 {
                     Server.ErrorLog(ex);
                 }
-
                 SavePricesXML();
                 RepositionItems();
                 CountListedItems();
@@ -417,49 +431,47 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x06001A14 RID: 6676 RVA: 0x000B7F78 File Offset: 0x000B6178
         public static void SavePricesXML()
         {
+            //IL_0000: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0006: Expected O, but got Unknown
             try
             {
-                var xmlDocument = new XmlDocument();
-                xmlDocument.AppendChild(xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
-                xmlDocument.AppendChild(xmlDocument.CreateWhitespace("\r\n"));
-                xmlDocument.AppendChild(
-                    xmlDocument.CreateComment("If you set amount to 0 then the item will not appear in the shop."));
-                xmlDocument.AppendChild(xmlDocument.CreateWhitespace("\r\n"));
-                var xmlElement = xmlDocument.CreateElement("Store");
-                var xmlAttribute = xmlDocument.CreateAttribute("first-page-limit");
-                xmlAttribute.Value = firstPageLimit.ToString();
-                xmlElement.SetAttributeNode(xmlAttribute);
-                for (var i = 0; i < storeItems.Count; i++)
+                XmlDocument val = new XmlDocument();
+                val.AppendChild(val.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
+                val.AppendChild(val.CreateWhitespace("\r\n"));
+                val.AppendChild(val.CreateComment("If you set amount to 0 then the item will not appear in the shop."));
+                val.AppendChild(val.CreateWhitespace("\r\n"));
+                XmlElement val2 = val.CreateElement("Store");
+                XmlAttribute val3 = val.CreateAttribute("first-page-limit");
+                val3.Value = firstPageLimit.ToString();
+                val2.SetAttributeNode(val3);
+                for (int i = 0; i < storeItems.Count; i++)
                 {
-                    var xmlElement2 = xmlDocument.CreateElement("Item");
-                    var xmlAttribute2 = xmlDocument.CreateAttribute("id");
-                    var xmlAttribute3 = xmlDocument.CreateAttribute("name");
-                    var xmlAttribute4 = xmlDocument.CreateAttribute("position");
-                    var xmlAttribute5 = xmlDocument.CreateAttribute("price");
-                    var xmlAttribute6 = xmlDocument.CreateAttribute("amount");
-                    var xmlAttribute7 = xmlDocument.CreateAttribute("description");
-                    xmlAttribute2.Value = storeItems[i].id.ToString();
-                    xmlAttribute3.Value = storeItems[i].name;
-                    xmlAttribute4.Value = storeItems[i].position.ToString();
-                    xmlAttribute5.Value = storeItems[i].price.ToString();
-                    xmlAttribute6.Value = storeItems[i].amount.ToString();
-                    xmlAttribute7.Value = storeItems[i].description;
-                    xmlElement2.SetAttributeNode(xmlAttribute4);
-                    xmlElement2.SetAttributeNode(xmlAttribute2);
-                    xmlElement2.SetAttributeNode(xmlAttribute3);
-                    xmlElement2.SetAttributeNode(xmlAttribute5);
-                    xmlElement2.SetAttributeNode(xmlAttribute6);
-                    xmlElement2.SetAttributeNode(xmlAttribute7);
-                    xmlElement.AppendChild(xmlElement2);
+                    XmlElement val4 = val.CreateElement("Item");
+                    XmlAttribute val5 = val.CreateAttribute("id");
+                    XmlAttribute val6 = val.CreateAttribute("name");
+                    XmlAttribute val7 = val.CreateAttribute("position");
+                    XmlAttribute val8 = val.CreateAttribute("price");
+                    XmlAttribute val9 = val.CreateAttribute("amount");
+                    XmlAttribute val10 = val.CreateAttribute("description");
+                    val5.Value = storeItems[i].id.ToString();
+                    val6.Value = storeItems[i].name;
+                    val7.Value = storeItems[i].position.ToString();
+                    val8.Value = storeItems[i].price.ToString();
+                    val9.Value = storeItems[i].amount.ToString();
+                    val10.Value = storeItems[i].description;
+                    val4.SetAttributeNode(val7);
+                    val4.SetAttributeNode(val5);
+                    val4.SetAttributeNode(val6);
+                    val4.SetAttributeNode(val8);
+                    val4.SetAttributeNode(val9);
+                    val4.SetAttributeNode(val10);
+                    val2.AppendChild(val4);
                 }
-
-                var fileStream = new FileStream(storePriceFilePath, FileMode.Create, FileAccess.Write,
-                    FileShare.ReadWrite);
-                xmlDocument.AppendChild(xmlElement);
-                xmlDocument.Save(fileStream);
+                FileStream fileStream = new FileStream(storePriceFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                val.AppendChild(val2);
+                val.Save(fileStream);
                 fileStream.Close();
             }
             catch (Exception ex)
@@ -468,14 +480,16 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x06001A15 RID: 6677 RVA: 0x000B81B8 File Offset: 0x000B63B8
         public static void BuyLife(Player p)
         {
             if (p.money >= life.price)
             {
                 p.money -= life.price;
-                if (p.lives == 0) p.invincible = false;
-                p.lives += (byte) life.amount;
+                if (p.lives == 0)
+                {
+                    p.invincible = false;
+                }
+                p.lives += (byte)life.amount;
                 p.flipHead = false;
                 Player.SendMessage(p, Lang.Store.BoughtLife);
                 if (p.inHeaven)
@@ -490,7 +504,6 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x06001A16 RID: 6678 RVA: 0x000B8270 File Offset: 0x000B6470
         public static void BuyArmor(Player p)
         {
             if (p.money >= armor.price)
@@ -498,13 +511,13 @@ namespace MCDzienny
                 p.money -= armor.price;
                 p.UseArmor();
                 Player.SendMessage(p, Lang.Store.BoughtArmor);
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A17 RID: 6679 RVA: 0x000B82D0 File Offset: 0x000B64D0
         public static void BuySponge(Player p)
         {
             if (p.money >= sponge.price)
@@ -512,13 +525,13 @@ namespace MCDzienny
                 p.money -= sponge.price;
                 p.spongeBlocks += sponge.amount;
                 Player.SendMessage(p, Lang.Store.BoughtSponges);
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A18 RID: 6680 RVA: 0x000B8340 File Offset: 0x000B6540
         public static void BuyWater(Player p)
         {
             if (p.money >= water.price)
@@ -526,13 +539,13 @@ namespace MCDzienny
                 p.money -= water.price;
                 p.waterBlocks += water.amount;
                 Player.SendMessage(p, Lang.Store.BoughtWater);
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A19 RID: 6681 RVA: 0x000B83B0 File Offset: 0x000B65B0
         public static void BuyHammer(Player p)
         {
             if (p.money >= hammer.price)
@@ -540,13 +553,13 @@ namespace MCDzienny
                 p.money -= hammer.price;
                 Player.SendMessage(p, Lang.Store.BoughtHammer);
                 p.hammer += hammer.amount;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A1A RID: 6682 RVA: 0x000B8420 File Offset: 0x000B6620
         public static void BuyDoor(Player p)
         {
             if (p.money >= door.price)
@@ -554,117 +567,106 @@ namespace MCDzienny
                 p.money -= door.price;
                 p.doorBlocks += door.amount;
                 Player.SendMessage(p, Lang.Store.BoughtDoors);
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A1B RID: 6683 RVA: 0x000B8490 File Offset: 0x000B6690
         public static void BuyTitle(Player p)
         {
             if (p.boughtTitle)
             {
                 Player.SendMessage(p, Lang.Store.BoughtTitleTip);
-                return;
             }
-
-            if (p.money >= title.price)
+            else if (p.money >= title.price)
             {
                 p.money -= title.price;
                 Player.SendMessage(p, Lang.Store.BoughtTitle);
                 p.boughtTitle = true;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A1C RID: 6684 RVA: 0x000B8504 File Offset: 0x000B6704
         public static void BuyWelcome(Player p)
         {
             if (p.boughtWelcome)
             {
                 Player.SendMessage(p, Lang.Store.BoughtWelcomeTip);
-                return;
             }
-
-            if (p.money >= welcomeMessage.price)
+            else if (p.money >= welcomeMessage.price)
             {
                 p.money -= welcomeMessage.price;
                 Player.SendMessage(p, Lang.Store.BoughtWelcome);
                 p.boughtWelcome = true;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A1D RID: 6685 RVA: 0x000B8578 File Offset: 0x000B6778
         public static void BuyFarewell(Player p)
         {
             if (p.boughtFarewell)
             {
                 Player.SendMessage(p, Lang.Store.BoughtFarewellTip);
-                return;
             }
-
-            if (p.money >= farewellMessage.price)
+            else if (p.money >= farewellMessage.price)
             {
                 p.money -= farewellMessage.price;
                 Player.SendMessage(p, Lang.Store.BoughtFarewell);
                 p.boughtFarewell = true;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A1E RID: 6686 RVA: 0x000B85EC File Offset: 0x000B67EC
         public static void BuyTeleport(Player p)
         {
             if (p.hasTeleport)
             {
                 Player.SendMessage(p, Lang.Store.BoughtTeleportTip);
-                return;
             }
-
-            if (p.money >= teleport.price)
+            else if (p.money >= teleport.price)
             {
                 p.money -= teleport.price;
                 Player.SendMessage(p, Lang.Store.BoughtTeleport);
                 p.hasTeleport = true;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A1F RID: 6687 RVA: 0x000B8660 File Offset: 0x000B6860
         public static void BuyPromotion(Player p)
         {
-            var promotionPrice = GetPromotionPrice(p);
+            int promotionPrice = GetPromotionPrice(p);
             if (promotionPrice == 0)
             {
                 Player.SendMessage(p, Lang.Store.BoughtPromotionWarning);
                 return;
             }
-
             if (LavaSettings.All.RequireRegistrationForPromotion && !p.FlagsCollection["registered"])
             {
-                var flag = false;
-                Player.OnPlayerRegisteredCheck(p, ref flag);
-                if (!flag)
+                bool isRegistered = false;
+                Player.OnPlayerRegisteredCheck(p, ref isRegistered);
+                if (!isRegistered)
                 {
-                    var text = MessagesManager.GetString("RegistrationRequired");
-                    text = text == "" ? "%cYou have to register on the forum before you can get a higher rank!" : text;
-                    Player.SendMessage(p, text);
+                    string @string = MessagesManager.GetString("RegistrationRequired");
+                    @string = @string == "" ? "%cYou have to register on the forum before you can get a higher rank!" : @string;
+                    Player.SendMessage(p, @string);
                     return;
                 }
-
                 p.FlagsCollection["registered"] = true;
             }
-
             if (p.money >= promotionPrice)
             {
                 if (LavaSystem.RankUp(p))
@@ -678,68 +680,56 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x06001A20 RID: 6688 RVA: 0x000B8720 File Offset: 0x000B6920
         public static void BuyColor(Player p)
         {
             if (p.boughtColor)
             {
                 Player.SendMessage(p, Lang.Store.BoughtColorTip);
-                return;
             }
-
-            if (p.money >= color.price)
+            else if (p.money >= color.price)
             {
                 p.money -= color.price;
                 Player.SendMessage(p, Lang.Store.BoughtColor);
                 p.boughtColor = true;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x06001A21 RID: 6689 RVA: 0x000B8794 File Offset: 0x000B6994
         public static void BuyTitleColor(Player p)
         {
             if (p.boughtTColor)
             {
                 Player.SendMessage(p, Lang.Store.BoughtTitleColorTip);
-                return;
             }
-
-            if (p.money >= titleColor.price)
+            else if (p.money >= titleColor.price)
             {
                 p.money -= titleColor.price;
                 Player.SendMessage(p, Lang.Store.BoughtTitleColor);
                 p.boughtTColor = true;
-                return;
             }
-
-            Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            else
+            {
+                Player.SendMessage(p, string.Format(Lang.Store.NotEnoughMoney, Server.moneys));
+            }
         }
 
-        // Token: 0x02000393 RID: 915
         public class Item
         {
-            // Token: 0x04000E64 RID: 3684
+
             public int amount;
 
-            // Token: 0x04000E67 RID: 3687
             public string description;
-
-            // Token: 0x04000E62 RID: 3682
             public int id;
 
-            // Token: 0x04000E66 RID: 3686
             public string name;
 
-            // Token: 0x04000E63 RID: 3683
             public int position;
 
-            // Token: 0x04000E65 RID: 3685
             public ushort price;
 
-            // Token: 0x04000E68 RID: 3688
             public string realPosition;
         }
     }

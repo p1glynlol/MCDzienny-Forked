@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -9,33 +9,22 @@ using System.Xml;
 
 namespace MCDzienny
 {
-    // Token: 0x0200022D RID: 557
     public class LavaSettingsProvider : SettingsProvider
     {
-        // Token: 0x04000888 RID: 2184
-        private const string SETTINGSROOT = "LavaSettings";
+        const string SETTINGSROOT = "LavaSettings";
 
-        // Token: 0x04000889 RID: 2185
-        private readonly string fileName = "properties/lava.properties";
+        readonly string fileName = "properties/lava.properties";
 
-        // Token: 0x0400088A RID: 2186
-        private XmlDocument m_SettingsXML;
+        XmlDocument m_SettingsXML;
 
-        // Token: 0x170005C1 RID: 1473
-        // (get) Token: 0x06001008 RID: 4104 RVA: 0x00054EC4 File Offset: 0x000530C4
-        // (set) Token: 0x06001009 RID: 4105 RVA: 0x00054ED8 File Offset: 0x000530D8
-        public override string ApplicationName
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Name; }
-            set { }
-        }
+        public override string ApplicationName { get { return Assembly.GetExecutingAssembly().GetName().Name; } set {} }
 
-        // Token: 0x170005C2 RID: 1474
-        // (get) Token: 0x0600100E RID: 4110 RVA: 0x00054FF8 File Offset: 0x000531F8
-        private XmlDocument SettingsXML
+        XmlDocument SettingsXML
         {
             get
             {
+                //IL_000c: Unknown result type (might be due to invalid IL or missing references)
+                //IL_0016: Expected O, but got Unknown
                 if (m_SettingsXML == null)
                 {
                     m_SettingsXML = new XmlDocument();
@@ -45,139 +34,134 @@ namespace MCDzienny
                     }
                     catch (Exception)
                     {
-                        var newChild = m_SettingsXML.CreateXmlDeclaration("1.0", "utf-8", "yes");
-                        m_SettingsXML.AppendChild(newChild);
+                        XmlDeclaration val = m_SettingsXML.CreateXmlDeclaration("1.0", "utf-8", "yes");
+                        m_SettingsXML.AppendChild(val);
                         m_SettingsXML.AppendChild(m_SettingsXML.CreateWhitespace("\n\r"));
-                        var newChild2 = m_SettingsXML.CreateNode(XmlNodeType.Element, "LavaSettings", "");
-                        m_SettingsXML.AppendChild(newChild2);
+                        XmlNode val2 = m_SettingsXML.CreateNode((XmlNodeType)1, "LavaSettings", "");
+                        m_SettingsXML.AppendChild(val2);
                     }
                 }
-
                 return m_SettingsXML;
             }
         }
 
-        // Token: 0x06001007 RID: 4103 RVA: 0x00054EB4 File Offset: 0x000530B4
         public override void Initialize(string name, NameValueCollection config)
         {
-            base.Initialize(ApplicationName, config);
+            Initialize(ApplicationName, config);
         }
 
-        // Token: 0x0600100A RID: 4106 RVA: 0x00054EDC File Offset: 0x000530DC
         public virtual string GetAppSettingsPath()
         {
-            var fileInfo = new FileInfo(Application.ExecutablePath);
+            FileInfo fileInfo = new FileInfo(Application.ExecutablePath);
             return fileInfo.DirectoryName;
         }
 
-        // Token: 0x0600100B RID: 4107 RVA: 0x00054EFC File Offset: 0x000530FC
         public virtual string GetAppSettingsFilename()
         {
             return fileName;
         }
 
-        // Token: 0x0600100C RID: 4108 RVA: 0x00054F04 File Offset: 0x00053104
         public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection propvals)
         {
-            foreach (var obj in propvals)
+            //IL_000f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0015: Expected O, but got Unknown
+            foreach (SettingsPropertyValue propval in propvals)
             {
-                var value = (SettingsPropertyValue) obj;
+                SettingsPropertyValue value = propval;
                 SetValue(value);
             }
-
             try
             {
                 SettingsXML.Save(GetAppSettingsFilename());
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) {}
         }
 
-        // Token: 0x0600100D RID: 4109 RVA: 0x00054F7C File Offset: 0x0005317C
-        public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context,
-            SettingsPropertyCollection props)
+        public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection props)
         {
-            var settingsPropertyValueCollection = new SettingsPropertyValueCollection();
-            foreach (var obj in props)
+            //IL_0000: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0006: Expected O, but got Unknown
+            //IL_0015: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001b: Expected O, but got Unknown
+            //IL_001c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0022: Expected O, but got Unknown
+            SettingsPropertyValueCollection val = new SettingsPropertyValueCollection();
+            foreach (SettingsProperty prop in props)
             {
-                var settingsProperty = (SettingsProperty) obj;
-                settingsPropertyValueCollection.Add(new SettingsPropertyValue(settingsProperty)
-                {
-                    IsDirty = false,
-                    SerializedValue = GetValue(settingsProperty)
-                });
+                SettingsProperty val2 = prop;
+                SettingsPropertyValue val3 = new SettingsPropertyValue(val2);
+                val3.IsDirty = false;
+                val3.SerializedValue = GetValue(val2);
+                val.Add(val3);
             }
-
-            return settingsPropertyValueCollection;
+            return val;
         }
 
-        // Token: 0x0600100F RID: 4111 RVA: 0x000550B0 File Offset: 0x000532B0
-        private string GetValue(SettingsProperty setting)
+        string GetValue(SettingsProperty setting)
         {
-            var result = "";
+            string text = "";
             try
             {
                 if (IsRoaming(setting))
-                    result = SettingsXML.SelectSingleNode("LavaSettings/" + setting.Name).InnerText;
-                else
-                    result = SettingsXML.SelectSingleNode("LavaSettings/" + setting.Name).InnerText;
+                {
+                    return SettingsXML.SelectSingleNode("LavaSettings/" + setting.Name).InnerText;
+                }
+                return SettingsXML.SelectSingleNode("LavaSettings/" + setting.Name).InnerText;
             }
             catch
             {
                 if (setting.DefaultValue != null)
-                    result = setting.DefaultValue.ToString();
-                else
-                    result = "";
+                {
+                    return setting.DefaultValue.ToString();
+                }
+                return "";
             }
-
-            return result;
         }
 
-        // Token: 0x06001010 RID: 4112 RVA: 0x00055144 File Offset: 0x00053344
-        private void SetValue(SettingsPropertyValue propVal)
+        void SetValue(SettingsPropertyValue propVal)
         {
-            XmlElement xmlElement = null;
+            //IL_004e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0054: Expected O, but got Unknown
+            //IL_002b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0031: Expected O, but got Unknown
+            XmlElement val = null;
             try
             {
-                if (IsRoaming(propVal.Property))
-                    xmlElement = (XmlElement) SettingsXML.SelectSingleNode("LavaSettings/" + propVal.Name);
-                else
-                    xmlElement = (XmlElement) SettingsXML.SelectSingleNode("LavaSettings/" + propVal.Name);
+                val = !IsRoaming(propVal.Property) ? (XmlElement)SettingsXML.SelectSingleNode("LavaSettings/" + propVal.Name)
+                    : (XmlElement)SettingsXML.SelectSingleNode("LavaSettings/" + propVal.Name);
             }
             catch (Exception)
             {
-                xmlElement = null;
+                val = null;
             }
-
-            if (xmlElement != null)
+            if (val != null)
             {
-                xmlElement.InnerText = propVal.SerializedValue.ToString();
-                return;
+                val.InnerText = propVal.SerializedValue.ToString();
             }
-
-            if (IsRoaming(propVal.Property))
+            else if (IsRoaming(propVal.Property))
             {
-                xmlElement = SettingsXML.CreateElement(propVal.Name);
-                xmlElement.InnerText = propVal.SerializedValue.ToString();
-                SettingsXML.SelectSingleNode("LavaSettings").AppendChild(xmlElement);
-                return;
+                val = SettingsXML.CreateElement(propVal.Name);
+                val.InnerText = propVal.SerializedValue.ToString();
+                SettingsXML.SelectSingleNode("LavaSettings").AppendChild(val);
             }
-
-            xmlElement = SettingsXML.CreateElement(propVal.Name);
-            xmlElement.InnerText = propVal.SerializedValue.ToString();
-            SettingsXML.SelectSingleNode("LavaSettings").AppendChild(xmlElement);
+            else
+            {
+                val = SettingsXML.CreateElement(propVal.Name);
+                val.InnerText = propVal.SerializedValue.ToString();
+                SettingsXML.SelectSingleNode("LavaSettings").AppendChild(val);
+            }
         }
 
-        // Token: 0x06001011 RID: 4113 RVA: 0x00055254 File Offset: 0x00053454
-        private bool IsRoaming(SettingsProperty prop)
+        bool IsRoaming(SettingsProperty prop)
         {
-            foreach (var obj in prop.Attributes)
+            foreach (DictionaryEntry item in prop.Attributes)
             {
-                var attribute = (Attribute) ((DictionaryEntry) obj).Value;
-                if (attribute is SettingsManageabilityAttribute) return true;
+                Attribute attribute = (Attribute)item.Value;
+                if (attribute is SettingsManageabilityAttribute)
+                {
+                    return true;
+                }
             }
-
             return false;
         }
     }

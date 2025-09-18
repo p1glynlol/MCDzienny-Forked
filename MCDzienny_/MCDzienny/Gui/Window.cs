@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -9,128 +10,481 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using MCDzienny.GUI;
+using System.Windows.Forms.Layout;
+using MCDzienny_.Gui;
+using MCDzienny_.Properties;
+using MCDzienny.GUI.RemoteAccess;
 using MCDzienny.InfectionSystem;
 using MCDzienny.Misc;
 using MCDzienny.Plugins;
-using MCDzienny.Properties;
+using MCDzienny.RemoteAccess;
 using MCDzienny.Settings;
-using MCDzienny_.Gui;
 using Message = System.Windows.Forms.Message;
-using Timer = System.Timers.Timer;
+using Timer = System.Windows.Forms.Timer;
 
 namespace MCDzienny.Gui
 {
-    // Token: 0x0200035F RID: 863
-    public partial class Window : Form
+    public class Window : Form
     {
-        // Token: 0x04000CEB RID: 3307
-        private const uint OBJID_VSCROLL = 4294967291U;
 
-        // Token: 0x04000CEC RID: 3308
-        private const int EM_LINESCROLL = 182;
+        const uint OBJID_VSCROLL = 4294967291u;
 
-        // Token: 0x04000CEE RID: 3310
-        private static readonly object chatSynchronizationObject = new object();
+        const int EM_LINESCROLL = 182;
 
-        // Token: 0x04000CF3 RID: 3315
+        static readonly object chatSynchronizationObject = new object();
+
         internal static Server s;
 
-        // Token: 0x04000CF8 RID: 3320
         public static Window thisWindow;
 
-        // Token: 0x04000CF9 RID: 3321
         public static bool prevLoaded;
 
-        // Token: 0x04000CFA RID: 3322
         public static bool lavaSettingsPrevLoaded;
 
-        // Token: 0x04000CFB RID: 3323
         public static bool zombieSettingsPrevLoaded;
 
-        // Token: 0x04000D09 RID: 3337
         public static volatile bool showWarning = true;
 
-        // Token: 0x04000D02 RID: 3330
-        private Queue chatQueue = Queue.Synchronized(new Queue(200));
+        readonly SplashScreen2 splashScreen2;
 
-        // Token: 0x04000CFF RID: 3327
-        private ColorChatSettings colorChatSettings;
+        readonly UpdateListViewDelegate UpdateMapsList;
 
-        // Token: 0x04000D06 RID: 3334
-        private CreateMap createMap;
+        readonly UpdateListViewDelegate UpdatePlayerList;
 
-        // Token: 0x04000CFD RID: 3325
-        private Form LavaPropertiesForm;
+        CustomListView accountsList;
 
-        // Token: 0x04000CF5 RID: 3317
+        PropertyGrid allMapsGrid;
+
+        ToolStripMenuItem animalAIToolStripMenuItem;
+
+        CheckBox banCheck;
+
+        TextBox banText;
+
+        ToolStripMenuItem banToolStripMenuItem;
+
+        ToolStripPanel BottomToolStripPanel;
+
+        Button btnCreateMap;
+
+        Button btnMute;
+
+        Button btnProperties;
+
+        Button button10;
+
+        Button button11;
+
+        Button button12;
+
+        Button button13;
+
+        Button button14;
+
+        Button button15;
+
+        Button button18;
+
+        Button button2;
+
+        Button button3;
+
+        Button button4;
+
+        Button button5;
+
+        Button button6;
+
+        Button button7;
+
+        Button button8;
+
+        Button button9;
+
+        Label cAqua;
+
+        Label cBlack;
+
+        Label cBlue;
+
+        Label cBrightGreen;
+
+        Label cDarkBlue;
+
+        Label cDarkGray;
+
+        Label cDarkGreen;
+
+        Label cDarkRed;
+
+        Label cGold;
+
+        Label cGray;
+
+        Button changeAccountBtn;
+
+        TabPage changelogTab;
+
+        TextBox chatInputBox;
+
+        RichTextBox chatMainBox;
+
+        Button chatOnOff_btn;
+
+        ListBox chatPlayerList;
+
+        Queue chatQueue = Queue.Synchronized(new Queue(200));
+
+        TabPage chatTab;
+
+        Label chatWarningLabel;
+
+        CheckBox checkBox1;
+
+        CheckBox checkBox2;
+
+        ColorChatSettings colorChatSettings;
+
+        IContainer components;
+
+        ToolStripContentPanel ContentPanel;
+
+        Label cPink;
+
+        Label cPurple;
+
+        CreateMap createMap;
+
+        Label cRed;
+
+        Label cTeal;
+
+        Label cWhite;
+
+        Label cYellow;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+
+        DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+
+        ToolStripMenuItem edgeWaterToolStripMenuItem;
+
+        TabPage errorsTab;
+
+        ToolStripMenuItem finiteModeToolStripMenuItem;
+
+        FontDialog fontDialog1;
+
+        GroupBox gBChat;
+
+        GroupBox gBCommands;
+
+        GroupBox groupBox1;
+
+        GroupBox groupBox2;
+
+        GroupBox groupBox3;
+
+        GroupBox groupBox4;
+
+        ToolStripMenuItem growingGrassToolStripMenuItem;
+
+        ToolStripMenuItem hideConsole;
+
+        ContextMenuStrip iconContext;
+
+        DataGridViewEnumerated infectionMapsGrid;
+
+        CheckBox kickCheck;
+
+        TextBox kickText;
+
+        ToolStripMenuItem kickToolStripMenuItem;
+
+        ToolStripMenuItem killerBlocksToolStripMenuItem;
+
+        Label label1;
+
+        Label label10;
+
+        Label label11;
+
+        Label label12;
+
+        Label label17;
+
+        Label label2;
+
+        Label label20;
+
+        Label label22;
+
+        Label label25;
+
+        Label label3;
+
+        Label label4;
+
+        Label label5;
+
+        Label label6;
+
+        Label label7;
+
+        Label label8;
+
+        Label label9;
+
+        Form LavaPropertiesForm;
+
+        TabPage lavaTab;
+
+        Label lblPluginAuthor;
+
+        Label lblPluginDesc;
+
+        Label lblPluginName;
+
+        Label lblPluginVersion;
+
+        ToolStripPanel LeftToolStripPanel;
+
+        LinkLabel linkLabel1;
+
+        CustomListView listViewMaps;
+
+        CustomListView listViewPlayers;
+
         public volatile bool loaded;
 
-        // Token: 0x04000CF0 RID: 3312
+        TabPage mainTab;
+
+        TabControl mainTabs;
+
+        ColumnHeader mapColumnName;
+
+        ColumnHeader mapColumnPhysics;
+
+        ColumnHeader mapColumnPlayers;
+
+        ColumnHeader mapColumnWeight;
+
+        DataGridViewTextBoxColumn mapName;
+
+        DataGridViewEnumerated mapsGrid;
+
+        ListBox mapsList;
+
+        ContextMenuStrip mapsStrip;
+
+        TabPage mapsTab;
+
+        Label mCount;
+
+        Button minimizeButton;
+
+        ComboBox mode;
+
+        Button newAccountBtn;
+
         public NotifyIcon notifyIcon1 = new NotifyIcon();
 
-        // Token: 0x04000CF1 RID: 3313
+        ToolStripMenuItem openConsole;
+
+        Label pCount;
+
         public volatile int pendingPacketsAvg;
 
-        // Token: 0x04000CF2 RID: 3314
         public volatile int pendingPacketsSum;
 
-        // Token: 0x04000CFE RID: 3326
-        private PropertyWindow PropertyForm;
+        DataGridViewTextBoxColumn phase1;
 
-        // Token: 0x04000CED RID: 3309
-        private Regex regex =
-            new Regex(
-                "^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$");
+        DataGridViewTextBoxColumn phase2;
 
-        // Token: 0x04000D05 RID: 3333
-        private Player selectedPlayer;
+        ToolStripMenuItem physicsToolStripMenuItem;
 
-        // Token: 0x04000D04 RID: 3332
-        private string selectedPlayerName = "";
+        PictureBox pictureBox1;
 
-        // Token: 0x04000CF7 RID: 3319
-        private bool shuttingDown;
+        ComboBox playerColorCombo;
 
-        // Token: 0x04000CF4 RID: 3316
-        private readonly SplashScreen2 splashScreen2;
+        ColumnHeader PlayersColumnAfk;
 
-        // Token: 0x04000D0A RID: 3338
-        private int split2Height;
+        ColumnHeader PlayersColumnMap;
 
-        // Token: 0x04000D0D RID: 3341
-        private int split3Width;
+        ColumnHeader PlayersColumnName;
 
-        // Token: 0x04000D0B RID: 3339
-        private int split4Height;
+        PropertyGrid playersGrid;
 
-        // Token: 0x04000D0C RID: 3340
-        private int split5Width;
+        ListView playersListView;
 
-        // Token: 0x04000CF6 RID: 3318
+        TabPage playersTab;
 
-        // Token: 0x04000D00 RID: 3328
-        private Tools toolsForm;
+        ContextMenuStrip playerStrip;
 
-        // Token: 0x04000D01 RID: 3329
-        private Form UpdateForm;
+        ColumnHeader PlMap;
 
-        // Token: 0x04000D08 RID: 3336
-        private readonly UpdateListViewDelegate UpdateMapsList;
+        ColumnHeader PlName;
 
-        // Token: 0x04000D07 RID: 3335
-        private readonly UpdateListViewDelegate UpdatePlayerList;
+        ColumnHeader PlRank;
 
-        // Token: 0x04000CFC RID: 3324
-        private Form ZombiePropertiesForm;
+        Panel pnlPlugin;
 
-        // Token: 0x060018C2 RID: 6338 RVA: 0x000A9B00 File Offset: 0x000A7D00
-        public Window(FormWindowState startState = FormWindowState.Normal)
+        PropertyWindow PropertyForm;
+
+        Regex regex = new Regex("^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$");
+
+        ColumnHeader remoteAccount;
+
+        Button removeAccountBtn;
+
+        ToolStripPanel RightToolStripPanel;
+
+        ToolStripMenuItem rPChatToolStripMenuItem;
+
+        ToolStripMenuItem saveToolStripMenuItem;
+
+        Player selectedPlayer;
+
+        string selectedPlayerName = "";
+
+        ToolStripMenuItem settingsToolStripMenuItem;
+
+        ToolStripMenuItem shutdownServer;
+
+        bool shuttingDown;
+
+        DataGridViewTextBoxColumn sourceX;
+
+        DataGridViewTextBoxColumn sourceY;
+
+        DataGridViewTextBoxColumn sourceZ;
+
+        int split2Height;
+
+        int split3Width;
+
+        int split4Height;
+
+        int split5Width;
+
+        SplitContainer splitContainer2;
+
+        SplitContainer splitContainer3;
+
+        SplitContainer splitContainer4;
+
+        SplitContainer splitContainer5;
+
+        StatusStrip statusStrip1;
+
+        ToolStripMenuItem survivalDeathToolStripMenuItem;
+
+        TabPage systemTab;
+
+        TabControl tabControl1;
+
+        TabPage tabPage1;
+
+        TabPage tabPage2;
+
+        TabPage tabPagePlugins;
+
+        ComboBox targetMapCombo;
+
+        TextBox textBox1;
+
+        TextBox textBox4;
+
+        TextBox titleText;
+
+        Timer tmrRestart;
+
+        Tools toolsForm;
+
+        ToolStripContainer toolStripContainer1;
+
+        ToolStripMenuItem toolStripMenuItem2;
+
+        ToolStripMenuItem toolStripMenuItem3;
+
+        ToolStripMenuItem toolStripMenuItem4;
+
+        ToolStripMenuItem toolStripMenuItem5;
+
+        ToolStripMenuItem toolStripMenuItem6;
+
+        internal ToolStripStatusLabel toolStripStatusLabelLagometer;
+
+        internal ToolStripStatusLabel toolStripStatusLabelRoundTime;
+
+        ToolStripStatusLabel toolStripStatusLabelUptime;
+
+        ToolTip toolTip1;
+
+        ToolStripPanel TopToolStripPanel;
+
+        TreeView treeView1;
+
+        TextBox txtChangelog;
+
+        TextBox txtCommands;
+
+        TextBox txtCommandsUsed;
+
+        TextBox txtErrors;
+
+        TextBox txtInput;
+
+        TextBox txtLog;
+
+        TextBox txtSystem;
+
+        TextBox txtUrl;
+
+        DataGridViewTextBoxColumn typeOfLava;
+
+        ListBox unloadedMapsList;
+
+        ToolStripMenuItem unloadToolStripMenuItem;
+
+        Form UpdateForm;
+
+        ToolStripMenuItem voiceToolStripMenuItem;
+
+        ToolStripMenuItem whoisToolStripMenuItem;
+
+        int x;
+
+        CheckBox xbanCheck;
+
+        TextBox xbanText;
+
+        Form ZombiePropertiesForm;
+
+        Button zombieSettings;
+
+        TabPage zombieSurvivalTab;
+
+        public Window(FormWindowState startState = 0)
         {
-            if (startState == FormWindowState.Minimized)
+            //IL_0011: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001b: Expected O, but got Unknown
+            //IL_0041: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0043: Invalid comparison between Unknown and I4
+            if ((int)startState == 1)
             {
                 StartMinimized = true;
-                WindowState = FormWindowState.Minimized;
+                WindowState = (FormWindowState)1;
                 ShowInTaskbar = false;
             }
             else
@@ -139,116 +493,113 @@ namespace MCDzienny.Gui
                 splashScreen2.SetBitmap(Resources.splashScreen);
                 splashScreen2.Show();
             }
-
             UpdatePlayerList = UpdatePlayerListView;
             UpdateMapsList = UpdateMapsListView;
             InitializeComponent();
             InitializeStatus();
-            if (!showWarning) chatWarningLabel.Visible = false;
+            if (!showWarning)
+            {
+                chatWarningLabel.Visible = false;
+            }
         }
 
-        // Token: 0x170008FA RID: 2298
-        // (get) Token: 0x060018C0 RID: 6336 RVA: 0x000A9AEC File Offset: 0x000A7CEC
-        // (set) Token: 0x060018C1 RID: 6337 RVA: 0x000A9AF4 File Offset: 0x000A7CF4
         public bool StartMinimized { get; set; }
 
-        // Token: 0x170008FB RID: 2299
-        // (get) Token: 0x0600194A RID: 6474 RVA: 0x000ADEBC File Offset: 0x000AC0BC
-        private Point FormCenter
+        Point FormCenter
         {
             get
             {
-                var num = Location.X + Size.Width / 2;
-                var y = Location.Y + Size.Height / 2;
+                int num = Location.X + Size.Width / 2;
+                int y = Location.Y + Size.Height / 2;
                 return new Point(num, y);
             }
         }
 
-        // Token: 0x060018B8 RID: 6328
+        public static event EventHandler Minimize;
+
         [DllImport("user32.dll")]
         public static extern int GetWindowLong(IntPtr window, int index);
 
-        // Token: 0x060018B9 RID: 6329
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr window, int index, int value);
 
-        // Token: 0x060018BA RID: 6330
         [DllImport("user32.dll")]
-        private static extern int GetScrollPos(IntPtr hWnd, int nBar);
+        static extern int GetScrollPos(IntPtr hWnd, int nBar);
 
-        // Token: 0x060018BB RID: 6331
         [DllImport("user32.dll")]
-        private static extern int SetScrollPos(IntPtr hWnd, int nBar, int nPos, bool bRedraw);
+        static extern int SetScrollPos(IntPtr hWnd, int nBar, int nPos, bool bRedraw);
 
-        // Token: 0x060018BC RID: 6332
         [DllImport("user32.dll")]
-        private static extern int SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+        static extern int SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
 
-        // Token: 0x060018BD RID: 6333
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+        static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
-        // Token: 0x14000027 RID: 39
-        // (add) Token: 0x060018BE RID: 6334 RVA: 0x000A9A84 File Offset: 0x000A7C84
-        // (remove) Token: 0x060018BF RID: 6335 RVA: 0x000A9AB8 File Offset: 0x000A7CB8
-        public static event EventHandler Minimize;
-
-        // Token: 0x060018C3 RID: 6339 RVA: 0x000A9BD4 File Offset: 0x000A7DD4
-        private void InitializeStatus()
+        void InitializeStatus()
         {
-            var timer = new Timer(50000.0);
+            System.Timers.Timer timer = new System.Timers.Timer(50000.0);
             timer.Elapsed += delegate
             {
-                var timeFormat = "";
-                var timeSpan = DateTime.Now.Subtract(Server.TimeOnline);
+                string timeFormat = "";
+                TimeSpan timeSpan = DateTime.Now.Subtract(Server.TimeOnline);
                 if (timeSpan.Days > 0)
-                    timeFormat = string.Concat(timeSpan.Days, "d ", timeSpan.Hours, "h ", timeSpan.Minutes, "min");
-                else if (timeSpan.Hours > 0)
-                    timeFormat = string.Concat(timeSpan.Hours, "h ", timeSpan.Minutes, "min");
-                else
-                    timeFormat = timeSpan.Minutes + "min";
-                thisWindow.toolStripStatusLabelUptime.GetCurrentParent().BeginInvoke(new Action(delegate
                 {
-                    toolStripStatusLabelUptime.Text = "Uptime : " + timeFormat;
-                }));
+                    timeFormat = timeSpan.Days + "d " + timeSpan.Hours + "h " + timeSpan.Minutes + "min";
+                }
+                else if (timeSpan.Hours > 0)
+                {
+                    timeFormat = timeSpan.Hours + "h " + timeSpan.Minutes + "min";
+                }
+                else
+                {
+                    timeFormat = timeSpan.Minutes + "min";
+                }
+                thisWindow.toolStripStatusLabelUptime.GetCurrentParent().BeginInvoke((Action)delegate { toolStripStatusLabelUptime.Text = "Uptime : " + timeFormat; });
+                RemoteClient.remoteClients.ForEach(delegate(RemoteClient rc) { rc.SendUptime(timeSpan); });
             };
             timer.Start();
-            toolStripStatusLabelRoundTime.Visible = Server.mode == Mode.Lava || Server.mode == Mode.LavaFreebuild;
+            toolStripStatusLabelRoundTime.Visible = Server.mode == Mode.Lava || Server.mode == Mode.LavaFreebuild ? true : false;
         }
 
-        // Token: 0x060018C4 RID: 6340 RVA: 0x000A9C2C File Offset: 0x000A7E2C
-        private void Window_Minimize(object sender, EventArgs e)
-        {
-        }
+        void Window_Minimize(object sender, EventArgs e) {}
 
-        // Token: 0x060018C5 RID: 6341 RVA: 0x000A9C30 File Offset: 0x000A7E30
-        protected override void OnShown(EventArgs e)
-        {
-        }
+        protected override void OnShown(EventArgs e) {}
 
-        // Token: 0x060018C6 RID: 6342 RVA: 0x000A9C34 File Offset: 0x000A7E34
-        private void Window_Load(object sender, EventArgs e)
+        void Window_Load(object sender, EventArgs e)
         {
+            //IL_0027: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0031: Expected O, but got Unknown
+            //IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00d1: Expected O, but got Unknown
+            //IL_01d0: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01da: Expected O, but got Unknown
+            //IL_0328: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0332: Expected O, but got Unknown
+            //IL_051e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0525: Expected O, but got Unknown
             Hide();
             thisWindow = this;
             Text = "<server name here>";
-            Icon = new Icon(Assembly.GetExecutingAssembly().GetManifestResourceStream("MCDzienny_.MCDzienny.mcdzienny.ico"));
+            Icon = new Icon(Assembly.GetExecutingAssembly().GetManifestResourceStream("MCDzienny.mcdzienny.ico"));
             if (!StartMinimized)
-                WindowState = FormWindowState.Normal;
+            {
+                WindowState = 0;
+            }
             else
+            {
                 Hide();
+            }
             LoadGuiSettings();
             s = new Server();
             s.OnLog += WriteLine;
             s.OnCommand += newCommand;
             s.OnError += newError;
             s.OnSystem += newSystem;
-            foreach (var obj in mainTabs.TabPages)
+            foreach (TabPage tabPage in mainTabs.TabPages)
             {
-                var tabPage = (TabPage) obj;
-                mainTabs.SelectTab(tabPage);
+                TabPage val = tabPage;
+                mainTabs.SelectTab(val);
             }
-
             mainTabs.SelectTab(mainTabs.TabPages[0]);
             s.HeartBeatFail += HeartBeatFail;
             s.OnURLChange += UpdateUrl;
@@ -260,27 +611,31 @@ namespace MCDzienny.Gui
             notifyIcon1.Icon = Icon;
             notifyIcon1.Visible = true;
             notifyIcon1.MouseClick += notifyIcon1_MouseClick;
-            var timer = new Timer(10000.0);
+            System.Timers.Timer timer = new System.Timers.Timer(10000.0);
             timer.Elapsed += delegate
             {
-                if (Server.shuttingDown) return;
-                UpdateMapList("'");
-                FillMainMapListView();
+                if (!Server.shuttingDown)
+                {
+                    UpdateMapList("'");
+                    FillMainMapListView();
+                }
             };
             timer.Start();
-            var timer2 = new Timer(60000.0);
+            System.Timers.Timer timer2 = new System.Timers.Timer(60000.0);
             timer2.Elapsed += delegate
             {
-                if (Server.shuttingDown) return;
-                UpdateClientList();
+                if (!Server.shuttingDown)
+                {
+                    UpdateClientList();
+                }
             };
             timer2.Start();
             if (File.Exists(Logger.ErrorLogPath))
             {
-                var array = File.ReadAllLines(Logger.ErrorLogPath);
+                string[] array = File.ReadAllLines(Logger.ErrorLogPath);
                 if (array.Length > 200)
                 {
-                    var array2 = new string[200];
+                    string[] array2 = new string[200];
                     Array.Copy(array, array.Length - 200, array2, 0, 200);
                     txtErrors.Lines = array2;
                 }
@@ -289,43 +644,37 @@ namespace MCDzienny.Gui
                     txtErrors.Lines = array;
                 }
             }
-
             if (File.Exists("extra/Changelog.txt"))
-                foreach (var str in File.ReadAllLines("extra/Changelog.txt"))
-                    txtChangelog.AppendText("\r\n           " + str);
-            FontFamily fontFamily = null;
-            foreach (var fontFamily2 in FontFamily.Families)
-                if (string.Equals(fontFamily2.Name, GeneralSettings.All.ChatFontFamily))
+            {
+                string[] array3 = File.ReadAllLines("extra/Changelog.txt");
+                foreach (string text in array3)
                 {
-                    fontFamily = fontFamily2;
+                    txtChangelog.AppendText("\r\n           " + text);
+                }
+            }
+            FontFamily val2 = null;
+            FontFamily[] families = FontFamily.Families;
+            foreach (FontFamily val3 in families)
+            {
+                if (string.Equals(val3.Name, GeneralSettings.All.ChatFontFamily))
+                {
+                    val2 = val3;
                     break;
                 }
-
-            if (fontFamily != null) chatMainBox.Font = new Font(fontFamily, GeneralSettings.All.ChatFontSize);
-            object[] items =
+            }
+            if (val2 != null)
             {
-                "black",
-                "navy",
-                "green",
-                "teal",
-                "maroon",
-                "purple",
-                "gold",
-                "silver",
-                "gray",
-                "blue",
-                "lime",
-                "aqua",
-                "red",
-                "pink",
-                "yellow",
-                "white"
+                chatMainBox.Font = new Font(val2, GeneralSettings.All.ChatFontSize);
+            }
+            object[] array4 = new object[16]
+            {
+                "black", "navy", "green", "teal", "maroon", "purple", "gold", "silver", "gray", "blue", "lime", "aqua", "red", "pink", "yellow", "white"
             };
-            playerColorCombo.Items.AddRange(items);
+            playerColorCombo.Items.AddRange(array4);
             RefreshUnloadedMapsList();
-            var path = Application.StartupPath + "\\Plugins";
+            string path = Application.StartupPath + "\\Plugins";
             DirectoryUtil.CreateIfNotExists(path);
-            var instance = new AddPlugin();
+            AddPlugin instance = new AddPlugin();
             Server.Plugins.AvailablePlugins.Add(new AvailablePlugin
             {
                 Instance = instance,
@@ -338,6 +687,11 @@ namespace MCDzienny.Gui
             });
             Server.Plugins.AvailablePlugins.Add(new AvailablePlugin
             {
+                Instance = new PluginKeyboardShortcuts(),
+                IsCore = true
+            });
+            Server.Plugins.AvailablePlugins.Add(new AvailablePlugin
+            {
                 Instance = new ImportFromDat(),
                 IsCore = true
             });
@@ -345,80 +699,93 @@ namespace MCDzienny.Gui
             lblPluginDesc.Text = "";
             lblPluginName.Text = "";
             lblPluginVersion.Text = "";
-            foreach (var availablePlugin in Server.Plugins.AvailablePlugins)
+            foreach (AvailablePlugin availablePlugin in Server.Plugins.AvailablePlugins)
             {
-                var node = new TreeNode(availablePlugin.Instance.Name);
-                treeView1.Nodes.Add(node);
+                TreeNode val4 = new TreeNode(availablePlugin.Instance.Name);
+                treeView1.Nodes.Add(val4);
             }
-
-            if (splashScreen2 != null) splashScreen2.Hide();
-            base.Show();
+            if (splashScreen2 != null)
+            {
+                splashScreen2.Hide();
+            }
+            Show();
         }
 
-        // Token: 0x060018C7 RID: 6343 RVA: 0x000AA1C8 File Offset: 0x000A83C8
         public void RemoveNodeFromPluginList(string name)
         {
+            //IL_0054: Unknown result type (might be due to invalid IL or missing references)
+            //IL_005a: Expected O, but got Unknown
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(delegate { RemoveNodeFromPluginList(name); }));
+                BeginInvoke((Action)delegate { RemoveNodeFromPluginList(name); });
                 return;
             }
-
-            TreeNode treeNode = null;
-            foreach (var obj in treeView1.Nodes)
+            TreeNode val = null;
+            foreach (TreeNode node in treeView1.Nodes)
             {
-                var treeNode2 = (TreeNode) obj;
-                if (treeNode2.Text == name)
+                TreeNode val2 = node;
+                if (val2.Text == name)
                 {
-                    treeNode = treeNode2;
+                    val = val2;
                     break;
                 }
             }
-
-            if (treeNode != null) treeView1.Nodes.Remove(treeNode);
+            if (val != null)
+            {
+                treeView1.Nodes.Remove(val);
+            }
         }
 
-        // Token: 0x060018C8 RID: 6344 RVA: 0x000AA28C File Offset: 0x000A848C
         public void AddNodeToPluginList(TreeNode node)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(delegate { AddNodeToPluginList(node); }));
-                return;
+                BeginInvoke((Action)delegate { AddNodeToPluginList(node); });
             }
-
-            treeView1.Nodes.Add(node);
+            else
+            {
+                treeView1.Nodes.Add(node);
+            }
         }
 
-        // Token: 0x060018C9 RID: 6345 RVA: 0x000AA2E8 File Offset: 0x000A84E8
         public void UpdateMainMapListView()
         {
             if (InvokeRequired)
             {
                 Invoke(new Action(UpdateMainMapListView));
-                return;
             }
-
-            FillMainMapListView();
+            else
+            {
+                FillMainMapListView();
+            }
         }
 
-        // Token: 0x060018CA RID: 6346 RVA: 0x000AA30C File Offset: 0x000A850C
-        private void FillMainMapListView()
+        void FillMainMapListView()
         {
             var listItems = new List<string[]>();
             Server.levels.ForEach(delegate(Level l)
             {
-                var array = new string[5];
+                string[] array = new string[5];
                 if (l.mapType == MapType.Freebuild)
+                {
                     array[0] = "Freebuild";
+                }
                 else if (l.mapType == MapType.Lava)
+                {
                     array[0] = "Lava";
+                }
                 else if (l.mapType == MapType.Zombie)
+                {
                     array[0] = "Zombie";
+                }
                 else if (l.mapType == MapType.Home)
+                {
                     array[0] = "Home";
+                }
                 else
+                {
                     array[0] = "MyMap";
+                }
                 array[1] = l.name;
                 array[2] = Level.GetPhysicsNameByNumber(l.physics).ToLower();
                 array[3] = l.PlayersCount.ToString();
@@ -428,80 +795,100 @@ namespace MCDzienny.Gui
             UpdateMapsListView(listItems);
         }
 
-        // Token: 0x060018CB RID: 6347 RVA: 0x000AA34C File Offset: 0x000A854C
-        private void SettingsUpdate()
+        void SettingsUpdate()
         {
-            if (shuttingDown) return;
-            if (txtLog.InvokeRequired)
+            if (shuttingDown)
             {
-                VoidDelegate method = SettingsUpdate;
-                Invoke(method);
                 return;
             }
-
+            if (txtLog.InvokeRequired)
+            {
+                VoidDelegate voidDelegate = SettingsUpdate;
+                Invoke(voidDelegate);
+                return;
+            }
             Text = Server.name + " MCDzienny Version: " + Server.Version;
             chatOnOff_btn.Text = GeneralSettings.All.UseChat ? "Activated" : "Deactivated";
             if (Server.mode == Mode.Freebuild || Server.mode == Mode.Zombie)
+            {
                 toolStripStatusLabelRoundTime.Visible = false;
+            }
+            remoteAccounts_ElementChanged(null, EventArgs.Empty);
+            checkBox1.Checked = RemoteSettings.All.AllowRemoteAccess;
+            checkBox2.Checked = RemoteSettings.All.ShowInBrowser;
+            textBox1.Text = RemoteSettings.All.Port.ToString();
+            Server.remoteAccounts.ElementChanged -= remoteAccounts_ElementChanged;
+            Server.remoteAccounts.ElementChanged += remoteAccounts_ElementChanged;
         }
 
-        // Token: 0x060018CD RID: 6349 RVA: 0x000AA4E4 File Offset: 0x000A86E4
-        private void HeartBeatFail()
+        void remoteAccounts_ElementChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                var list = new List<string>();
+                foreach (string key in Server.remoteAccounts.Accounts.Keys)
+                {
+                    list.Add(key);
+                }
+                UpdateAccountsList(list.ToArray());
+            }
+            catch {}
+        }
+
+        void HeartBeatFail()
         {
             WriteLine("Recent Heartbeat Failed");
         }
 
-        // Token: 0x060018CE RID: 6350 RVA: 0x000AA4F4 File Offset: 0x000A86F4
-        private void newError(string message)
+        void newError(string message)
         {
             try
             {
                 if (txtErrors.InvokeRequired)
                 {
-                    ErrorDelegate method = newError;
-                    Invoke(method, message);
+                    ErrorDelegate errorDelegate = newError;
+                    Invoke(errorDelegate, message);
+                    return;
                 }
-                else
+                txtErrors.AppendText(Environment.NewLine + message);
+                if (txtErrors.Text.Length > 3000)
                 {
-                    txtErrors.AppendText(Environment.NewLine + message);
-                    if (txtErrors.Text.Length > 3000)
+                    int num = txtLog.Text.IndexOf('\n', txtErrors.Text.Length - 2300) + 1;
+                    if (num == -1)
                     {
-                        var num = txtLog.Text.IndexOf('\n', txtErrors.Text.Length - 2300) + 1;
-                        if (num == -1) num = txtErrors.Text.Length - 2300;
-                        txtErrors.Text = txtErrors.Text.Substring(num);
-                        txtErrors.SelectionStart = txtErrors.TextLength;
-                        txtErrors.ScrollToCaret();
-                        txtErrors.Refresh();
+                        num = txtErrors.Text.Length - 2300;
                     }
+                    txtErrors.Text = txtErrors.Text.Substring(num);
+                    txtErrors.SelectionStart = txtErrors.TextLength;
+                    txtErrors.ScrollToCaret();
+                    txtErrors.Refresh();
                 }
             }
-            catch
-            {
-            }
+            catch {}
         }
 
-        // Token: 0x060018CF RID: 6351 RVA: 0x000AA608 File Offset: 0x000A8808
-        private void newSystem(string message)
+        void newSystem(string message)
         {
             try
             {
                 if (txtSystem.InvokeRequired)
                 {
-                    SystemDelegate method = newSystem;
-                    Invoke(method, message);
+                    SystemDelegate systemDelegate = newSystem;
+                    Invoke(systemDelegate, message);
+                    return;
                 }
-                else
+                txtSystem.AppendText(Environment.NewLine + message);
+                if (txtSystem.Text.Length > 3000)
                 {
-                    txtSystem.AppendText(Environment.NewLine + message);
-                    if (txtSystem.Text.Length > 3000)
+                    int num = txtSystem.Text.IndexOf('\n', txtSystem.Text.Length - 2300) + 1;
+                    if (num == -1)
                     {
-                        var num = txtSystem.Text.IndexOf('\n', txtSystem.Text.Length - 2300) + 1;
-                        if (num == -1) num = txtSystem.Text.Length - 2300;
-                        txtSystem.Text = txtSystem.Text.Substring(num);
-                        txtSystem.SelectionStart = txtSystem.TextLength;
-                        txtSystem.ScrollToCaret();
-                        txtSystem.Refresh();
+                        num = txtSystem.Text.Length - 2300;
                     }
+                    txtSystem.Text = txtSystem.Text.Substring(num);
+                    txtSystem.SelectionStart = txtSystem.TextLength;
+                    txtSystem.ScrollToCaret();
+                    txtSystem.Refresh();
                 }
             }
             catch (Exception ex)
@@ -510,53 +897,56 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018D0 RID: 6352 RVA: 0x000AA724 File Offset: 0x000A8924
         public void Write(string s)
         {
-            if (shuttingDown) return;
-            if (txtLog.InvokeRequired)
+            if (!shuttingDown)
             {
-                LogDelegate method = Write;
-                Invoke(method, s);
-                return;
+                if (txtLog.InvokeRequired)
+                {
+                    LogDelegate logDelegate = Write;
+                    Invoke(logDelegate, s);
+                }
+                else
+                {
+                    txtLog.AppendText(s);
+                }
             }
-
-            txtLog.AppendText(s);
         }
 
-        // Token: 0x060018D1 RID: 6353 RVA: 0x000AA778 File Offset: 0x000A8978
         public void WriteLine(string s)
         {
-            if (shuttingDown) return;
-            if (InvokeRequired)
+            if (shuttingDown)
             {
-                LogDelegate method = WriteLine;
-                Invoke(method, s);
                 return;
             }
-
-            var scrollbarinfo = default(SCROLLBARINFO);
-            scrollbarinfo.cbSize = Marshal.SizeOf(scrollbarinfo);
-            GetScrollBarInfo(txtLog.Handle, 4294967291U, ref scrollbarinfo);
-            var flag = scrollbarinfo.xyThumbBottom > scrollbarinfo.rcScrollBar.Bottom - scrollbarinfo.rcScrollBar.Top -
-                2 * scrollbarinfo.dxyLineButton;
-            if (flag)
+            if (InvokeRequired)
+            {
+                LogDelegate logDelegate = WriteLine;
+                Invoke(logDelegate, s);
+                return;
+            }
+            SCROLLBARINFO psbi = default(SCROLLBARINFO);
+            psbi.cbSize = Marshal.SizeOf(psbi);
+            GetScrollBarInfo(txtLog.Handle, 4294967291u, ref psbi);
+            if (psbi.xyThumbBottom > psbi.rcScrollBar.Bottom - psbi.rcScrollBar.Top - 2 * psbi.dxyLineButton)
             {
                 txtLog.AppendText("\r\n" + s);
             }
             else
             {
-                var scrollPos = GetScrollPos(txtLog.Handle, 1);
-                var textBox = txtLog;
-                textBox.Text = textBox.Text + "\r\n" + s;
-                SetScrollPos(txtLog.Handle, 1, scrollPos, true);
+                int scrollPos = GetScrollPos(txtLog.Handle, 1);
+                TextBox obj = txtLog;
+                obj.Text = obj.Text + "\r\n" + s;
+                SetScrollPos(txtLog.Handle, 1, scrollPos, bRedraw: true);
                 SendMessage(txtLog.Handle, 182, 1, scrollPos);
             }
-
             if (txtLog.Text.Length > 20000)
             {
-                var num = txtLog.Text.IndexOf('\n', txtLog.Text.Length - 14000) + 1;
-                if (num == -1) num = txtLog.Text.Length - 14000;
+                int num = txtLog.Text.IndexOf('\n', txtLog.Text.Length - 14000) + 1;
+                if (num == -1)
+                {
+                    num = txtLog.Text.Length - 14000;
+                }
                 txtLog.Text = txtLog.Text.Substring(num);
                 txtLog.SelectionStart = txtLog.TextLength;
                 txtLog.ScrollToCaret();
@@ -564,63 +954,54 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018D2 RID: 6354 RVA: 0x000AA938 File Offset: 0x000A8B38
         public void UpdateClientList()
         {
             if (InvokeRequired)
             {
-                PlayerListCallback method = UpdateClientList;
-                Invoke(method);
+                PlayerListCallback playerListCallback = UpdateClientList;
+                Invoke(playerListCallback);
                 return;
             }
-
             try
             {
                 chatPlayerList.Items.Clear();
                 playersListView.Items.Clear();
                 Player.players.ForEach(delegate(Player p)
                 {
+                    //IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+                    //IL_00b0: Expected O, but got Unknown
                     if (p == null)
                     {
                         Server.s.Log("Error gui: p == null");
-                        return;
                     }
-
-                    if (p.group == null)
+                    else if (p.group == null)
                     {
                         Server.s.Log("Error gui: p.group == null");
-                        return;
                     }
-
-                    if (p.name == null)
+                    else if (p.name == null)
                     {
                         Server.s.Log("Error gui: p.name == null");
-                        return;
                     }
-
-                    if (p.level == null)
+                    else if (p.level == null)
                     {
                         Server.s.Log("Error gui: p.level == null");
-                        return;
                     }
-
-                    if (p.level.name == null)
+                    else if (p.level.name == null)
                     {
                         Server.s.Log("Error gui: p.level.name == null");
-                        return;
                     }
-
-                    var listViewItem = new ListViewItem(new[]
+                    else
                     {
-                        p.name,
-                        p.group.name,
-                        p.level.name
-                    });
-                    listViewItem.Name = p.name;
-                    playersListView.Items.Add(listViewItem);
-                    chatPlayerList.Items.Add(p.name);
+                        ListViewItem val = new ListViewItem(new string[3]
+                        {
+                            p.name, p.group.name, p.level.name
+                        });
+                        val.Name = p.name;
+                        playersListView.Items.Add(val);
+                        chatPlayerList.Items.Add(p.name);
+                    }
                 });
-                var array = playersListView.Items.Find(selectedPlayerName, false);
+                ListViewItem[] array = playersListView.Items.Find(selectedPlayerName, false);
                 if (array.Length > 0)
                 {
                     array[0].Selected = true;
@@ -630,7 +1011,6 @@ namespace MCDzienny.Gui
                     selectedPlayerName = "";
                     selectedPlayer = null;
                 }
-
                 playersListView.Update();
                 playersList_DataSourceChanged();
                 pCount.Text = Player.players.Count.ToString();
@@ -641,47 +1021,46 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018D3 RID: 6355 RVA: 0x000AAA28 File Offset: 0x000A8C28
         public void UpdateMapList(string _)
         {
             if (InvokeRequired)
             {
-                LogDelegate method = UpdateMapList;
-                Invoke(method, _);
+                LogDelegate logDelegate = UpdateMapList;
+                Invoke(logDelegate, _);
                 return;
             }
-
             mapsList.Items.Clear();
-            var pcount = 0;
-            using (var enumerator = Server.levels.GetEnumerator())
+            int pcount = 0;
+            foreach (Level level in Server.levels)
             {
-                while (enumerator.MoveNext())
+                pcount = 0;
+                PlayerCollection players = Player.players;
+                Action<Player> action = delegate(Player who)
                 {
-                    var level = enumerator.Current;
-                    pcount = 0;
-                    Player.players.ForEach(delegate(Player who)
+                    if (who.level == level)
                     {
-                        if (who.level == level) pcount++;
-                    });
-                    mapsList.Items.Add(level.name);
-                    mapsList_DataSourceChanged();
-                    mCount.Text = Server.levels.Count.ToString();
-                }
+                        pcount++;
+                    }
+                };
+                players.ForEach(action);
+                mapsList.Items.Add(level.name);
+                mapsList_DataSourceChanged();
+                mCount.Text = Server.levels.Count.ToString();
             }
         }
 
-        // Token: 0x060018D4 RID: 6356 RVA: 0x000AAB38 File Offset: 0x000A8D38
         public void UpdateProperties()
         {
-            mode.SelectedIndex = (int) (Server.mode != Mode.Zombie ? Server.mode : Mode.ZombieFreebuild);
+            mode.SelectedIndex = (int)(Server.mode != Mode.Zombie ? Server.mode : Mode.ZombieFreebuild);
         }
 
-        // Token: 0x060018D5 RID: 6357 RVA: 0x000AAB5C File Offset: 0x000A8D5C
         public void UpdateLavaMaps()
         {
             if (mapsGrid.Rows.Count < LavaSystem.lavaMaps.Count)
+            {
                 mapsGrid.Rows.Add(LavaSystem.lavaMaps.Count - mapsGrid.Rows.Count);
-            for (var i = 0; i < LavaSystem.lavaMaps.Count; i++)
+            }
+            for (int i = 0; i < LavaSystem.lavaMaps.Count; i++)
             {
                 mapsGrid.Rows[i].Cells[0].Value = LavaSystem.lavaMaps[i].Name;
                 mapsGrid.Rows[i].Cells[1].Value = LavaSystem.lavaMaps[i].LavaSources[0].X;
@@ -693,12 +1072,13 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018D6 RID: 6358 RVA: 0x000AAD68 File Offset: 0x000A8F68
         public void UpdateInfectionMaps()
         {
             if (infectionMapsGrid.Rows.Count < InfectionMaps.infectionMaps.Count)
+            {
                 mapsGrid.Rows.Add(InfectionMaps.infectionMaps.Count - infectionMapsGrid.Rows.Count);
-            for (var i = 0; i < InfectionMaps.infectionMaps.Count; i++)
+            }
+            for (int i = 0; i < InfectionMaps.infectionMaps.Count; i++)
             {
                 infectionMapsGrid.Rows[i].Cells[0].Value = InfectionMaps.infectionMaps[i].Name;
                 infectionMapsGrid.Rows[i].Cells[4].Value = InfectionMaps.infectionMaps[i].CountdownSeconds;
@@ -706,77 +1086,88 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018D7 RID: 6359 RVA: 0x000AAE78 File Offset: 0x000A9078
-        public void UpdatePackets(int packets)
-        {
-        }
+        public void UpdatePackets(int packets) {}
 
-        // Token: 0x060018D8 RID: 6360 RVA: 0x000AAE7C File Offset: 0x000A907C
         public void UpdateUrl(string s)
         {
             if (InvokeRequired)
             {
-                StringCallback method = UpdateUrl;
-                Invoke(method, s);
-                return;
+                StringCallback stringCallback = UpdateUrl;
+                Invoke(stringCallback, s);
             }
-
-            txtUrl.Text = s;
+            else
+            {
+                txtUrl.Text = s;
+            }
         }
 
-        // Token: 0x060018D9 RID: 6361 RVA: 0x000AAEC0 File Offset: 0x000A90C0
-        private void Window_FormClosing(object sender, FormClosingEventArgs e)
+        void Window_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (shuttingDown) return;
+            //IL_003d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0042: Invalid comparison between I4 and Unknown
+            if (shuttingDown)
+            {
+                return;
+            }
             GeneralSettings.All.Save();
             SaveGuiSettings();
             ServerProperties.Save();
             Server.Plugins.ClosePlugins();
-            if (!Server.restarting && DialogResult.Yes != MessageBox.Show("Shutdown the server?", "Shutdown",
-                MessageBoxButtons.YesNo, MessageBoxIcon.None, MessageBoxDefaultButton.Button1))
+            if (!Server.restarting && 6 != (int)MessageBox.Show("Shutdown the server?", "Shutdown", (MessageBoxButtons)4, 0, 0))
             {
                 e.Cancel = true;
                 return;
             }
-
-            if (notifyIcon1 != null) notifyIcon1.Visible = false;
-            shuttingDown = true;
-            Program.ExitProgram(false);
-        }
-
-        // Token: 0x060018DA RID: 6362 RVA: 0x000AAF3C File Offset: 0x000A913C
-        private bool ConfirmationQuestionPopup(string actionName)
-        {
-            return DialogResult.Yes == MessageBox.Show(actionName + " ?", "Confirmation", MessageBoxButtons.YesNo,
-                MessageBoxIcon.None, MessageBoxDefaultButton.Button1);
-        }
-
-        // Token: 0x060018DB RID: 6363 RVA: 0x000AAF5C File Offset: 0x000A915C
-        private void txtInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Return)
+            if (notifyIcon1 != null)
             {
-                e.SuppressKeyPress = true;
-                e.Handled = true;
-                if (txtInput.Text == null || txtInput.Text.Trim() == "") return;
-                if (!ServerProperties.ValidString(txtInput.Text, "%![]:.,{}~-+()?_/\\^*#@$~`\"'|=;<>& "))
-                {
-                    txtInput.Text = "Invalid character detected.";
-                    return;
-                }
+                notifyIcon1.Visible = false;
+            }
+            shuttingDown = true;
+            Program.ExitProgram(AutoRestart: false);
+        }
 
-                var text = txtInput.Text.Trim();
-                if (txtInput.Text[0] == '#')
-                {
-                    var text2 = text.Remove(0, 1).Trim();
-                    Player.GlobalMessageOps(string.Concat("To Ops &f-", Server.DefaultColor,
-                        Server.ConsoleRealName.Substring(0, Server.ConsoleRealName.Length - 2), "&f- ", text2));
-                    Server.s.Log("(OPs): Console: " + text2);
-                    Player.IRCSay("Console: " + text2, true);
-                    txtInput.Clear();
-                    return;
-                }
+        bool ConfirmationQuestionPopup(string actionName)
+        {
+            //IL_0014: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0019: Invalid comparison between I4 and Unknown
+            if (6 == (int)MessageBox.Show(actionName + " ?", "Confirmation", (MessageBoxButtons)4, 0, 0))
+            {
+                return true;
+            }
+            return false;
+        }
 
+        void txtInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0008: Invalid comparison between Unknown and I4
+            if ((int)e.KeyCode != 13)
+            {
+                return;
+            }
+            e.SuppressKeyPress = true;
+            e.Handled = true;
+            if (txtInput.Text == null || txtInput.Text.Trim() == "")
+            {
+                return;
+            }
+            if (!ServerProperties.ValidString(txtInput.Text, "%![]:.,{}~-+()?_/\\^*#@$~`\"'|=;<>& "))
+            {
+                txtInput.Text = "Invalid character detected.";
+                return;
+            }
+            string text = txtInput.Text.Trim();
+            string text2 = text;
+            if (txtInput.Text[0] == '#')
+            {
+                text2 = text.Remove(0, 1).Trim();
+                Player.GlobalMessageOps("To Ops &f-" + Server.DefaultColor + Server.ConsoleRealName.Substring(0, Server.ConsoleRealName.Length - 2) + "&f- " + text2);
+                Server.s.Log("(OPs): Console: " + text2);
+                Player.IRCSay("Console: " + text2, opchat: true);
+                txtInput.Clear();
+            }
+            else
+            {
                 Player.GlobalMessage(Server.ConsoleRealName + txtInput.Text);
                 Player.IRCSay(Server.ConsoleRealNameIRC + txtInput.Text);
                 Server.s.Log("<CONSOLE> " + txtInput.Text);
@@ -784,154 +1175,148 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018DC RID: 6364 RVA: 0x000AB0EC File Offset: 0x000A92EC
-        private void txtCommands_KeyDown(object sender, KeyEventArgs e)
+        void txtCommands_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return)
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0008: Invalid comparison between Unknown and I4
+            if ((int)e.KeyCode != 13)
             {
-                e.SuppressKeyPress = true;
-                e.Handled = true;
-                var sentMsg = "";
-                if (txtCommands.Text == null || txtCommands.Text.Trim() == "")
+                return;
+            }
+            e.SuppressKeyPress = true;
+            e.Handled = true;
+            string text = "";
+            string sentMsg = "";
+            if (txtCommands.Text == null || txtCommands.Text.Trim() == "")
+            {
+                Server.s.CommandUsed("CONSOLE: Whitespace commands are not allowed.");
+                txtCommands.Clear();
+                return;
+            }
+            if (txtCommands.Text[0] == '/' && txtCommands.Text.Length > 1)
+            {
+                txtCommands.Text = txtCommands.Text.Substring(1);
+            }
+            if (txtCommands.Text.IndexOf(' ') != -1)
+            {
+                text = txtCommands.Text.Split(' ')[0];
+                sentMsg = txtCommands.Text.Substring(txtCommands.Text.IndexOf(' ') + 1);
+            }
+            else
+            {
+                if (!(txtCommands.Text != ""))
                 {
-                    Server.s.CommandUsed("CONSOLE: Whitespace commands are not allowed.");
-                    txtCommands.Clear();
                     return;
                 }
-
-                if (txtCommands.Text[0] == '/' && txtCommands.Text.Length > 1)
-                    txtCommands.Text = txtCommands.Text.Substring(1);
-                string text;
-                if (txtCommands.Text.IndexOf(' ') != -1)
-                {
-                    text = txtCommands.Text.Split(' ')[0];
-                    sentMsg = txtCommands.Text.Substring(txtCommands.Text.IndexOf(' ') + 1);
-                }
-                else
-                {
-                    if (!(txtCommands.Text != "")) return;
-                    text = txtCommands.Text;
-                }
-
-                try
-                {
-                    var found = Command.all.Find(text);
-                    if (found != null)
-                    {
-                        if (!found.ConsoleAccess)
-                        {
-                            Server.s.CommandUsed(string.Format("You can't use {0} command from console.", text));
-                            txtCommands.Text = "";
-                            return;
-                        }
-
-                        new Thread(delegate()
-                        {
-                            try
-                            {
-                                found.Use(null, sentMsg);
-                            }
-                            catch (Exception ex2)
-                            {
-                                Server.ErrorLog(ex2);
-                            }
-                        }).Start();
-                        if (found.HighSecurity)
-                            Server.s.CommandUsed("CONSOLE: USED /" + text + " ***");
-                        else
-                            Server.s.CommandUsed("CONSOLE: USED /" + text + " " + sentMsg);
-                    }
-
-                    if (found == null) Server.s.CommandUsed("CONSOLE: Command  '/" + text + "'  does not exist.");
-                }
-                catch (Exception ex)
-                {
-                    Server.ErrorLog(ex);
-                    Server.s.CommandUsed("CONSOLE: Failed command.");
-                }
-
-                txtCommands.Clear();
+                text = txtCommands.Text;
             }
+            try
+            {
+                Command found = Command.all.Find(text);
+                if (found != null)
+                {
+                    if (!found.ConsoleAccess)
+                    {
+                        Server.s.CommandUsed(string.Format("You can't use {0} command from console.", text));
+                        txtCommands.Text = "";
+                        return;
+                    }
+                    new Thread((ThreadStart)delegate
+                    {
+                        try
+                        {
+                            found.Use(null, sentMsg);
+                        }
+                        catch (Exception ex)
+                        {
+                            Server.ErrorLog(ex);
+                        }
+                    }).Start();
+                    if (found.HighSecurity)
+                    {
+                        Server.s.CommandUsed("CONSOLE: USED /" + text + " ***");
+                    }
+                    else
+                    {
+                        Server.s.CommandUsed("CONSOLE: USED /" + text + " " + sentMsg);
+                    }
+                }
+                if (found == null)
+                {
+                    Server.s.CommandUsed("CONSOLE: Command  '/" + text + "'  does not exist.");
+                }
+            }
+            catch (Exception ex2)
+            {
+                Server.ErrorLog(ex2);
+                Server.s.CommandUsed("CONSOLE: Failed command.");
+            }
+            txtCommands.Clear();
         }
 
-        // Token: 0x060018DD RID: 6365 RVA: 0x000AB360 File Offset: 0x000A9560
         public void newCommand(string p)
         {
             if (txtCommandsUsed.InvokeRequired)
             {
-                LogDelegate method = newCommand;
-                Invoke(method, p);
-                return;
+                LogDelegate logDelegate = newCommand;
+                Invoke(logDelegate, p);
             }
-
-            txtCommandsUsed.AppendText("\r\n" + p);
+            else
+            {
+                txtCommandsUsed.AppendText("\r\n" + p);
+            }
         }
 
-        // Token: 0x060018DE RID: 6366 RVA: 0x000AB3B4 File Offset: 0x000A95B4
-        private void ChangeCheck(string newCheck)
+        void ChangeCheck(string newCheck)
         {
             Server.ConsoleName = newCheck;
         }
 
-        // Token: 0x060018DF RID: 6367 RVA: 0x000AB3BC File Offset: 0x000A95BC
-        private void btnProperties_Click_1(object sender, EventArgs e)
+        void btnProperties_Click_1(object sender, EventArgs e)
         {
             if (!prevLoaded)
             {
                 PropertyForm = new PropertyWindow();
                 prevLoaded = true;
             }
-
             PropertyForm.ShowAt(FormCenter);
         }
 
-        // Token: 0x060018E0 RID: 6368 RVA: 0x000AB3E8 File Offset: 0x000A95E8
-        private void btnUpdate_Click_1(object sender, EventArgs e)
-        {
-        }
+        void btnUpdate_Click_1(object sender, EventArgs e) {}
 
-        // Token: 0x060018E1 RID: 6369 RVA: 0x000AB3EC File Offset: 0x000A95EC
-        private void gBChat_Enter(object sender, EventArgs e)
-        {
-        }
+        void gBChat_Enter(object sender, EventArgs e) {}
 
-        // Token: 0x060018E2 RID: 6370 RVA: 0x000AB3F0 File Offset: 0x000A95F0
-        private void btnExtra_Click_1(object sender, EventArgs e)
+        void btnExtra_Click_1(object sender, EventArgs e)
         {
             if (!prevLoaded)
             {
                 PropertyForm = new PropertyWindow();
                 prevLoaded = true;
             }
-
             PropertyForm.Show();
             PropertyForm.Top = Top + Height - txtCommandsUsed.Height;
             PropertyForm.Left = Left;
         }
 
-        // Token: 0x060018E3 RID: 6371 RVA: 0x000AB458 File Offset: 0x000A9658
-        private void Window_Resize(object sender, EventArgs e)
+        void Window_Resize(object sender, EventArgs e)
         {
             Hide();
         }
 
-        // Token: 0x060018E4 RID: 6372 RVA: 0x000AB460 File Offset: 0x000A9660
-        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+        void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
-            base.Show();
+            Show();
             BringToFront();
-            WindowState = FormWindowState.Normal;
+            WindowState = 0;
         }
 
-        // Token: 0x060018E5 RID: 6373 RVA: 0x000AB478 File Offset: 0x000A9678
-        private void button1_Click_1(object sender, EventArgs e)
+        void button1_Click_1(object sender, EventArgs e)
         {
             UpdateForm = new UpdateWindow();
             UpdateForm.Show();
         }
 
-        // Token: 0x060018E6 RID: 6374 RVA: 0x000AB490 File Offset: 0x000A9690
-        private void tmrRestart_Tick(object sender, EventArgs e)
+        void tmrRestart_Tick(object sender, EventArgs e)
         {
             if (Server.autorestart && DateTime.Now.TimeOfDay.CompareTo(Server.restarttime.TimeOfDay) > 0 &&
                 DateTime.Now.TimeOfDay.CompareTo(Server.restarttime.AddSeconds(1.0).TimeOfDay) < 0)
@@ -945,70 +1330,75 @@ namespace MCDzienny.Gui
                     notifyIcon1.Icon = null;
                     notifyIcon1.Visible = false;
                 }
-
-                Program.ExitProgram(true);
+                Program.ExitProgram(AutoRestart: true);
             }
         }
 
-        // Token: 0x060018E7 RID: 6375 RVA: 0x000AB590 File Offset: 0x000A9790
-        private void openConsole_Click(object sender, EventArgs e)
+        void openConsole_Click(object sender, EventArgs e)
         {
-            base.Show();
+            Show();
             BringToFront();
-            WindowState = FormWindowState.Normal;
-            base.Show();
+            WindowState = 0;
+            Show();
             BringToFront();
-            WindowState = FormWindowState.Normal;
+            WindowState = 0;
         }
 
-        // Token: 0x060018E8 RID: 6376 RVA: 0x000AB5B8 File Offset: 0x000A97B8
-        private void hideConsole_Click(object sender, EventArgs e)
+        void hideConsole_Click(object sender, EventArgs e)
         {
-            WindowState = FormWindowState.Minimized;
+            WindowState = (FormWindowState)1;
             Hide();
         }
 
-        // Token: 0x060018E9 RID: 6377 RVA: 0x000AB5C8 File Offset: 0x000A97C8
-        private void shutdownServer_Click(object sender, EventArgs e)
+        void shutdownServer_Click(object sender, EventArgs e)
         {
             ServerProperties.Save();
-            if (notifyIcon1 != null) notifyIcon1.Visible = false;
-            Program.ExitProgram(false);
+            if (notifyIcon1 != null)
+            {
+                notifyIcon1.Visible = false;
+            }
+            Program.ExitProgram(AutoRestart: false);
         }
 
-        // Token: 0x060018EA RID: 6378 RVA: 0x000AB5EC File Offset: 0x000A97EC
-        private void voiceToolStripMenuItem_Click(object sender, EventArgs e)
+        void voiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var player = Player.FindExact(listViewPlayers.LastSelectedItemName);
-            if (player != null) Command.all.Find("voice").Use(null, player.name);
-        }
-
-        // Token: 0x060018EB RID: 6379 RVA: 0x000AB628 File Offset: 0x000A9828
-        private void whoisToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var player = Player.FindExact(listViewPlayers.LastSelectedItemName);
-            if (player != null) Command.all.Find("whois").Use(null, player.name);
-        }
-
-        // Token: 0x060018EC RID: 6380 RVA: 0x000AB664 File Offset: 0x000A9864
-        private void kickToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var player = Player.FindExact(listViewPlayers.LastSelectedItemName);
+            Player player = Player.FindExact(listViewPlayers.LastSelectedItemName);
             if (player != null)
+            {
+                Command.all.Find("voice").Use(null, player.name);
+            }
+        }
+
+        void whoisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Player player = Player.FindExact(listViewPlayers.LastSelectedItemName);
+            if (player != null)
+            {
+                Command.all.Find("whois").Use(null, player.name);
+            }
+        }
+
+        void kickToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Player player = Player.FindExact(listViewPlayers.LastSelectedItemName);
+            if (player != null)
+            {
                 Command.all.Find("kick").Use(null, player.name + " You have been kicked by the console.");
+            }
         }
 
-        // Token: 0x060018ED RID: 6381 RVA: 0x000AB6AC File Offset: 0x000A98AC
-        private void banToolStripMenuItem_Click(object sender, EventArgs e)
+        void banToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var player = Player.FindExact(listViewPlayers.LastSelectedItemName);
-            if (player != null) Command.all.Find("ban").Use(null, player.name);
+            Player player = Player.FindExact(listViewPlayers.LastSelectedItemName);
+            if (player != null)
+            {
+                Command.all.Find("ban").Use(null, player.name);
+            }
         }
 
-        // Token: 0x060018EE RID: 6382 RVA: 0x000AB6E8 File Offset: 0x000A98E8
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("physics").Use(null, level.name + " 0");
@@ -1016,10 +1406,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018EF RID: 6383 RVA: 0x000AB734 File Offset: 0x000A9934
-        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("physics").Use(null, level.name + " 1");
@@ -1027,10 +1416,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F0 RID: 6384 RVA: 0x000AB780 File Offset: 0x000A9980
-        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        void toolStripMenuItem4_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("physics").Use(null, level.name + " 2");
@@ -1038,10 +1426,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F1 RID: 6385 RVA: 0x000AB7CC File Offset: 0x000A99CC
-        private void toolStripMenuItem5_Click(object sender, EventArgs e)
+        void toolStripMenuItem5_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("physics").Use(null, level.name + " 3");
@@ -1049,10 +1436,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F2 RID: 6386 RVA: 0x000AB818 File Offset: 0x000A9A18
-        private void toolStripMenuItem6_Click(object sender, EventArgs e)
+        void toolStripMenuItem6_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("physics").Use(null, level.name + " 4");
@@ -1060,10 +1446,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F3 RID: 6387 RVA: 0x000AB864 File Offset: 0x000A9A64
-        private void unloadToolStripMenuItem_Click(object sender, EventArgs e)
+        void unloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("unload").Use(null, level.name);
@@ -1071,10 +1456,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F4 RID: 6388 RVA: 0x000AB8A8 File Offset: 0x000A9AA8
-        private void finiteModeToolStripMenuItem_Click(object sender, EventArgs e)
+        void finiteModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("map").Use(null, level.name + " finite");
@@ -1082,10 +1466,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F5 RID: 6389 RVA: 0x000AB8F4 File Offset: 0x000A9AF4
-        private void animalAIToolStripMenuItem_Click(object sender, EventArgs e)
+        void animalAIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("map").Use(null, level.name + " ai");
@@ -1093,10 +1476,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F6 RID: 6390 RVA: 0x000AB940 File Offset: 0x000A9B40
-        private void edgeWaterToolStripMenuItem_Click(object sender, EventArgs e)
+        void edgeWaterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("map").Use(null, level.name + " edge");
@@ -1104,10 +1486,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F7 RID: 6391 RVA: 0x000AB98C File Offset: 0x000A9B8C
-        private void growingGrassToolStripMenuItem_Click(object sender, EventArgs e)
+        void growingGrassToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("map").Use(null, level.name + " grass");
@@ -1115,17 +1496,18 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018F8 RID: 6392 RVA: 0x000AB9D8 File Offset: 0x000A9BD8
-        private void survivalDeathToolStripMenuItem_Click(object sender, EventArgs e)
+        void survivalDeathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
-            if (level != null) Command.all.Find("map").Use(null, level.name + " death");
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            if (level != null)
+            {
+                Command.all.Find("map").Use(null, level.name + " death");
+            }
         }
 
-        // Token: 0x060018F9 RID: 6393 RVA: 0x000ABA20 File Offset: 0x000A9C20
-        private void killerBlocksToolStripMenuItem_Click(object sender, EventArgs e)
+        void killerBlocksToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("map").Use(null, level.name + " killer");
@@ -1133,10 +1515,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018FA RID: 6394 RVA: 0x000ABA6C File Offset: 0x000A9C6C
-        private void rPChatToolStripMenuItem_Click(object sender, EventArgs e)
+        void rPChatToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("map").Use(null, level.name + " chat");
@@ -1144,10 +1525,9 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018FB RID: 6395 RVA: 0x000ABAB8 File Offset: 0x000A9CB8
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var level = Level.FindExact(listViewMaps.LastSelectedItemName);
+            Level level = Level.FindExact(listViewMaps.LastSelectedItemName);
             if (level != null)
             {
                 Command.all.Find("save").Use(null, level.name);
@@ -1155,40 +1535,43 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x060018FC RID: 6396 RVA: 0x000ABAFC File Offset: 0x000A9CFC
-        private void tabControl1_Click(object sender, EventArgs e)
+        void tabControl1_Click(object sender, EventArgs e)
         {
-            foreach (var obj in mainTabs.TabPages)
+            //IL_0019: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001f: Expected O, but got Unknown
+            //IL_0035: Unknown result type (might be due to invalid IL or missing references)
+            //IL_003b: Expected O, but got Unknown
+            //IL_0044: Unknown result type (might be due to invalid IL or missing references)
+            //IL_004a: Expected O, but got Unknown
+            foreach (TabPage tabPage in mainTabs.TabPages)
             {
-                var tabPage = (TabPage) obj;
-                foreach (var obj2 in tabPage.Controls)
+                TabPage val = tabPage;
+                foreach (Control item in (ArrangedElementCollection)val.Controls)
                 {
-                    var control = (Control) obj2;
-                    if (control is TextBox)
+                    Control val2 = item;
+                    if (val2 is TextBox)
                     {
-                        var textBox = (TextBox) control;
-                        textBox.Update();
+                        TextBox val3 = (TextBox)val2;
+                        val3.Update();
                     }
                 }
             }
         }
 
-        // Token: 0x060018FD RID: 6397 RVA: 0x000ABBB4 File Offset: 0x000A9DB4
-        private void minimizeButton_Click(object sender, EventArgs e)
+        void minimizeButton_Click(object sender, EventArgs e)
         {
-            WindowState = FormWindowState.Minimized;
+            WindowState = (FormWindowState)1;
             Hide();
         }
 
-        // Token: 0x060018FE RID: 6398 RVA: 0x000ABBC4 File Offset: 0x000A9DC4
-        private void updateLabel_Click(object sender, EventArgs e)
-        {
-        }
+        void updateLabel_Click(object sender, EventArgs e) {}
 
-        // Token: 0x060018FF RID: 6399 RVA: 0x000ABBC8 File Offset: 0x000A9DC8
-        private void mode_SelectedIndexChanged(object sender, EventArgs e)
+        void mode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Command.all.Count == 0) return;
+            if (Command.all.Count == 0)
+            {
+                return;
+            }
             try
             {
                 switch (mode.SelectedIndex)
@@ -1213,72 +1596,65 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x06001900 RID: 6400 RVA: 0x000ABC3C File Offset: 0x000A9E3C
-        private void button1_Click(object sender, EventArgs e)
+        void button1_Click(object sender, EventArgs e)
         {
             if (!lavaSettingsPrevLoaded)
             {
                 LavaPropertiesForm = new LavaProperties();
                 lavaSettingsPrevLoaded = true;
             }
-
             LavaPropertiesForm.Show();
         }
 
-        // Token: 0x06001901 RID: 6401 RVA: 0x000ABC64 File Offset: 0x000A9E64
-        private void zombieSettings_Click(object sender, EventArgs e)
+        void zombieSettings_Click(object sender, EventArgs e)
         {
             if (!zombieSettingsPrevLoaded)
             {
                 ZombiePropertiesForm = new ZombieProperties();
                 zombieSettingsPrevLoaded = true;
             }
-
             ZombiePropertiesForm.Show();
         }
 
-        // Token: 0x06001902 RID: 6402 RVA: 0x000ABC8C File Offset: 0x000A9E8C
-        private void txtSystem_TextChanged(object sender, EventArgs e)
-        {
-        }
+        void txtSystem_TextChanged(object sender, EventArgs e) {}
 
-        // Token: 0x06001903 RID: 6403 RVA: 0x000ABC90 File Offset: 0x000A9E90
-        private void liClients_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
+        void liClients_SelectedIndexChanged(object sender, EventArgs e) {}
 
-        // Token: 0x06001904 RID: 6404 RVA: 0x000ABC94 File Offset: 0x000A9E94
         public void UpdateChat(string msg)
         {
-            if (GeneralSettings.All.UseChat)
+            if (GeneralSettings.All.UseChat && !shuttingDown)
             {
-                if (shuttingDown) return;
                 if (chatMainBox.InvokeRequired)
                 {
                     BeginInvoke(new Action<string>(UpdateChat), msg);
-                    return;
                 }
-
-                UpChat(msg);
+                else
+                {
+                    UpChat(msg);
+                }
             }
         }
 
-        // Token: 0x06001905 RID: 6405 RVA: 0x000ABCEC File Offset: 0x000A9EEC
         public void UpChat(string message)
         {
             try
             {
                 var list = new List<Coloring>();
                 Player.FilterMessageConsole(ref message);
-                message = message.Replace('\u0003', '♥').Replace('\u0004', '♦').Replace('\a', '●').Replace('\b', '○')
-                    .Replace('\v', '♂').Replace('\f', '♀').Replace('\u0010', '►').Replace('\u0011', '◄')
-                    .Replace('\u0013', '‼').Replace('\u000f', '☼').Replace('\u0016', '▄');
+                message = message.Replace('\u0003', '♥').Replace('\u0004', '♦').Replace('\a', '●')
+                    .Replace('\b', '○')
+                    .Replace('\v', '♂')
+                    .Replace('\f', '♀')
+                    .Replace('\u0010', '►')
+                    .Replace('\u0011', '◄')
+                    .Replace('\u0013', '‼')
+                    .Replace('\u000f', '☼')
+                    .Replace('\u0016', '▄');
                 message = "&0" + message + "\r\n";
-                for (var num = message.IndexOf('&'); num != -1; num = message.IndexOf('&'))
+                for (int num = message.IndexOf('&'); num != -1; num = message.IndexOf('&'))
                 {
-                    var color = Color.White;
-                    var c = message[num + 1];
-                    switch (c)
+                    Color color = Color.White;
+                    switch (message[num + 1])
                     {
                         case '0':
                             color = Color.Black;
@@ -1310,32 +1686,25 @@ namespace MCDzienny.Gui
                         case '9':
                             color = Color.FromArgb(115, 115, 255);
                             break;
-                        default:
-                            switch (c)
-                            {
-                                case 'a':
-                                    color = Color.FromArgb(85, 255, 85);
-                                    break;
-                                case 'b':
-                                    color = Color.FromArgb(85, 255, 255);
-                                    break;
-                                case 'c':
-                                    color = Color.FromArgb(250, 70, 70);
-                                    break;
-                                case 'd':
-                                    color = Color.FromArgb(255, 95, 255);
-                                    break;
-                                case 'e':
-                                    color = Color.FromArgb(255, 255, 85);
-                                    break;
-                                case 'f':
-                                    color = Color.White;
-                                    break;
-                            }
-
+                        case 'a':
+                            color = Color.FromArgb(85, 255, 85);
+                            break;
+                        case 'b':
+                            color = Color.FromArgb(85, 255, 255);
+                            break;
+                        case 'c':
+                            color = Color.FromArgb(250, 70, 70);
+                            break;
+                        case 'd':
+                            color = Color.FromArgb(255, 95, 255);
+                            break;
+                        case 'e':
+                            color = Color.FromArgb(255, 255, 85);
+                            break;
+                        case 'f':
+                            color = Color.White;
                             break;
                     }
-
                     list.Add(new Coloring
                     {
                         index = num + 1,
@@ -1343,7 +1712,6 @@ namespace MCDzienny.Gui
                     });
                     message = message.Remove(num, 2);
                 }
-
                 lock (chatSynchronizationObject)
                 {
                     chatMainBox.AppendText(message);
@@ -1352,30 +1720,28 @@ namespace MCDzienny.Gui
                         int i;
                         for (i = 0; i < list.Count - 1; i++)
                         {
-                            chatMainBox.Select(chatMainBox.Text.Length - (message.Length - list[i].index),
-                                chatMainBox.Text.Length - (list[i + 1].index - list[i].index));
+                            chatMainBox.Select(chatMainBox.Text.Length - (message.Length - list[i].index), chatMainBox.Text.Length - (list[i + 1].index - list[i].index));
                             chatMainBox.SelectionColor = list[i].color;
                         }
-
-                        chatMainBox.Select(chatMainBox.Text.Length - (message.Length - list[i].index),
-                            chatMainBox.Text.Length - (message.Length - list[i].index));
+                        chatMainBox.Select(chatMainBox.Text.Length - (message.Length - list[i].index), chatMainBox.Text.Length - (message.Length - list[i].index));
                         chatMainBox.SelectionColor = list[i].color;
                     }
                     else if (list.Count == 1)
                     {
-                        chatMainBox.Select(chatMainBox.Text.Length - (message.Length - list[0].index),
-                            chatMainBox.Text.Length - (message.Length - list[0].index));
+                        chatMainBox.Select(chatMainBox.Text.Length - (message.Length - list[0].index), chatMainBox.Text.Length - (message.Length - list[0].index));
                         chatMainBox.SelectionColor = list[0].color;
                     }
-
                     chatMainBox.SelectionStart = chatMainBox.Text.Length;
                     chatMainBox.ScrollToCaret();
                     if (chatMainBox.Text.Length > 10000)
                     {
-                        var num2 = chatMainBox.Text.IndexOf('\n', chatMainBox.Text.Length - 8000) + 1;
-                        if (num2 == -1) num2 = chatMainBox.Text.Length - 8000;
+                        int num2 = chatMainBox.Text.IndexOf('\n', chatMainBox.Text.Length - 8000) + 1;
+                        if (num2 == -1)
+                        {
+                            num2 = chatMainBox.Text.Length - 8000;
+                        }
                         chatMainBox.Select(num2, chatMainBox.Text.Length - 1 - num2);
-                        var selectedRtf = chatMainBox.SelectedRtf;
+                        string selectedRtf = chatMainBox.SelectedRtf;
                         chatMainBox.Rtf = selectedRtf;
                         chatMainBox.AppendText("\r\n");
                         chatMainBox.SelectionStart = chatMainBox.Text.Length;
@@ -1389,137 +1755,137 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x06001906 RID: 6406 RVA: 0x000AC238 File Offset: 0x000AA438
-        private void chatTab_Click(object sender, EventArgs e)
-        {
-        }
+        void chatTab_Click(object sender, EventArgs e) {}
 
-        // Token: 0x06001907 RID: 6407 RVA: 0x000AC23C File Offset: 0x000AA43C
-        private void chatTab_Focus(object sender, EventArgs e)
+        void chatTab_Focus(object sender, EventArgs e)
         {
             chatInputBox.Focus();
         }
 
-        // Token: 0x06001908 RID: 6408 RVA: 0x000AC24C File Offset: 0x000AA44C
-        private void lavaTab_Click(object sender, EventArgs e)
-        {
-        }
+        void lavaTab_Click(object sender, EventArgs e) {}
 
-        // Token: 0x06001909 RID: 6409 RVA: 0x000AC250 File Offset: 0x000AA450
-        private void txtInput_TextChanged(object sender, EventArgs e)
-        {
-        }
+        void txtInput_TextChanged(object sender, EventArgs e) {}
 
-        // Token: 0x0600190A RID: 6410 RVA: 0x000AC254 File Offset: 0x000AA454
-        private void chatInputBox_KeyDown(object sender, KeyEventArgs e)
+        void chatInputBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return)
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0008: Invalid comparison between Unknown and I4
+            if ((int)e.KeyCode != 13)
             {
-                e.SuppressKeyPress = true;
-                if (chatInputBox.Text == null || chatInputBox.Text.Trim() == "") return;
-                if (!ServerProperties.ValidString(chatInputBox.Text, "%![]:.,{}~-+()?_/\\^*#@$~`\"'|=;<>& "))
+                return;
+            }
+            e.SuppressKeyPress = true;
+            if (chatInputBox.Text == null || chatInputBox.Text.Trim() == "")
+            {
+                return;
+            }
+            if (!ServerProperties.ValidString(chatInputBox.Text, "%![]:.,{}~-+()?_/\\^*#@$~`\"'|=;<>& "))
+            {
+                chatInputBox.Text = "Invalid character detected.";
+                return;
+            }
+            if (chatInputBox.Text[0] != '/')
+            {
+                if (chatInputBox.Text != null && !(chatInputBox.Text.Trim() == ""))
                 {
-                    chatInputBox.Text = "Invalid character detected.";
-                    return;
-                }
-
-                if (chatInputBox.Text[0] != '/')
-                {
-                    if (chatInputBox.Text == null || chatInputBox.Text.Trim() == "") return;
-                    var text = chatInputBox.Text.Trim();
+                    string text = chatInputBox.Text.Trim();
+                    string text2 = text;
                     if (chatInputBox.Text[0] == '#')
                     {
-                        var text2 = text.Remove(0, 1).Trim();
-                        Player.GlobalMessageOps(string.Concat("To Ops &f-", Server.DefaultColor,
-                            Server.ConsoleRealName.Substring(0, Server.ConsoleRealName.Length - 1), "&f- ", text2));
+                        text2 = text.Remove(0, 1).Trim();
+                        Player.GlobalMessageOps("To Ops &f-" + Server.DefaultColor + Server.ConsoleRealName.Substring(0, Server.ConsoleRealName.Length - 1) + "&f- " +
+                                                text2);
                         Server.s.Log("(OPs): Console: " + text2);
-                        Player.IRCSay("Console: " + text2, true);
+                        Player.IRCSay("Console: " + text2, opchat: true);
                         chatInputBox.Clear();
-                        return;
-                    }
-
-                    Player.GlobalMessage(Server.ConsoleRealName + chatInputBox.Text);
-                    Player.IRCSay(Server.ConsoleRealNameIRC + chatInputBox.Text);
-                    WriteLine("<CONSOLE> " + chatInputBox.Text);
-                    chatInputBox.Clear();
-                }
-                else
-                {
-                    var text3 = "";
-                    if (chatInputBox.Text == null || chatInputBox.Text.Trim() == "")
-                    {
-                        Server.s.CommandUsed("CONSOLE: Whitespace commands are not allowed.");
-                        chatInputBox.Clear();
-                        return;
-                    }
-
-                    if (chatInputBox.Text[0] == '/' && chatInputBox.Text.Length > 1)
-                        chatInputBox.Text = chatInputBox.Text.Substring(1);
-                    string text4;
-                    if (chatInputBox.Text.IndexOf(' ') != -1)
-                    {
-                        text4 = chatInputBox.Text.Split(' ')[0];
-                        text3 = chatInputBox.Text.Substring(chatInputBox.Text.IndexOf(' ') + 1);
                     }
                     else
                     {
-                        if (!(chatInputBox.Text != "")) return;
-                        text4 = chatInputBox.Text;
+                        Player.GlobalMessage(Server.ConsoleRealName + chatInputBox.Text);
+                        Player.IRCSay(Server.ConsoleRealNameIRC + chatInputBox.Text);
+                        WriteLine("<CONSOLE> " + chatInputBox.Text);
+                        chatInputBox.Clear();
                     }
-
-                    try
-                    {
-                        var command = Command.all.Find(text4);
-                        if (command != null)
-                        {
-                            if (!command.ConsoleAccess)
-                            {
-                                Server.s.CommandUsed(string.Format("You can't use {0} command from console.", text4));
-                                return;
-                            }
-
-                            command.Use(null, text3);
-                            Server.s.CommandUsed("CONSOLE: USED /" + text4 + " " + text3);
-                        }
-
-                        if (command == null)
-                            Server.s.CommandUsed("CONSOLE: Command  '/" + text4 + "'  does not exist.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Server.ErrorLog(ex);
-                        Server.s.CommandUsed("CONSOLE: Failed command.");
-                    }
-
-                    chatInputBox.Clear();
                 }
+                return;
+            }
+            string text3 = "";
+            string text4 = "";
+            if (chatInputBox.Text == null || chatInputBox.Text.Trim() == "")
+            {
+                Server.s.CommandUsed("CONSOLE: Whitespace commands are not allowed.");
+                chatInputBox.Clear();
+                return;
+            }
+            if (chatInputBox.Text[0] == '/' && chatInputBox.Text.Length > 1)
+            {
+                chatInputBox.Text = chatInputBox.Text.Substring(1);
+            }
+            if (chatInputBox.Text.IndexOf(' ') != -1)
+            {
+                text3 = chatInputBox.Text.Split(' ')[0];
+                text4 = chatInputBox.Text.Substring(chatInputBox.Text.IndexOf(' ') + 1);
+            }
+            else
+            {
+                if (!(chatInputBox.Text != ""))
+                {
+                    return;
+                }
+                text3 = chatInputBox.Text;
+            }
+            try
+            {
+                Command command = Command.all.Find(text3);
+                if (command != null)
+                {
+                    if (!command.ConsoleAccess)
+                    {
+                        Server.s.CommandUsed(string.Format("You can't use {0} command from console.", text3));
+                        return;
+                    }
+                    command.Use(null, text4);
+                    Server.s.CommandUsed("CONSOLE: USED /" + text3 + " " + text4);
+                }
+                if (command == null)
+                {
+                    Server.s.CommandUsed("CONSOLE: Command  '/" + text3 + "'  does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Server.ErrorLog(ex);
+                Server.s.CommandUsed("CONSOLE: Failed command.");
+            }
+            chatInputBox.Clear();
+        }
+
+        void playersList_SelectedIndexChanged(object sender, EventArgs e) {}
+
+        void playersList_DataSourceChanged()
+        {
+            if (!Player.players.Contains((Player)playersGrid.SelectedObject))
+            {
+                playersGrid.SelectedObject = null;
             }
         }
 
-        // Token: 0x0600190B RID: 6411 RVA: 0x000AC5E4 File Offset: 0x000AA7E4
-        private void playersList_SelectedIndexChanged(object sender, EventArgs e)
+        void mapsList_DataSourceChanged()
         {
+            if (!Server.levels.Contains((Level)allMapsGrid.SelectedObject))
+            {
+                allMapsGrid.SelectedObject = null;
+            }
         }
 
-        // Token: 0x0600190C RID: 6412 RVA: 0x000AC5F4 File Offset: 0x000AA7F4
-        private void playersList_DataSourceChanged()
-        {
-            if (!Player.players.Contains((Player) playersGrid.SelectedObject)) playersGrid.SelectedObject = null;
-        }
-
-        // Token: 0x0600190D RID: 6413 RVA: 0x000AC620 File Offset: 0x000AA820
-        private void mapsList_DataSourceChanged()
-        {
-            if (!Server.levels.Contains((Level) allMapsGrid.SelectedObject)) allMapsGrid.SelectedObject = null;
-        }
-
-        // Token: 0x0600190E RID: 6414 RVA: 0x000AC64C File Offset: 0x000AA84C
-        private void mapsList_SelectedIndexChanged(object sender, EventArgs e)
+        void mapsList_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
                 if (mapsList.SelectedIndex != -1)
+                {
                     allMapsGrid.SelectedObject = Level.Find(mapsList.Items[mapsList.SelectedIndex].ToString());
+                }
             }
             catch (Exception ex)
             {
@@ -1527,203 +1893,188 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x0600190F RID: 6415 RVA: 0x000AC6B4 File Offset: 0x000AA8B4
-        private void chatTab_Click_1(object sender, EventArgs e)
-        {
-        }
+        void chatTab_Click_1(object sender, EventArgs e) {}
 
-        // Token: 0x06001910 RID: 6416 RVA: 0x000AC6B8 File Offset: 0x000AA8B8
-        private void gBCommands_Enter(object sender, EventArgs e)
-        {
-        }
+        void gBCommands_Enter(object sender, EventArgs e) {}
 
-        // Token: 0x06001911 RID: 6417 RVA: 0x000AC6BC File Offset: 0x000AA8BC
-        private void txtLog_TextChanged(object sender, EventArgs e)
-        {
-        }
+        void txtLog_TextChanged(object sender, EventArgs e) {}
 
-        // Token: 0x06001912 RID: 6418 RVA: 0x000AC6C0 File Offset: 0x000AA8C0
-        private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-        }
+        void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {}
 
-        // Token: 0x06001913 RID: 6419 RVA: 0x000AC6C4 File Offset: 0x000AA8C4
-        private void toolStripContainer2_ContentPanel_Load(object sender, EventArgs e)
-        {
-        }
+        void toolStripContainer2_ContentPanel_Load(object sender, EventArgs e) {}
 
-        // Token: 0x06001914 RID: 6420 RVA: 0x000AC6C8 File Offset: 0x000AA8C8
-        private void playersGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
+        void playersGridView_CellContentClick(object sender, DataGridViewCellEventArgs e) {}
 
-        // Token: 0x06001915 RID: 6421 RVA: 0x000AC6CC File Offset: 0x000AA8CC
-        private void playersListView_SelectedIndexChanged(object sender, EventArgs e)
+        void playersListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (playersListView.SelectedIndices.Count > 0 && selectedPlayerName !=
-                playersListView.Items[playersListView.SelectedIndices[0]].SubItems[0].Text)
+            if (playersListView.SelectedIndices.Count > 0 && selectedPlayerName != playersListView.Items[playersListView.SelectedIndices[0]].SubItems[0].Text)
             {
                 selectedPlayerName = playersListView.Items[playersListView.SelectedIndices[0]].SubItems[0].Text;
                 selectedPlayer = Player.Find(selectedPlayerName);
                 playersGrid.SelectedObject = selectedPlayer;
             }
-
             SelectionChangedCommandsUpdate();
         }
 
-        // Token: 0x06001916 RID: 6422 RVA: 0x000AC78C File Offset: 0x000AA98C
-        private void mapsGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
+        void mapsGrid_CellContentClick(object sender, DataGridViewCellEventArgs e) {}
 
-        // Token: 0x06001917 RID: 6423 RVA: 0x000AC790 File Offset: 0x000AA990
-        private void button3_Click(object sender, EventArgs e)
+        void button3_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            if (kickCheck.Checked)
+            if (selectedPlayer != null)
             {
-                Command.all.Find("kick").Use(null, selectedPlayer.name + " " + kickText.Text);
-                return;
+                if (kickCheck.Checked)
+                {
+                    Command.all.Find("kick").Use(null, selectedPlayer.name + " " + kickText.Text);
+                }
+                else
+                {
+                    Command.all.Find("kick").Use(null, selectedPlayer.name + " &cKicked.");
+                }
             }
-
-            Command.all.Find("kick").Use(null, selectedPlayer.name + " &cKicked.");
         }
 
-        // Token: 0x06001918 RID: 6424 RVA: 0x000AC814 File Offset: 0x000AAA14
-        private void button2_Click(object sender, EventArgs e)
+        void button2_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            if (!ConfirmationQuestionPopup("              Ban " + selectedPlayer.name)) return;
-            if (banCheck.Checked)
+            if (selectedPlayer != null && ConfirmationQuestionPopup("              Ban " + selectedPlayer.name))
             {
-                Command.all.Find("ban").Use(null, selectedPlayer.name + " " + banText.Text);
-                return;
+                if (banCheck.Checked)
+                {
+                    Command.all.Find("ban").Use(null, selectedPlayer.name + " " + banText.Text);
+                }
+                else
+                {
+                    Command.all.Find("ban").Use(null, selectedPlayer.name + " &cYou are banned!");
+                }
             }
-
-            Command.all.Find("ban").Use(null, selectedPlayer.name + " &cYou are banned!");
         }
 
-        // Token: 0x06001919 RID: 6425 RVA: 0x000AC8B8 File Offset: 0x000AAAB8
-        private void button4_Click(object sender, EventArgs e)
+        void button4_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            if (!ConfirmationQuestionPopup("            Xban " + selectedPlayer.name)) return;
-            if (banCheck.Checked)
+            if (selectedPlayer != null && ConfirmationQuestionPopup("            Xban " + selectedPlayer.name))
             {
-                Command.all.Find("xban").Use(null, selectedPlayer.name + " " + xbanText.Text);
-                return;
+                if (banCheck.Checked)
+                {
+                    Command.all.Find("xban").Use(null, selectedPlayer.name + " " + xbanText.Text);
+                }
+                else
+                {
+                    Command.all.Find("xban").Use(null, selectedPlayer.name + " &cYou are banned!");
+                }
             }
-
-            Command.all.Find("xban").Use(null, selectedPlayer.name + " &cYou are banned!");
         }
 
-        // Token: 0x0600191A RID: 6426 RVA: 0x000AC95C File Offset: 0x000AAB5C
-        private void button15_Click(object sender, EventArgs e)
+        void button15_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            if (!ConfirmationQuestionPopup("    Undo all " + selectedPlayer.name + " actions")) return;
-            Command.all.Find("undo").Use(null, selectedPlayer.name + " all");
+            if (selectedPlayer != null && ConfirmationQuestionPopup("    Undo all " + selectedPlayer.name + " actions"))
+            {
+                Command.all.Find("undo").Use(null, selectedPlayer.name + " all");
+            }
         }
 
-        // Token: 0x0600191B RID: 6427 RVA: 0x000AC9C0 File Offset: 0x000AABC0
-        private void kickCheck_CheckedChanged(object sender, EventArgs e)
+        void kickCheck_CheckedChanged(object sender, EventArgs e)
         {
             if (kickCheck.Checked)
             {
                 kickText.ReadOnly = false;
-                return;
             }
-
-            kickText.ReadOnly = true;
+            else
+            {
+                kickText.ReadOnly = true;
+            }
         }
 
-        // Token: 0x0600191C RID: 6428 RVA: 0x000AC9E8 File Offset: 0x000AABE8
-        private void banCheck_CheckedChanged(object sender, EventArgs e)
+        void banCheck_CheckedChanged(object sender, EventArgs e)
         {
             if (banCheck.Checked)
             {
                 banText.ReadOnly = false;
-                return;
             }
-
-            banText.ReadOnly = true;
+            else
+            {
+                banText.ReadOnly = true;
+            }
         }
 
-        // Token: 0x0600191D RID: 6429 RVA: 0x000ACA10 File Offset: 0x000AAC10
-        private void xbanCheck_CheckedChanged(object sender, EventArgs e)
+        void xbanCheck_CheckedChanged(object sender, EventArgs e)
         {
             if (xbanCheck.Checked)
             {
                 xbanText.ReadOnly = false;
-                return;
             }
-
-            xbanText.ReadOnly = true;
+            else
+            {
+                xbanText.ReadOnly = true;
+            }
         }
 
-        // Token: 0x0600191E RID: 6430 RVA: 0x000ACA38 File Offset: 0x000AAC38
-        private void kickText_TextChanged(object sender, EventArgs e)
+        void kickText_TextChanged(object sender, EventArgs e) {}
+
+        void button8_Click(object sender, EventArgs e)
         {
+            if (selectedPlayer != null)
+            {
+                Command.all.Find("kill").Use(null, selectedPlayer.name);
+            }
         }
 
-        // Token: 0x0600191F RID: 6431 RVA: 0x000ACA3C File Offset: 0x000AAC3C
-        private void button8_Click(object sender, EventArgs e)
+        void button5_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            Command.all.Find("kill").Use(null, selectedPlayer.name);
+            if (selectedPlayer != null)
+            {
+                Command.all.Find("mute").Use(null, selectedPlayer.name);
+            }
         }
 
-        // Token: 0x06001920 RID: 6432 RVA: 0x000ACA68 File Offset: 0x000AAC68
-        private void button5_Click(object sender, EventArgs e)
+        void comboBox2_SelectedIndexChanged(object sender, EventArgs e) {}
+
+        void button6_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            Command.all.Find("mute").Use(null, selectedPlayer.name);
+            if (selectedPlayer != null)
+            {
+                Command.all.Find("settitle").Use(null, selectedPlayer.name + " " + titleText.Text);
+            }
         }
 
-        // Token: 0x06001921 RID: 6433 RVA: 0x000ACA94 File Offset: 0x000AAC94
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        void button7_Click(object sender, EventArgs e)
         {
+            if (selectedPlayer != null)
+            {
+                Command.all.Find("setcolor").Use(null, selectedPlayer.name + " " + playerColorCombo.Items[playerColorCombo.SelectedIndex]);
+            }
         }
 
-        // Token: 0x06001922 RID: 6434 RVA: 0x000ACA98 File Offset: 0x000AAC98
-        private void button6_Click(object sender, EventArgs e)
+        void button14_Click(object sender, EventArgs e)
         {
-            if (selectedPlayer == null) return;
-            Command.all.Find("settitle").Use(null, selectedPlayer.name + " " + titleText.Text);
+            if (selectedPlayer != null)
+            {
+                Command.all.Find("move").Use(null, selectedPlayer.name + " " + targetMapCombo.Items[targetMapCombo.SelectedIndex]);
+            }
         }
 
-        // Token: 0x06001923 RID: 6435 RVA: 0x000ACAD8 File Offset: 0x000AACD8
-        private void button7_Click(object sender, EventArgs e)
-        {
-            if (selectedPlayer == null) return;
-            Command.all.Find("setcolor").Use(null,
-                selectedPlayer.name + " " + playerColorCombo.Items[playerColorCombo.SelectedIndex]);
-        }
-
-        // Token: 0x06001924 RID: 6436 RVA: 0x000ACB38 File Offset: 0x000AAD38
-        private void button14_Click(object sender, EventArgs e)
-        {
-            if (selectedPlayer == null) return;
-            Command.all.Find("move").Use(null,
-                selectedPlayer.name + " " + targetMapCombo.Items[targetMapCombo.SelectedIndex]);
-        }
-
-        // Token: 0x06001925 RID: 6437 RVA: 0x000ACB94 File Offset: 0x000AAD94
-        private void SelectionChangedCommandsUpdate()
+        void SelectionChangedCommandsUpdate()
         {
             if (selectedPlayer != null)
             {
                 btnMute.Text = selectedPlayer.muted ? "Unmute" : "Mute";
                 var levelNames = new List<string>();
                 Server.levels.ForEach(delegate(Level l) { levelNames.Add(l.name); });
-                var text = "";
-                if (targetMapCombo.SelectedItem != null) text = targetMapCombo.SelectedItem.ToString();
+                string text = "";
+                if (targetMapCombo.SelectedItem != null)
+                {
+                    text = targetMapCombo.SelectedItem.ToString();
+                }
                 targetMapCombo.Items.Clear();
                 targetMapCombo.Items.AddRange(levelNames.ToArray());
-                var num = targetMapCombo.FindString(text);
-                if (num != -1) targetMapCombo.SelectedIndex = num;
+                int num = targetMapCombo.FindString(text);
+                if (num != -1)
+                {
+                    targetMapCombo.SelectedIndex = num;
+                }
                 playerColorCombo.SelectedIndex = playerColorCombo.FindString(c.Name(selectedPlayer.color));
-                if (!titleText.Focused) titleText.Text = selectedPlayer.prefix.Trim().Trim('[', ']');
+                if (!titleText.Focused)
+                {
+                    titleText.Text = selectedPlayer.prefix.Trim().Trim('[', ']');
+                }
             }
             else
             {
@@ -1733,42 +2084,41 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x06001926 RID: 6438 RVA: 0x000ACCF8 File Offset: 0x000AAEF8
-        private void consoleName_TextChanged(object sender, EventArgs e)
-        {
-        }
+        void consoleName_TextChanged(object sender, EventArgs e) {}
 
-        // Token: 0x06001927 RID: 6439 RVA: 0x000ACCFC File Offset: 0x000AAEFC
-        private void button9_Click(object sender, EventArgs e)
+        void button9_Click(object sender, EventArgs e)
         {
             if (createMap == null || createMap.IsDisposed)
             {
                 createMap = new CreateMap();
                 createMap.Show();
-                return;
             }
-
-            createMap.BringToFront();
-            createMap.Show();
+            else
+            {
+                createMap.BringToFront();
+                createMap.Show();
+            }
         }
 
-        // Token: 0x06001928 RID: 6440 RVA: 0x000ACD4C File Offset: 0x000AAF4C
-        private void button13_Click(object sender, EventArgs e)
+        void button13_Click(object sender, EventArgs e)
         {
             if (mapsList.SelectedIndex != -1)
+            {
                 Command.all.Find("unload").Use(null, mapsList.Items[mapsList.SelectedIndex].ToString());
+            }
         }
 
-        // Token: 0x06001929 RID: 6441 RVA: 0x000ACD9C File Offset: 0x000AAF9C
-        private void button12_Click(object sender, EventArgs e)
+        void button12_Click(object sender, EventArgs e)
         {
             try
             {
                 if (mapsList.SelectedIndex != -1)
                 {
-                    var text = mapsList.Items[mapsList.SelectedIndex].ToString();
+                    string text = mapsList.Items[mapsList.SelectedIndex].ToString();
                     if (ConfirmationQuestionPopup("             Delete " + text))
+                    {
                         Command.all.Find("deletelvl").Use(null, text);
+                    }
                 }
             }
             catch (Exception ex)
@@ -1777,46 +2127,58 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x0600192A RID: 6442 RVA: 0x000ACE1C File Offset: 0x000AB01C
         public void RefreshUnloadedMapsList()
         {
-            if (unloadedMapsList == null) return;
-            if (unloadedMapsList.InvokeRequired)
+            if (unloadedMapsList != null)
             {
-                RefreshMapList method = DoRefreshUnloadedMapsList;
-                Invoke(method);
-                return;
+                if (unloadedMapsList.InvokeRequired)
+                {
+                    RefreshMapList refreshMapList = DoRefreshUnloadedMapsList;
+                    Invoke(refreshMapList);
+                }
+                else
+                {
+                    DoRefreshUnloadedMapsList();
+                }
             }
-
-            DoRefreshUnloadedMapsList();
         }
 
-        // Token: 0x0600192B RID: 6443 RVA: 0x000ACE5C File Offset: 0x000AB05C
         public void DoRefreshUnloadedMapsList()
         {
             var loadedLevels = new List<string>();
             var list = new List<string>();
-            var directoryInfo = new DirectoryInfo("levels/");
-            var files = directoryInfo.GetFiles("*.lvl");
-            if (Server.levels == null) return;
+            DirectoryInfo directoryInfo = new DirectoryInfo("levels/");
+            FileInfo[] files = directoryInfo.GetFiles("*.lvl");
+            if (Server.levels == null)
+            {
+                return;
+            }
             Server.levels.ForEach(delegate(Level l) { loadedLevels.Add(l.name.ToLower()); });
             if (files != null)
-                foreach (var fileInfo in files)
+            {
+                FileInfo[] array = files;
+                foreach (FileInfo fileInfo in array)
+                {
                     if (!loadedLevels.Contains(fileInfo.Name.Replace(".lvl", "").ToLower()))
+                    {
                         list.Add(fileInfo.Name.Remove(fileInfo.Name.Length - 4, 4));
+                    }
+                }
+            }
             unloadedMapsList.Items.Clear();
-            if (list.Count > 0) unloadedMapsList.Items.AddRange(list.ToArray());
+            if (list.Count > 0)
+            {
+                unloadedMapsList.Items.AddRange(list.ToArray());
+            }
         }
 
-        // Token: 0x0600192C RID: 6444 RVA: 0x000ACF50 File Offset: 0x000AB150
-        private void button10_Click(object sender, EventArgs e)
+        void button10_Click(object sender, EventArgs e)
         {
             try
             {
                 if (unloadedMapsList.SelectedIndex != -1)
                 {
-                    Command.all.Find("load")
-                        .Use(null, unloadedMapsList.Items[unloadedMapsList.SelectedIndex].ToString());
+                    Command.all.Find("load").Use(null, unloadedMapsList.Items[unloadedMapsList.SelectedIndex].ToString());
                     RefreshUnloadedMapsList();
                 }
             }
@@ -1826,56 +2188,45 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x0600192D RID: 6445 RVA: 0x000ACFC4 File Offset: 0x000AB1C4
-        private void Color_Click(object sender, EventArgs e)
+        void Color_Click(object sender, EventArgs e)
         {
-            var label = (Label) sender;
-            if (chatInputBox.Text.Length > 0 &&
-                "%&".Contains(chatInputBox.Text[chatInputBox.Text.Length - 1].ToString()))
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0007: Expected O, but got Unknown
+            Label val = (Label)sender;
+            if (chatInputBox.Text.Length > 0 && "%&".Contains(chatInputBox.Text[chatInputBox.Text.Length - 1].ToString()))
+            {
                 chatInputBox.Text = chatInputBox.Text.Remove(chatInputBox.Text.Length - 1);
-            if (chatInputBox.Text.Length > 1 &&
-                (chatInputBox.Text[chatInputBox.Text.Length - 2] == '%' ||
-                 chatInputBox.Text[chatInputBox.Text.Length - 2] == '&') &&
+            }
+            if (chatInputBox.Text.Length > 1 && (chatInputBox.Text[chatInputBox.Text.Length - 2] == '%' || chatInputBox.Text[chatInputBox.Text.Length - 2] == '&') &&
                 "abcdef1234567890".Contains(chatInputBox.Text[chatInputBox.Text.Length - 1].ToString()))
+            {
                 chatInputBox.Text = chatInputBox.Text.Remove(chatInputBox.Text.Length - 2);
-            chatInputBox.AppendText(label.Tag.ToString());
+            }
+            chatInputBox.AppendText(val.Tag.ToString());
         }
 
-        // Token: 0x0600192E RID: 6446 RVA: 0x000AD12C File Offset: 0x000AB32C
-        private void label24_Click(object sender, EventArgs e)
-        {
-        }
+        void label24_Click(object sender, EventArgs e) {}
 
-        // Token: 0x0600192F RID: 6447 RVA: 0x000AD130 File Offset: 0x000AB330
-        private void txtErrors_TextChanged(object sender, EventArgs e)
-        {
-        }
+        void txtErrors_TextChanged(object sender, EventArgs e) {}
 
-        // Token: 0x06001930 RID: 6448 RVA: 0x000AD134 File Offset: 0x000AB334
-        private void chatOnOff_btn_Click(object sender, EventArgs e)
+        void chatOnOff_btn_Click(object sender, EventArgs e)
         {
             if (GeneralSettings.All.UseChat)
             {
                 GeneralSettings.All.UseChat = false;
                 chatOnOff_btn.Text = "Deactivated";
-                return;
             }
-
-            GeneralSettings.All.UseChat = true;
-            chatOnOff_btn.Text = "Activated";
+            else
+            {
+                GeneralSettings.All.UseChat = true;
+                chatOnOff_btn.Text = "Activated";
+            }
         }
 
-        // Token: 0x06001931 RID: 6449 RVA: 0x000AD184 File Offset: 0x000AB384
-        private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-        }
+        void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e) {}
 
-        // Token: 0x06001932 RID: 6450 RVA: 0x000AD188 File Offset: 0x000AB388
-        private void label2_Click(object sender, EventArgs e)
-        {
-        }
+        void label2_Click(object sender, EventArgs e) {}
 
-        // Token: 0x06001933 RID: 6451 RVA: 0x000AD18C File Offset: 0x000AB38C
         public void UpdatePlayerListView(List<string[]> listElements)
         {
             if (listViewPlayers.InvokeRequired)
@@ -1883,11 +2234,12 @@ namespace MCDzienny.Gui
                 listViewPlayers.Invoke(UpdatePlayerList, listElements);
                 return;
             }
-
             listViewPlayers.BeginUpdate();
             listViewPlayers.RemoveAllItems();
             listElements.ForEach(delegate(string[] elements)
             {
+                //IL_005e: Unknown result type (might be due to invalid IL or missing references)
+                //IL_0064: Expected O, but got Unknown
                 if (elements.Length > 0)
                 {
                     if (!listViewPlayers.GroupExists(elements[0]))
@@ -1895,39 +2247,42 @@ namespace MCDzienny.Gui
                         listViewPlayers.ClearGroups();
                         try
                         {
-                            for (var i = Group.groupList.Count - 1; i >= 0; i--)
-                                listViewPlayers.AddGroup(Group.groupList[i].trueName);
+                            for (int num = Group.groupList.Count - 1; num >= 0; num--)
+                            {
+                                listViewPlayers.AddGroup(Group.groupList[num].trueName);
+                            }
                         }
-                        catch
+                        catch {}
+                    }
+                    ListViewItem val = new ListViewItem(elements[1]);
+                    val.Group = listViewPlayers.GetGroup(elements[0]);
+                    if (elements.Length > 2)
+                    {
+                        for (int i = 2; i < elements.Length; i++)
                         {
+                            val.SubItems.Add(elements[i]);
                         }
                     }
-
-                    var listViewItem = new ListViewItem(elements[1]);
-                    listViewItem.Group = listViewPlayers.GetGroup(elements[0]);
-                    if (elements.Length > 2)
-                        for (var j = 2; j < elements.Length; j++)
-                            listViewItem.SubItems.Add(elements[j]);
-                    listViewPlayers.Items.Add(listViewItem);
+                    listViewPlayers.Items.Add(val);
                 }
             });
             listViewPlayers.EndUpdate();
             listViewPlayers.Refresh();
         }
 
-        // Token: 0x06001934 RID: 6452 RVA: 0x000AD20C File Offset: 0x000AB40C
-        private void UpdateMapsListView(List<string[]> listElements)
+        void UpdateMapsListView(List<string[]> listElements)
         {
             if (listViewMaps.InvokeRequired)
             {
                 listViewMaps.Invoke(UpdateMapsList, listElements);
                 return;
             }
-
             listViewMaps.BeginUpdate();
             listViewMaps.RemoveAllItems();
             listElements.ForEach(delegate(string[] elements)
             {
+                //IL_0077: Unknown result type (might be due to invalid IL or missing references)
+                //IL_007d: Expected O, but got Unknown
                 if (elements.Length > 0)
                 {
                     if (!listViewMaps.GroupExists(elements[0]))
@@ -1939,28 +2294,30 @@ namespace MCDzienny.Gui
                         listViewMaps.AddGroup("Home");
                         listViewMaps.AddGroup("MyMap");
                     }
-
-                    var listViewItem = new ListViewItem(elements[1]);
-                    listViewItem.Group = listViewMaps.GetGroup(elements[0]);
+                    ListViewItem val = new ListViewItem(elements[1]);
+                    val.Group = listViewMaps.GetGroup(elements[0]);
                     if (elements.Length > 2)
-                        for (var i = 2; i < elements.Length; i++)
-                            listViewItem.SubItems.Add(elements[i]);
-                    listViewMaps.Items.Add(listViewItem);
+                    {
+                        for (int i = 2; i < elements.Length; i++)
+                        {
+                            val.SubItems.Add(elements[i]);
+                        }
+                    }
+                    listViewMaps.Items.Add(val);
                 }
             });
             listViewMaps.EndUpdate();
             listViewMaps.Refresh();
         }
 
-        // Token: 0x06001935 RID: 6453 RVA: 0x000AD28C File Offset: 0x000AB48C
-        private void listViewPlayers_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
+        void listViewPlayers_SelectedIndexChanged(object sender, EventArgs e) {}
 
-        // Token: 0x06001936 RID: 6454 RVA: 0x000AD290 File Offset: 0x000AB490
-        private void SaveGuiSettings()
+        void SaveGuiSettings()
         {
-            if (WindowState == FormWindowState.Normal || WindowState == FormWindowState.Minimized)
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0009: Unknown result type (might be due to invalid IL or missing references)
+            //IL_000f: Invalid comparison between Unknown and I4
+            if (WindowState == 0 || (int)WindowState == 1)
             {
                 GuiSettings.All.WindowWidth = Width;
                 GuiSettings.All.WindowHeight = Height;
@@ -1973,21 +2330,16 @@ namespace MCDzienny.Gui
             {
                 GuiSettings.All.WindowWidth = RestoreBounds.Width;
                 GuiSettings.All.WindowHeight = RestoreBounds.Height;
-                GuiSettings.All.MainSplitter3Distance =
-                    (int) (splitContainer3.SplitterDistance * (double) split3Width / splitContainer3.Width);
-                GuiSettings.All.MainSplitter2Distance = (int) (splitContainer2.SplitterDistance *
-                    (double) split2Height / splitContainer2.Height);
-                GuiSettings.All.MainSplitter4Distance = (int) (splitContainer4.SplitterDistance *
-                    (double) split4Height / splitContainer4.Height);
-                GuiSettings.All.MainSplitter5Distance =
-                    (int) (splitContainer5.SplitterDistance * (double) split5Width / splitContainer5.Width);
+                GuiSettings.All.MainSplitter3Distance = (int)(splitContainer3.SplitterDistance * (double)split3Width / splitContainer3.Width);
+                GuiSettings.All.MainSplitter2Distance = (int)(splitContainer2.SplitterDistance * (double)split2Height / splitContainer2.Height);
+                GuiSettings.All.MainSplitter4Distance = (int)(splitContainer4.SplitterDistance * (double)split4Height / splitContainer4.Height);
+                GuiSettings.All.MainSplitter5Distance = (int)(splitContainer5.SplitterDistance * (double)split5Width / splitContainer5.Width);
             }
-
             GuiSettings.All.Save();
+            RemoteSettings.All.Save();
         }
 
-        // Token: 0x06001937 RID: 6455 RVA: 0x000AD41C File Offset: 0x000AB61C
-        private void LoadGuiSettings()
+        void LoadGuiSettings()
         {
             try
             {
@@ -2004,8 +2356,7 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x06001938 RID: 6456 RVA: 0x000AD4B8 File Offset: 0x000AB6B8
-        private void button5_Click_1(object sender, EventArgs e)
+        void button5_Click_1(object sender, EventArgs e)
         {
             try
             {
@@ -2013,12 +2364,13 @@ namespace MCDzienny.Gui
                 {
                     toolsForm = new Tools();
                     toolsForm.ShowAt(FormCenter);
+                    return;
                 }
-                else
+                if (!toolsForm.Visible)
                 {
-                    if (!toolsForm.Visible) toolsForm.ShowAt(FormCenter);
-                    toolsForm.BringToFront();
+                    toolsForm.ShowAt(FormCenter);
                 }
+                toolsForm.BringToFront();
             }
             catch (Exception ex)
             {
@@ -2026,14 +2378,12 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x06001939 RID: 6457 RVA: 0x000AD53C File Offset: 0x000AB73C
-        private void mCount_Click(object sender, EventArgs e)
-        {
-        }
+        void mCount_Click(object sender, EventArgs e) {}
 
-        // Token: 0x0600193A RID: 6458 RVA: 0x000AD540 File Offset: 0x000AB740
-        private void button9_Click_1(object sender, EventArgs e)
+        void button9_Click_1(object sender, EventArgs e)
         {
+            //IL_000b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001c: Unknown result type (might be due to invalid IL or missing references)
             try
             {
                 MessageBox.Show(chatMainBox.Rtf);
@@ -2045,32 +2395,33 @@ namespace MCDzienny.Gui
             }
         }
 
-        // Token: 0x0600193B RID: 6459 RVA: 0x000AD58C File Offset: 0x000AB78C
-        private void chatBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        void chatBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            for (;;)
-                if (Trader.messages.Count <= 0)
-                {
-                    Thread.Sleep(1);
-                }
-                else
+            while (true)
+            {
+                if (Trader.messages.Count > 0)
                 {
                     chatMainBox.SuspendLayout();
-                    var text = (string) Trader.messages.Dequeue();
+                    string text = (string)Trader.messages.Dequeue();
                     text = DateTime.Now.ToString("(HH:mm:ss) ") + text;
                     var list = new List<Coloring>();
                     Player.FilterMessageConsole(ref text);
-                    text = text.Replace('\u0003', '♥').Replace('\u0004', '♦').Replace('\a', '●').Replace('\b', '○')
-                        .Replace('\v', '♂').Replace('\f', '♀').Replace('\u0010', '►').Replace('\u0011', '◄')
-                        .Replace('\u0013', '‼').Replace('\u000f', '☼').Replace('\u0016', '▄');
+                    text = text.Replace('\u0003', '♥').Replace('\u0004', '♦').Replace('\a', '●')
+                        .Replace('\b', '○')
+                        .Replace('\v', '♂')
+                        .Replace('\f', '♀')
+                        .Replace('\u0010', '►')
+                        .Replace('\u0011', '◄')
+                        .Replace('\u0013', '‼')
+                        .Replace('\u000f', '☼')
+                        .Replace('\u0016', '▄');
                     text = "&0" + text + "\r\n";
                     try
                     {
-                        for (var num = text.IndexOf('&'); num != -1; num = text.IndexOf('&'))
+                        for (int num = text.IndexOf('&'); num != -1; num = text.IndexOf('&'))
                         {
-                            var color = Color.White;
-                            var c = text[num + 1];
-                            switch (c)
+                            Color color = Color.White;
+                            switch (text[num + 1])
                             {
                                 case '0':
                                     color = Color.Black;
@@ -2102,32 +2453,25 @@ namespace MCDzienny.Gui
                                 case '9':
                                     color = Color.FromArgb(115, 115, 255);
                                     break;
-                                default:
-                                    switch (c)
-                                    {
-                                        case 'a':
-                                            color = Color.FromArgb(85, 255, 85);
-                                            break;
-                                        case 'b':
-                                            color = Color.FromArgb(85, 255, 255);
-                                            break;
-                                        case 'c':
-                                            color = Color.FromArgb(250, 70, 70);
-                                            break;
-                                        case 'd':
-                                            color = Color.FromArgb(255, 95, 255);
-                                            break;
-                                        case 'e':
-                                            color = Color.FromArgb(255, 255, 85);
-                                            break;
-                                        case 'f':
-                                            color = Color.White;
-                                            break;
-                                    }
-
+                                case 'a':
+                                    color = Color.FromArgb(85, 255, 85);
+                                    break;
+                                case 'b':
+                                    color = Color.FromArgb(85, 255, 255);
+                                    break;
+                                case 'c':
+                                    color = Color.FromArgb(250, 70, 70);
+                                    break;
+                                case 'd':
+                                    color = Color.FromArgb(255, 95, 255);
+                                    break;
+                                case 'e':
+                                    color = Color.FromArgb(255, 255, 85);
+                                    break;
+                                case 'f':
+                                    color = Color.White;
                                     break;
                             }
-
                             list.Add(new Coloring
                             {
                                 index = num + 1,
@@ -2135,37 +2479,34 @@ namespace MCDzienny.Gui
                             });
                             text = text.Remove(num, 2);
                         }
-
                         chatMainBox.AppendText(text);
                         if (list.Count > 1)
                         {
                             int i;
                             for (i = 0; i < list.Count - 1; i++)
                             {
-                                chatMainBox.Select(chatMainBox.Text.Length - (text.Length - list[i].index),
-                                    chatMainBox.Text.Length - (list[i + 1].index - list[i].index));
+                                chatMainBox.Select(chatMainBox.Text.Length - (text.Length - list[i].index), chatMainBox.Text.Length - (list[i + 1].index - list[i].index));
                                 chatMainBox.SelectionColor = list[i].color;
                             }
-
-                            chatMainBox.Select(chatMainBox.Text.Length - (text.Length - list[i].index),
-                                chatMainBox.Text.Length - (text.Length - list[i].index));
+                            chatMainBox.Select(chatMainBox.Text.Length - (text.Length - list[i].index), chatMainBox.Text.Length - (text.Length - list[i].index));
                             chatMainBox.SelectionColor = list[i].color;
                         }
                         else if (list.Count == 1)
                         {
-                            chatMainBox.Select(chatMainBox.Text.Length - (text.Length - list[0].index),
-                                chatMainBox.Text.Length - (text.Length - list[0].index));
+                            chatMainBox.Select(chatMainBox.Text.Length - (text.Length - list[0].index), chatMainBox.Text.Length - (text.Length - list[0].index));
                             chatMainBox.SelectionColor = list[0].color;
                         }
-
                         chatMainBox.SelectionStart = chatMainBox.Text.Length;
                         chatMainBox.ScrollToCaret();
                         if (chatMainBox.Text.Length > 10000)
                         {
-                            var num2 = chatMainBox.Text.IndexOf('\n', chatMainBox.Text.Length - 8000) + 1;
-                            if (num2 == -1) num2 = chatMainBox.Text.Length - 8000;
+                            int num2 = chatMainBox.Text.IndexOf('\n', chatMainBox.Text.Length - 8000) + 1;
+                            if (num2 == -1)
+                            {
+                                num2 = chatMainBox.Text.Length - 8000;
+                            }
                             chatMainBox.Select(num2, chatMainBox.Text.Length - 1 - num2);
-                            var selectedRtf = chatMainBox.SelectedRtf;
+                            string selectedRtf = chatMainBox.SelectedRtf;
                             chatMainBox.Rtf = selectedRtf;
                             chatMainBox.AppendText("\r\n");
                             chatMainBox.SelectionStart = chatMainBox.Text.Length;
@@ -2176,65 +2517,166 @@ namespace MCDzienny.Gui
                     {
                         Server.ErrorLog(ex);
                     }
-
                     chatMainBox.ResumeLayout();
                     Thread.Sleep(1);
                 }
+                else
+                {
+                    Thread.Sleep(1);
+                }
+            }
         }
 
-        // Token: 0x0600193C RID: 6460 RVA: 0x000ADB0C File Offset: 0x000ABD0C
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             ActiveControl = null;
         }
 
-        // Token: 0x06001947 RID: 6471 RVA: 0x000ADDB8 File Offset: 0x000ABFB8
+        void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                Listener.Start(int.Parse(textBox1.Text));
+            }
+            else
+            {
+                Listener.Stop();
+            }
+            RemoteSettings.All.AllowRemoteAccess = checkBox1.Checked;
+        }
+
+        public static void UpdateAccountsList(string[] accounts)
+        {
+            if (thisWindow.accountsList.InvokeRequired)
+            {
+                thisWindow.accountsList.Invoke(new Action<string[]>(UpdateAccountsList), accounts);
+                return;
+            }
+            thisWindow.accountsList.SuspendLayout();
+            thisWindow.accountsList.RemoveAllItems();
+            foreach (string text in accounts)
+            {
+                thisWindow.accountsList.Items.Add(text);
+            }
+            thisWindow.accountsList.ResumeLayout();
+        }
+
+        void newAccountBtn_Click(object sender, EventArgs e)
+        {
+            NewAccount newAccount = new NewAccount(this);
+            newAccount.Show();
+            ActiveControl = null;
+        }
+
+        void changeAccountBtn_Click(object sender, EventArgs e)
+        {
+            if (accountsList.SelectedIndices.Count == 1)
+            {
+                new ChangeAccount(this, accountsList.SelectedItems[0].Text).Show();
+            }
+            ActiveControl = null;
+        }
+
+        void removeAccountBtn_Click(object sender, EventArgs e)
+        {
+            if (accountsList.SelectedIndices.Count == 1)
+            {
+                new RemoveAccount(this, accountsList.SelectedItems[0].Text).Show();
+            }
+            ActiveControl = null;
+        }
+
+        void textBox1_Validating(object sender, CancelEventArgs e)
+        {
+            int result;
+            if (!int.TryParse(textBox1.Text, out result))
+            {
+                textBox1.Text = "33434";
+                e.Cancel = true;
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    //IL_000a: Unknown result type (might be due to invalid IL or missing references)
+                    MessageBox.Show("You have to enter an integer.", "Validation Error");
+                });
+            }
+            if (result == Server.port)
+            {
+                textBox1.Text = "33434";
+                e.Cancel = true;
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    //IL_000a: Unknown result type (might be due to invalid IL or missing references)
+                    MessageBox.Show("This port is already in use.", "Validation Error");
+                });
+            }
+        }
+
+        void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            RemoteSettings.All.ShowInBrowser = checkBox2.Checked;
+        }
+
+        void button18_Click(object sender, EventArgs e) {}
+
+        void button9_Click_2(object sender, EventArgs e)
+        {
+            RemoteSettings.All.Port = int.Parse(textBox1.Text);
+            if (checkBox1.Checked)
+            {
+                Listener.Stop();
+                Listener.Start(RemoteSettings.All.Port);
+            }
+            checkBox1.Checked = true;
+            ActiveControl = null;
+        }
+
+        void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("http://mcdzienny.cba.pl/remote.php");
+        }
+
         public void SetFont(Font f)
         {
             if (chatMainBox.InvokeRequired)
             {
-                chatMainBox.Invoke(new Action(delegate { SetFont(f); }));
+                chatMainBox.Invoke((Action)delegate { SetFont(f); });
                 return;
             }
-
             chatMainBox.SelectAll();
             chatMainBox.SelectionFont = f;
-            var selectedRtf = chatMainBox.SelectedRtf;
+            string selectedRtf = chatMainBox.SelectedRtf;
             chatMainBox.Font = f;
             chatMainBox.Rtf = selectedRtf;
             chatMainBox.AppendText(Environment.NewLine);
         }
 
-        // Token: 0x06001948 RID: 6472 RVA: 0x000ADE5C File Offset: 0x000AC05C
         public Font GetFont()
         {
-            return (Font) chatMainBox.Invoke(new Func<Font>(() => chatMainBox.Font));
+            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001d: Expected O, but got Unknown
+            return (Font)chatMainBox.Invoke((Func<Font>)(() => chatMainBox.Font));
         }
 
-        // Token: 0x06001949 RID: 6473 RVA: 0x000ADE7C File Offset: 0x000AC07C
-        private void pictureBox1_Click(object sender, EventArgs e)
+        void pictureBox1_Click(object sender, EventArgs e)
         {
             if (colorChatSettings == null || colorChatSettings.IsDisposed)
             {
                 colorChatSettings = new ColorChatSettings();
                 colorChatSettings.ShowAt(FormCenter);
-                return;
             }
-
-            colorChatSettings.BringToFront();
+            else
+            {
+                colorChatSettings.BringToFront();
+            }
         }
 
-        // Token: 0x0600194B RID: 6475 RVA: 0x000ADF14 File Offset: 0x000AC114
-        private void splitContainer4_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-        }
+        void splitContainer4_Panel2_Paint(object sender, PaintEventArgs e) {}
 
-        // Token: 0x0600194C RID: 6476 RVA: 0x000ADF18 File Offset: 0x000AC118
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (treeView1.SelectedNode != null)
             {
-                var availablePlugin = Server.Plugins.AvailablePlugins.Find(treeView1.SelectedNode.Text);
+                AvailablePlugin availablePlugin = Server.Plugins.AvailablePlugins.Find(treeView1.SelectedNode.Text);
                 if (availablePlugin != null)
                 {
                     lblPluginName.Text = availablePlugin.Instance.Name;
@@ -2242,16 +2684,18 @@ namespace MCDzienny.Gui
                     lblPluginAuthor.Text = "By: " + availablePlugin.Instance.Author;
                     lblPluginDesc.Text = availablePlugin.Instance.Description;
                     pnlPlugin.Controls.Clear();
-                    availablePlugin.Instance.MainInterface.Dock = DockStyle.Fill;
+                    availablePlugin.Instance.MainInterface.Dock = (DockStyle)5;
                     pnlPlugin.Controls.Add(availablePlugin.Instance.MainInterface);
                 }
             }
         }
 
-        // Token: 0x0600194D RID: 6477 RVA: 0x000AE010 File Offset: 0x000AC210
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == 5 && (int) m.WParam == 1 && Minimize != null) Window_Minimize(this, EventArgs.Empty);
+            if (m.Msg == 5 && (int)m.WParam == 1 && Minimize != null)
+            {
+                Window_Minimize(this, EventArgs.Empty);
+            }
             if (m.Msg == 274 && !(m.WParam == new IntPtr(61472)) && m.WParam == new IntPtr(61488))
             {
                 split2Height = splitContainer2.Height;
@@ -2259,112 +2703,2385 @@ namespace MCDzienny.Gui
                 split5Width = splitContainer5.Width;
                 split3Width = splitContainer3.Width;
             }
-
             base.WndProc(ref m);
         }
 
-        // Token: 0x06001950 RID: 6480 RVA: 0x000B56E8 File Offset: 0x000B38E8
-        private void mapsStrip_Opening(object sender, CancelEventArgs e)
+        protected override void Dispose(bool disposing)
         {
-            if (listViewMaps.SelectedIndices.Count <= 0) e.Cancel = true;
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
-        // Token: 0x06001951 RID: 6481 RVA: 0x000B5704 File Offset: 0x000B3904
-        private void playerStrip_Opening(object sender, CancelEventArgs e)
+        void InitializeComponent()
         {
-            if (listViewPlayers.SelectedIndices.Count <= 0) e.Cancel = true;
+            //IL_000b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0011: Expected O, but got Unknown
+            //IL_0011: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0017: Expected O, but got Unknown
+            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
+            //IL_001d: Expected O, but got Unknown
+            //IL_001d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0023: Expected O, but got Unknown
+            //IL_003b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0045: Expected O, but got Unknown
+            //IL_0046: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0050: Expected O, but got Unknown
+            //IL_0051: Unknown result type (might be due to invalid IL or missing references)
+            //IL_005b: Expected O, but got Unknown
+            //IL_005c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0066: Expected O, but got Unknown
+            //IL_0067: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0071: Expected O, but got Unknown
+            //IL_0072: Unknown result type (might be due to invalid IL or missing references)
+            //IL_007c: Expected O, but got Unknown
+            //IL_007d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0087: Expected O, but got Unknown
+            //IL_0088: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0092: Expected O, but got Unknown
+            //IL_0093: Unknown result type (might be due to invalid IL or missing references)
+            //IL_009d: Expected O, but got Unknown
+            //IL_009e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00a8: Expected O, but got Unknown
+            //IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00b3: Expected O, but got Unknown
+            //IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00be: Expected O, but got Unknown
+            //IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00c9: Expected O, but got Unknown
+            //IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00d4: Expected O, but got Unknown
+            //IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00df: Expected O, but got Unknown
+            //IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00ea: Expected O, but got Unknown
+            //IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00f5: Expected O, but got Unknown
+            //IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0106: Expected O, but got Unknown
+            //IL_0107: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0111: Expected O, but got Unknown
+            //IL_0112: Unknown result type (might be due to invalid IL or missing references)
+            //IL_011c: Expected O, but got Unknown
+            //IL_011d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0127: Expected O, but got Unknown
+            //IL_0128: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0132: Expected O, but got Unknown
+            //IL_0133: Unknown result type (might be due to invalid IL or missing references)
+            //IL_013d: Expected O, but got Unknown
+            //IL_013e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0148: Expected O, but got Unknown
+            //IL_0149: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0153: Expected O, but got Unknown
+            //IL_015f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0169: Expected O, but got Unknown
+            //IL_016a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0174: Expected O, but got Unknown
+            //IL_0175: Unknown result type (might be due to invalid IL or missing references)
+            //IL_017f: Expected O, but got Unknown
+            //IL_0180: Unknown result type (might be due to invalid IL or missing references)
+            //IL_018a: Expected O, but got Unknown
+            //IL_018b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0195: Expected O, but got Unknown
+            //IL_0196: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01a0: Expected O, but got Unknown
+            //IL_01a1: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01ab: Expected O, but got Unknown
+            //IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01bc: Expected O, but got Unknown
+            //IL_01c3: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01cd: Expected O, but got Unknown
+            //IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01d8: Expected O, but got Unknown
+            //IL_01d9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01e3: Expected O, but got Unknown
+            //IL_01e4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01ee: Expected O, but got Unknown
+            //IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+            //IL_01f9: Expected O, but got Unknown
+            //IL_01fa: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0204: Expected O, but got Unknown
+            //IL_0205: Unknown result type (might be due to invalid IL or missing references)
+            //IL_020f: Expected O, but got Unknown
+            //IL_0210: Unknown result type (might be due to invalid IL or missing references)
+            //IL_021a: Expected O, but got Unknown
+            //IL_021b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0225: Expected O, but got Unknown
+            //IL_0226: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0230: Expected O, but got Unknown
+            //IL_0231: Unknown result type (might be due to invalid IL or missing references)
+            //IL_023b: Expected O, but got Unknown
+            //IL_023c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0246: Expected O, but got Unknown
+            //IL_0247: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0251: Expected O, but got Unknown
+            //IL_0252: Unknown result type (might be due to invalid IL or missing references)
+            //IL_025c: Expected O, but got Unknown
+            //IL_025d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0267: Expected O, but got Unknown
+            //IL_0268: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0272: Expected O, but got Unknown
+            //IL_0273: Unknown result type (might be due to invalid IL or missing references)
+            //IL_027d: Expected O, but got Unknown
+            //IL_027e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0288: Expected O, but got Unknown
+            //IL_0289: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0293: Expected O, but got Unknown
+            //IL_0294: Unknown result type (might be due to invalid IL or missing references)
+            //IL_029e: Expected O, but got Unknown
+            //IL_029f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02a9: Expected O, but got Unknown
+            //IL_02aa: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02b4: Expected O, but got Unknown
+            //IL_02b5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02bf: Expected O, but got Unknown
+            //IL_02c0: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02ca: Expected O, but got Unknown
+            //IL_02cb: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02d5: Expected O, but got Unknown
+            //IL_02d6: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02e0: Expected O, but got Unknown
+            //IL_02e1: Unknown result type (might be due to invalid IL or missing references)
+            //IL_02eb: Expected O, but got Unknown
+            //IL_02f7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0301: Expected O, but got Unknown
+            //IL_0302: Unknown result type (might be due to invalid IL or missing references)
+            //IL_030c: Expected O, but got Unknown
+            //IL_030d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0317: Expected O, but got Unknown
+            //IL_0318: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0322: Expected O, but got Unknown
+            //IL_0323: Unknown result type (might be due to invalid IL or missing references)
+            //IL_032d: Expected O, but got Unknown
+            //IL_0339: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0343: Expected O, but got Unknown
+            //IL_0344: Unknown result type (might be due to invalid IL or missing references)
+            //IL_034e: Expected O, but got Unknown
+            //IL_034f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0359: Expected O, but got Unknown
+            //IL_035a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0364: Expected O, but got Unknown
+            //IL_0365: Unknown result type (might be due to invalid IL or missing references)
+            //IL_036f: Expected O, but got Unknown
+            //IL_0370: Unknown result type (might be due to invalid IL or missing references)
+            //IL_037a: Expected O, but got Unknown
+            //IL_037b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0385: Expected O, but got Unknown
+            //IL_0386: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0390: Expected O, but got Unknown
+            //IL_0391: Unknown result type (might be due to invalid IL or missing references)
+            //IL_039b: Expected O, but got Unknown
+            //IL_039c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03a6: Expected O, but got Unknown
+            //IL_03a7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03b1: Expected O, but got Unknown
+            //IL_03b2: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03bc: Expected O, but got Unknown
+            //IL_03bd: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03c7: Expected O, but got Unknown
+            //IL_03c8: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03d2: Expected O, but got Unknown
+            //IL_03d3: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03dd: Expected O, but got Unknown
+            //IL_03de: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03e8: Expected O, but got Unknown
+            //IL_03e9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03f3: Expected O, but got Unknown
+            //IL_03f4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_03fe: Expected O, but got Unknown
+            //IL_03ff: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0409: Expected O, but got Unknown
+            //IL_040a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0414: Expected O, but got Unknown
+            //IL_0415: Unknown result type (might be due to invalid IL or missing references)
+            //IL_041f: Expected O, but got Unknown
+            //IL_0420: Unknown result type (might be due to invalid IL or missing references)
+            //IL_042a: Expected O, but got Unknown
+            //IL_042b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0435: Expected O, but got Unknown
+            //IL_0436: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0440: Expected O, but got Unknown
+            //IL_0441: Unknown result type (might be due to invalid IL or missing references)
+            //IL_044b: Expected O, but got Unknown
+            //IL_044c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0456: Expected O, but got Unknown
+            //IL_0457: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0461: Expected O, but got Unknown
+            //IL_0462: Unknown result type (might be due to invalid IL or missing references)
+            //IL_046c: Expected O, but got Unknown
+            //IL_046d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0477: Expected O, but got Unknown
+            //IL_0478: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0482: Expected O, but got Unknown
+            //IL_0483: Unknown result type (might be due to invalid IL or missing references)
+            //IL_048d: Expected O, but got Unknown
+            //IL_048e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0498: Expected O, but got Unknown
+            //IL_0499: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04a3: Expected O, but got Unknown
+            //IL_04a4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04ae: Expected O, but got Unknown
+            //IL_04af: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04b9: Expected O, but got Unknown
+            //IL_04ba: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04c4: Expected O, but got Unknown
+            //IL_04c5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04cf: Expected O, but got Unknown
+            //IL_04d0: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04da: Expected O, but got Unknown
+            //IL_04db: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04e5: Expected O, but got Unknown
+            //IL_04e6: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04f0: Expected O, but got Unknown
+            //IL_04f1: Unknown result type (might be due to invalid IL or missing references)
+            //IL_04fb: Expected O, but got Unknown
+            //IL_04fc: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0506: Expected O, but got Unknown
+            //IL_0507: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0511: Expected O, but got Unknown
+            //IL_0512: Unknown result type (might be due to invalid IL or missing references)
+            //IL_051c: Expected O, but got Unknown
+            //IL_051d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0527: Expected O, but got Unknown
+            //IL_0528: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0532: Expected O, but got Unknown
+            //IL_0533: Unknown result type (might be due to invalid IL or missing references)
+            //IL_053d: Expected O, but got Unknown
+            //IL_053e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0548: Expected O, but got Unknown
+            //IL_0549: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0553: Expected O, but got Unknown
+            //IL_0554: Unknown result type (might be due to invalid IL or missing references)
+            //IL_055e: Expected O, but got Unknown
+            //IL_055f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0569: Expected O, but got Unknown
+            //IL_056a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0574: Expected O, but got Unknown
+            //IL_0575: Unknown result type (might be due to invalid IL or missing references)
+            //IL_057f: Expected O, but got Unknown
+            //IL_0580: Unknown result type (might be due to invalid IL or missing references)
+            //IL_058a: Expected O, but got Unknown
+            //IL_058b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0595: Expected O, but got Unknown
+            //IL_0596: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05a0: Expected O, but got Unknown
+            //IL_05a1: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05ab: Expected O, but got Unknown
+            //IL_05ac: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05b6: Expected O, but got Unknown
+            //IL_05b7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05c1: Expected O, but got Unknown
+            //IL_05c2: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05cc: Expected O, but got Unknown
+            //IL_05cd: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05d7: Expected O, but got Unknown
+            //IL_05d8: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05e2: Expected O, but got Unknown
+            //IL_05e3: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05ed: Expected O, but got Unknown
+            //IL_05ee: Unknown result type (might be due to invalid IL or missing references)
+            //IL_05f8: Expected O, but got Unknown
+            //IL_05f9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0603: Expected O, but got Unknown
+            //IL_0604: Unknown result type (might be due to invalid IL or missing references)
+            //IL_060e: Expected O, but got Unknown
+            //IL_060f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0619: Expected O, but got Unknown
+            //IL_061a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0624: Expected O, but got Unknown
+            //IL_0625: Unknown result type (might be due to invalid IL or missing references)
+            //IL_062f: Expected O, but got Unknown
+            //IL_0630: Unknown result type (might be due to invalid IL or missing references)
+            //IL_063a: Expected O, but got Unknown
+            //IL_063b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0645: Expected O, but got Unknown
+            //IL_0646: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0650: Expected O, but got Unknown
+            //IL_0651: Unknown result type (might be due to invalid IL or missing references)
+            //IL_065b: Expected O, but got Unknown
+            //IL_065c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0666: Expected O, but got Unknown
+            //IL_0667: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0671: Expected O, but got Unknown
+            //IL_0672: Unknown result type (might be due to invalid IL or missing references)
+            //IL_067c: Expected O, but got Unknown
+            //IL_067d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0687: Expected O, but got Unknown
+            //IL_0688: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0692: Expected O, but got Unknown
+            //IL_0693: Unknown result type (might be due to invalid IL or missing references)
+            //IL_069d: Expected O, but got Unknown
+            //IL_06a9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06b3: Expected O, but got Unknown
+            //IL_06b4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06be: Expected O, but got Unknown
+            //IL_06bf: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06c9: Expected O, but got Unknown
+            //IL_06ca: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06d4: Expected O, but got Unknown
+            //IL_06d5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06df: Expected O, but got Unknown
+            //IL_06e0: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06ea: Expected O, but got Unknown
+            //IL_06eb: Unknown result type (might be due to invalid IL or missing references)
+            //IL_06f5: Expected O, but got Unknown
+            //IL_06f6: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0700: Expected O, but got Unknown
+            //IL_0701: Unknown result type (might be due to invalid IL or missing references)
+            //IL_070b: Expected O, but got Unknown
+            //IL_070c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0716: Expected O, but got Unknown
+            //IL_0717: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0721: Expected O, but got Unknown
+            //IL_0722: Unknown result type (might be due to invalid IL or missing references)
+            //IL_072c: Expected O, but got Unknown
+            //IL_072d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0737: Expected O, but got Unknown
+            //IL_0738: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0742: Expected O, but got Unknown
+            //IL_0743: Unknown result type (might be due to invalid IL or missing references)
+            //IL_074d: Expected O, but got Unknown
+            //IL_074e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0758: Expected O, but got Unknown
+            //IL_0764: Unknown result type (might be due to invalid IL or missing references)
+            //IL_076e: Expected O, but got Unknown
+            //IL_076f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0779: Expected O, but got Unknown
+            //IL_077a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0784: Expected O, but got Unknown
+            //IL_0785: Unknown result type (might be due to invalid IL or missing references)
+            //IL_078f: Expected O, but got Unknown
+            //IL_0790: Unknown result type (might be due to invalid IL or missing references)
+            //IL_079a: Expected O, but got Unknown
+            //IL_079b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07a5: Expected O, but got Unknown
+            //IL_07a6: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07b0: Expected O, but got Unknown
+            //IL_07b1: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07bb: Expected O, but got Unknown
+            //IL_07bc: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07c6: Expected O, but got Unknown
+            //IL_07c7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07d1: Expected O, but got Unknown
+            //IL_07d2: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07dc: Expected O, but got Unknown
+            //IL_07dd: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07e7: Expected O, but got Unknown
+            //IL_07e8: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07f2: Expected O, but got Unknown
+            //IL_07f3: Unknown result type (might be due to invalid IL or missing references)
+            //IL_07fd: Expected O, but got Unknown
+            //IL_07fe: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0808: Expected O, but got Unknown
+            //IL_0809: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0813: Expected O, but got Unknown
+            //IL_0814: Unknown result type (might be due to invalid IL or missing references)
+            //IL_081e: Expected O, but got Unknown
+            //IL_081f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0829: Expected O, but got Unknown
+            //IL_082a: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0834: Expected O, but got Unknown
+            //IL_083b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0845: Expected O, but got Unknown
+            //IL_0846: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0850: Expected O, but got Unknown
+            //IL_0851: Unknown result type (might be due to invalid IL or missing references)
+            //IL_085b: Expected O, but got Unknown
+            //IL_085c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0866: Expected O, but got Unknown
+            //IL_0867: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0871: Expected O, but got Unknown
+            //IL_0872: Unknown result type (might be due to invalid IL or missing references)
+            //IL_087c: Expected O, but got Unknown
+            //IL_1247: Unknown result type (might be due to invalid IL or missing references)
+            //IL_129e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_12a8: Expected O, but got Unknown
+            //IL_144d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1457: Expected O, but got Unknown
+            //IL_1819: Unknown result type (might be due to invalid IL or missing references)
+            //IL_186d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_18c1: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1915: Unknown result type (might be due to invalid IL or missing references)
+            //IL_199e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1a1e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1b27: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1b31: Expected O, but got Unknown
+            //IL_1c5f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1d93: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1d9d: Expected O, but got Unknown
+            //IL_1e08: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1e12: Expected O, but got Unknown
+            //IL_1e3b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1e45: Expected O, but got Unknown
+            //IL_1eba: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1ec4: Expected O, but got Unknown
+            //IL_1f18: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1f22: Expected O, but got Unknown
+            //IL_1f4b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1f55: Expected O, but got Unknown
+            //IL_1fe4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_1fee: Expected O, but got Unknown
+            //IL_213b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2145: Expected O, but got Unknown
+            //IL_22b9: Unknown result type (might be due to invalid IL or missing references)
+            //IL_22c3: Expected O, but got Unknown
+            //IL_2334: Unknown result type (might be due to invalid IL or missing references)
+            //IL_233e: Expected O, but got Unknown
+            //IL_23ef: Unknown result type (might be due to invalid IL or missing references)
+            //IL_23f9: Expected O, but got Unknown
+            //IL_24b7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_24c1: Expected O, but got Unknown
+            //IL_257d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2587: Expected O, but got Unknown
+            //IL_2690: Unknown result type (might be due to invalid IL or missing references)
+            //IL_269a: Expected O, but got Unknown
+            //IL_28a7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_28b1: Expected O, but got Unknown
+            //IL_2927: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2931: Expected O, but got Unknown
+            //IL_2b26: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2b30: Expected O, but got Unknown
+            //IL_2ba7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2bb1: Expected O, but got Unknown
+            //IL_2e38: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2eac: Unknown result type (might be due to invalid IL or missing references)
+            //IL_2eb6: Expected O, but got Unknown
+            //IL_307e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_3088: Expected O, but got Unknown
+            //IL_31b7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_31c1: Expected O, but got Unknown
+            //IL_3234: Unknown result type (might be due to invalid IL or missing references)
+            //IL_323e: Expected O, but got Unknown
+            //IL_41dd: Unknown result type (might be due to invalid IL or missing references)
+            //IL_4498: Unknown result type (might be due to invalid IL or missing references)
+            //IL_44a2: Expected O, but got Unknown
+            //IL_4589: Unknown result type (might be due to invalid IL or missing references)
+            //IL_4593: Expected O, but got Unknown
+            //IL_47c7: Unknown result type (might be due to invalid IL or missing references)
+            //IL_4de3: Unknown result type (might be due to invalid IL or missing references)
+            //IL_4ded: Expected O, but got Unknown
+            //IL_519e: Unknown result type (might be due to invalid IL or missing references)
+            //IL_51a8: Expected O, but got Unknown
+            //IL_5223: Unknown result type (might be due to invalid IL or missing references)
+            //IL_522d: Expected O, but got Unknown
+            //IL_5581: Unknown result type (might be due to invalid IL or missing references)
+            //IL_56cd: Unknown result type (might be due to invalid IL or missing references)
+            //IL_56d7: Expected O, but got Unknown
+            //IL_59ab: Unknown result type (might be due to invalid IL or missing references)
+            //IL_59b5: Expected O, but got Unknown
+            //IL_5a30: Unknown result type (might be due to invalid IL or missing references)
+            //IL_5a3a: Expected O, but got Unknown
+            //IL_5b4f: Unknown result type (might be due to invalid IL or missing references)
+            //IL_5bbd: Unknown result type (might be due to invalid IL or missing references)
+            //IL_5bc7: Expected O, but got Unknown
+            //IL_5d0b: Unknown result type (might be due to invalid IL or missing references)
+            //IL_5d15: Expected O, but got Unknown
+            //IL_5d9c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_5da6: Expected O, but got Unknown
+            //IL_5fd2: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6894: Unknown result type (might be due to invalid IL or missing references)
+            //IL_689e: Expected O, but got Unknown
+            //IL_69e0: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6afc: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6b88: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6c3c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6d69: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6e78: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6e82: Expected O, but got Unknown
+            //IL_6f20: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6f2a: Expected O, but got Unknown
+            //IL_6fd4: Unknown result type (might be due to invalid IL or missing references)
+            //IL_6fde: Expected O, but got Unknown
+            //IL_7119: Unknown result type (might be due to invalid IL or missing references)
+            //IL_717d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_71d5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_72db: Unknown result type (might be due to invalid IL or missing references)
+            //IL_72ed: Unknown result type (might be due to invalid IL or missing references)
+            //IL_72f7: Expected O, but got Unknown
+            components = new Container();
+            DataGridViewCellStyle val = new DataGridViewCellStyle();
+            DataGridViewCellStyle val2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle val3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle val4 = new DataGridViewCellStyle();
+            ComponentResourceManager componentResourceManager = new ComponentResourceManager(typeof(Window));
+            mapsStrip = new ContextMenuStrip(components);
+            physicsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripMenuItem();
+            toolStripMenuItem4 = new ToolStripMenuItem();
+            toolStripMenuItem5 = new ToolStripMenuItem();
+            toolStripMenuItem6 = new ToolStripMenuItem();
+            unloadToolStripMenuItem = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
+            finiteModeToolStripMenuItem = new ToolStripMenuItem();
+            animalAIToolStripMenuItem = new ToolStripMenuItem();
+            edgeWaterToolStripMenuItem = new ToolStripMenuItem();
+            growingGrassToolStripMenuItem = new ToolStripMenuItem();
+            survivalDeathToolStripMenuItem = new ToolStripMenuItem();
+            killerBlocksToolStripMenuItem = new ToolStripMenuItem();
+            rPChatToolStripMenuItem = new ToolStripMenuItem();
+            saveToolStripMenuItem = new ToolStripMenuItem();
+            playerStrip = new ContextMenuStrip(components);
+            whoisToolStripMenuItem = new ToolStripMenuItem();
+            kickToolStripMenuItem = new ToolStripMenuItem();
+            banToolStripMenuItem = new ToolStripMenuItem();
+            voiceToolStripMenuItem = new ToolStripMenuItem();
+            zombieSurvivalTab = new TabPage();
+            label5 = new Label();
+            zombieSettings = new Button();
+            infectionMapsGrid = new DataGridViewEnumerated();
+            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn5 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn6 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn7 = new DataGridViewTextBoxColumn();
+            tmrRestart = new Timer(components);
+            iconContext = new ContextMenuStrip(components);
+            openConsole = new ToolStripMenuItem();
+            hideConsole = new ToolStripMenuItem();
+            shutdownServer = new ToolStripMenuItem();
+            BottomToolStripPanel = new ToolStripPanel();
+            TopToolStripPanel = new ToolStripPanel();
+            RightToolStripPanel = new ToolStripPanel();
+            LeftToolStripPanel = new ToolStripPanel();
+            ContentPanel = new ToolStripContentPanel();
+            toolStripContainer1 = new ToolStripContainer();
+            mainTabs = new TabControl();
+            mainTab = new TabPage();
+            splitContainer5 = new SplitContainer();
+            txtInput = new TextBox();
+            label1 = new Label();
+            txtCommands = new TextBox();
+            label2 = new Label();
+            label17 = new Label();
+            mode = new ComboBox();
+            txtUrl = new TextBox();
+            splitContainer3 = new SplitContainer();
+            splitContainer4 = new SplitContainer();
+            gBChat = new GroupBox();
+            txtLog = new TextBox();
+            gBCommands = new GroupBox();
+            txtCommandsUsed = new TextBox();
+            splitContainer2 = new SplitContainer();
+            listViewPlayers = new CustomListView();
+            PlayersColumnName = new ColumnHeader();
+            PlayersColumnMap = new ColumnHeader();
+            PlayersColumnAfk = new ColumnHeader();
+            label3 = new Label();
+            pCount = new Label();
+            listViewMaps = new CustomListView();
+            mapColumnName = new ColumnHeader();
+            mapColumnPhysics = new ColumnHeader();
+            mapColumnPlayers = new ColumnHeader();
+            mapColumnWeight = new ColumnHeader();
+            mCount = new Label();
+            label4 = new Label();
+            chatTab = new TabPage();
+            chatWarningLabel = new Label();
+            pictureBox1 = new PictureBox();
+            chatPlayerList = new ListBox();
+            chatMainBox = new RichTextBox();
+            chatOnOff_btn = new Button();
+            chatInputBox = new TextBox();
+            cBlack = new Label();
+            cWhite = new Label();
+            cDarkBlue = new Label();
+            cYellow = new Label();
+            cDarkGreen = new Label();
+            cPink = new Label();
+            cTeal = new Label();
+            cRed = new Label();
+            cDarkRed = new Label();
+            cAqua = new Label();
+            cPurple = new Label();
+            cBrightGreen = new Label();
+            cGold = new Label();
+            cBlue = new Label();
+            cGray = new Label();
+            cDarkGray = new Label();
+            label25 = new Label();
+            tabPagePlugins = new TabPage();
+            pnlPlugin = new Panel();
+            groupBox4 = new GroupBox();
+            lblPluginDesc = new Label();
+            lblPluginAuthor = new Label();
+            lblPluginVersion = new Label();
+            lblPluginName = new Label();
+            treeView1 = new TreeView();
+            playersTab = new TabPage();
+            playerColorCombo = new ComboBox();
+            targetMapCombo = new ComboBox();
+            button15 = new Button();
+            button14 = new Button();
+            banCheck = new CheckBox();
+            kickCheck = new CheckBox();
+            playersListView = new ListView();
+            PlName = new ColumnHeader();
+            PlRank = new ColumnHeader();
+            PlMap = new ColumnHeader();
+            titleText = new TextBox();
+            banText = new TextBox();
+            kickText = new TextBox();
+            label12 = new Label();
+            button8 = new Button();
+            button7 = new Button();
+            button6 = new Button();
+            btnMute = new Button();
+            button3 = new Button();
+            button2 = new Button();
+            label10 = new Label();
+            label7 = new Label();
+            playersGrid = new PropertyGrid();
+            button4 = new Button();
+            xbanCheck = new CheckBox();
+            xbanText = new TextBox();
+            mapsTab = new TabPage();
+            mapsList = new ListBox();
+            button13 = new Button();
+            label11 = new Label();
+            unloadedMapsList = new ListBox();
+            button12 = new Button();
+            button11 = new Button();
+            button10 = new Button();
+            btnCreateMap = new Button();
+            label9 = new Label();
+            label8 = new Label();
+            allMapsGrid = new PropertyGrid();
+            lavaTab = new TabPage();
+            label6 = new Label();
+            mapsGrid = new DataGridViewEnumerated();
+            mapName = new DataGridViewTextBoxColumn();
+            sourceX = new DataGridViewTextBoxColumn();
+            sourceY = new DataGridViewTextBoxColumn();
+            sourceZ = new DataGridViewTextBoxColumn();
+            phase1 = new DataGridViewTextBoxColumn();
+            phase2 = new DataGridViewTextBoxColumn();
+            typeOfLava = new DataGridViewTextBoxColumn();
+            systemTab = new TabPage();
+            groupBox1 = new GroupBox();
+            button9 = new Button();
+            checkBox1 = new CheckBox();
+            label20 = new Label();
+            textBox1 = new TextBox();
+            checkBox2 = new CheckBox();
+            button18 = new Button();
+            groupBox2 = new GroupBox();
+            accountsList = new CustomListView();
+            remoteAccount = new ColumnHeader();
+            newAccountBtn = new Button();
+            removeAccountBtn = new Button();
+            changeAccountBtn = new Button();
+            groupBox3 = new GroupBox();
+            linkLabel1 = new LinkLabel();
+            textBox4 = new TextBox();
+            label22 = new Label();
+            changelogTab = new TabPage();
+            tabControl1 = new TabControl();
+            tabPage1 = new TabPage();
+            txtChangelog = new TextBox();
+            tabPage2 = new TabPage();
+            txtSystem = new TextBox();
+            errorsTab = new TabPage();
+            txtErrors = new TextBox();
+            minimizeButton = new Button();
+            btnProperties = new Button();
+            fontDialog1 = new FontDialog();
+            toolTip1 = new ToolTip(components);
+            button5 = new Button();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabelUptime = new ToolStripStatusLabel();
+            toolStripStatusLabelRoundTime = new ToolStripStatusLabel();
+            toolStripStatusLabelLagometer = new ToolStripStatusLabel();
+            mapsStrip.SuspendLayout();
+            playerStrip.SuspendLayout();
+            zombieSurvivalTab.SuspendLayout();
+            ((ISupportInitialize)infectionMapsGrid).BeginInit();
+            iconContext.SuspendLayout();
+            toolStripContainer1.SuspendLayout();
+            mainTabs.SuspendLayout();
+            mainTab.SuspendLayout();
+            splitContainer5.Panel1.SuspendLayout();
+            splitContainer5.Panel2.SuspendLayout();
+            splitContainer5.SuspendLayout();
+            splitContainer3.Panel1.SuspendLayout();
+            splitContainer3.Panel2.SuspendLayout();
+            splitContainer3.SuspendLayout();
+            splitContainer4.Panel1.SuspendLayout();
+            splitContainer4.Panel2.SuspendLayout();
+            splitContainer4.SuspendLayout();
+            gBChat.SuspendLayout();
+            gBCommands.SuspendLayout();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
+            chatTab.SuspendLayout();
+            ((ISupportInitialize)pictureBox1).BeginInit();
+            tabPagePlugins.SuspendLayout();
+            groupBox4.SuspendLayout();
+            playersTab.SuspendLayout();
+            mapsTab.SuspendLayout();
+            lavaTab.SuspendLayout();
+            ((ISupportInitialize)mapsGrid).BeginInit();
+            systemTab.SuspendLayout();
+            groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
+            changelogTab.SuspendLayout();
+            tabControl1.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            errorsTab.SuspendLayout();
+            statusStrip1.SuspendLayout();
+            SuspendLayout();
+            mapsStrip.Items.AddRange(new ToolStripItem[4]
+            {
+                physicsToolStripMenuItem, unloadToolStripMenuItem, settingsToolStripMenuItem, saveToolStripMenuItem
+            });
+            mapsStrip.Name = "mapsStrip";
+            mapsStrip.Size = new Size(122, 92);
+            mapsStrip.Opening += mapsStrip_Opening;
+            physicsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[5]
+            {
+                toolStripMenuItem2, toolStripMenuItem3, toolStripMenuItem4, toolStripMenuItem5, toolStripMenuItem6
+            });
+            physicsToolStripMenuItem.Name = "physicsToolStripMenuItem";
+            physicsToolStripMenuItem.Size = new Size(121, 22);
+            physicsToolStripMenuItem.Text = "Physics";
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(104, 22);
+            toolStripMenuItem2.Text = "off";
+            toolStripMenuItem2.Click += toolStripMenuItem2_Click;
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(104, 22);
+            toolStripMenuItem3.Text = "1";
+            toolStripMenuItem3.Click += toolStripMenuItem3_Click;
+            toolStripMenuItem4.Name = "toolStripMenuItem4";
+            toolStripMenuItem4.Size = new Size(104, 22);
+            toolStripMenuItem4.Text = "2";
+            toolStripMenuItem4.Click += toolStripMenuItem4_Click;
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.Size = new Size(104, 22);
+            toolStripMenuItem5.Text = "3";
+            toolStripMenuItem5.Click += toolStripMenuItem5_Click;
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.Size = new Size(104, 22);
+            toolStripMenuItem6.Text = "door";
+            toolStripMenuItem6.Click += toolStripMenuItem6_Click;
+            unloadToolStripMenuItem.Name = "unloadToolStripMenuItem";
+            unloadToolStripMenuItem.Size = new Size(121, 22);
+            unloadToolStripMenuItem.Text = "Unload";
+            unloadToolStripMenuItem.Click += unloadToolStripMenuItem_Click;
+            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[7]
+            {
+                finiteModeToolStripMenuItem, animalAIToolStripMenuItem, edgeWaterToolStripMenuItem, growingGrassToolStripMenuItem, survivalDeathToolStripMenuItem,
+                killerBlocksToolStripMenuItem, rPChatToolStripMenuItem
+            });
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(121, 22);
+            settingsToolStripMenuItem.Text = "Settings";
+            finiteModeToolStripMenuItem.Name = "finiteModeToolStripMenuItem";
+            finiteModeToolStripMenuItem.Size = new Size(157, 22);
+            finiteModeToolStripMenuItem.Text = "Finite Mode";
+            finiteModeToolStripMenuItem.Click += finiteModeToolStripMenuItem_Click;
+            animalAIToolStripMenuItem.Name = "animalAIToolStripMenuItem";
+            animalAIToolStripMenuItem.Size = new Size(157, 22);
+            animalAIToolStripMenuItem.Text = "Animal AI";
+            animalAIToolStripMenuItem.Click += animalAIToolStripMenuItem_Click;
+            edgeWaterToolStripMenuItem.Name = "edgeWaterToolStripMenuItem";
+            edgeWaterToolStripMenuItem.Size = new Size(157, 22);
+            edgeWaterToolStripMenuItem.Text = "Edge Water";
+            edgeWaterToolStripMenuItem.Click += edgeWaterToolStripMenuItem_Click;
+            growingGrassToolStripMenuItem.Name = "growingGrassToolStripMenuItem";
+            growingGrassToolStripMenuItem.Size = new Size(157, 22);
+            growingGrassToolStripMenuItem.Text = "Grass Growing";
+            growingGrassToolStripMenuItem.Click += growingGrassToolStripMenuItem_Click;
+            survivalDeathToolStripMenuItem.Name = "survivalDeathToolStripMenuItem";
+            survivalDeathToolStripMenuItem.Size = new Size(157, 22);
+            survivalDeathToolStripMenuItem.Text = "Survival Death";
+            survivalDeathToolStripMenuItem.Click += survivalDeathToolStripMenuItem_Click;
+            killerBlocksToolStripMenuItem.Name = "killerBlocksToolStripMenuItem";
+            killerBlocksToolStripMenuItem.Size = new Size(157, 22);
+            killerBlocksToolStripMenuItem.Text = "Killer Blocks";
+            killerBlocksToolStripMenuItem.Click += killerBlocksToolStripMenuItem_Click;
+            rPChatToolStripMenuItem.Name = "rPChatToolStripMenuItem";
+            rPChatToolStripMenuItem.Size = new Size(157, 22);
+            rPChatToolStripMenuItem.Text = "RP Chat";
+            rPChatToolStripMenuItem.Click += rPChatToolStripMenuItem_Click;
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new Size(121, 22);
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
+            playerStrip.Items.AddRange(new ToolStripItem[4]
+            {
+                whoisToolStripMenuItem, kickToolStripMenuItem, banToolStripMenuItem, voiceToolStripMenuItem
+            });
+            playerStrip.Name = "playerStrip";
+            playerStrip.Size = new Size(113, 92);
+            playerStrip.Opening += playerStrip_Opening;
+            whoisToolStripMenuItem.Name = "whoisToolStripMenuItem";
+            whoisToolStripMenuItem.Size = new Size(112, 22);
+            whoisToolStripMenuItem.Text = "whois";
+            whoisToolStripMenuItem.Click += whoisToolStripMenuItem_Click;
+            kickToolStripMenuItem.Name = "kickToolStripMenuItem";
+            kickToolStripMenuItem.Size = new Size(112, 22);
+            kickToolStripMenuItem.Text = "kick";
+            kickToolStripMenuItem.Click += kickToolStripMenuItem_Click;
+            banToolStripMenuItem.Name = "banToolStripMenuItem";
+            banToolStripMenuItem.Size = new Size(112, 22);
+            banToolStripMenuItem.Text = "ban";
+            banToolStripMenuItem.Click += banToolStripMenuItem_Click;
+            voiceToolStripMenuItem.Name = "voiceToolStripMenuItem";
+            voiceToolStripMenuItem.Size = new Size(112, 22);
+            voiceToolStripMenuItem.Text = "voice";
+            voiceToolStripMenuItem.Click += voiceToolStripMenuItem_Click;
+            zombieSurvivalTab.BackColor = Color.Transparent;
+            zombieSurvivalTab.Controls.Add(label5);
+            zombieSurvivalTab.Controls.Add(zombieSettings);
+            zombieSurvivalTab.Controls.Add(infectionMapsGrid);
+            zombieSurvivalTab.Location = new Point(4, 22);
+            zombieSurvivalTab.Name = "zombieSurvivalTab";
+            zombieSurvivalTab.Padding = new Padding(3);
+            zombieSurvivalTab.Size = new Size(702, 488);
+            zombieSurvivalTab.TabIndex = 7;
+            zombieSurvivalTab.Text = "Zombie Survival";
+            label5.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label5.Location = new Point(42, 21);
+            label5.Name = "label5";
+            label5.Size = new Size(96, 19);
+            label5.TabIndex = 6;
+            label5.Text = "Infection maps:";
+            zombieSettings.Location = new Point(523, 12);
+            zombieSettings.Name = "zombieSettings";
+            zombieSettings.Size = new Size(106, 23);
+            zombieSettings.TabIndex = 0;
+            zombieSettings.Text = "Zombie Settings";
+            zombieSettings.UseVisualStyleBackColor = true;
+            zombieSettings.Click += zombieSettings_Click;
+            infectionMapsGrid.AutoSizeColumnsMode = (DataGridViewAutoSizeColumnsMode)16;
+            infectionMapsGrid.BackgroundColor = SystemColors.Control;
+            infectionMapsGrid.ColumnHeadersHeightSizeMode = (DataGridViewColumnHeadersHeightSizeMode)2;
+            infectionMapsGrid.Columns.AddRange(dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4,
+                                               dataGridViewTextBoxColumn5, dataGridViewTextBoxColumn6, dataGridViewTextBoxColumn7);
+            infectionMapsGrid.EditMode = (DataGridViewEditMode)4;
+            infectionMapsGrid.Location = new Point(43, 49);
+            infectionMapsGrid.Name = "infectionMapsGrid";
+            val.Alignment = (DataGridViewContentAlignment)32;
+            val.BackColor = SystemColors.Control;
+            val.Font = new Font("Calibri", 8.25f);
+            val.ForeColor = SystemColors.WindowText;
+            val.SelectionBackColor = SystemColors.Highlight;
+            val.SelectionForeColor = SystemColors.HighlightText;
+            val.WrapMode = (DataGridViewTriState)1;
+            infectionMapsGrid.RowHeadersDefaultCellStyle = val;
+            val2.Alignment = (DataGridViewContentAlignment)32;
+            infectionMapsGrid.RowsDefaultCellStyle = val2;
+            infectionMapsGrid.SelectionMode = 0;
+            infectionMapsGrid.Size = new Size(616, 406);
+            infectionMapsGrid.TabIndex = 1;
+            dataGridViewTextBoxColumn1.FillWeight = 135.3597f;
+            dataGridViewTextBoxColumn1.HeaderText = "Map Name";
+            dataGridViewTextBoxColumn1.MinimumWidth = 40;
+            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            dataGridViewTextBoxColumn2.FillWeight = 88.54781f;
+            dataGridViewTextBoxColumn2.HeaderText = "x";
+            dataGridViewTextBoxColumn2.MinimumWidth = 15;
+            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            dataGridViewTextBoxColumn3.FillWeight = 88.54781f;
+            dataGridViewTextBoxColumn3.HeaderText = "y";
+            dataGridViewTextBoxColumn3.MinimumWidth = 15;
+            dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            dataGridViewTextBoxColumn4.FillWeight = 88.54781f;
+            dataGridViewTextBoxColumn4.HeaderText = "z";
+            dataGridViewTextBoxColumn4.MinimumWidth = 15;
+            dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            dataGridViewTextBoxColumn5.FillWeight = 103.8501f;
+            dataGridViewTextBoxColumn5.HeaderText = "Phase I";
+            dataGridViewTextBoxColumn5.MinimumWidth = 30;
+            dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            dataGridViewTextBoxColumn6.FillWeight = 106.599f;
+            dataGridViewTextBoxColumn6.HeaderText = "Phase II";
+            dataGridViewTextBoxColumn6.MinimumWidth = 30;
+            dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            dataGridViewTextBoxColumn7.FillWeight = 88.54781f;
+            dataGridViewTextBoxColumn7.HeaderText = "Block";
+            dataGridViewTextBoxColumn7.MinimumWidth = 30;
+            dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            tmrRestart.Enabled = true;
+            tmrRestart.Interval = 1000;
+            iconContext.Items.AddRange(new ToolStripItem[3]
+            {
+                openConsole, hideConsole, shutdownServer
+            });
+            iconContext.Name = "iconContext";
+            iconContext.Size = new Size(169, 70);
+            openConsole.Name = "openConsole";
+            openConsole.Size = new Size(168, 22);
+            openConsole.Text = "Open Console";
+            openConsole.Click += openConsole_Click;
+            hideConsole.Name = "hideConsole";
+            hideConsole.Size = new Size(168, 22);
+            hideConsole.Text = "Hide Console";
+            hideConsole.Click += hideConsole_Click;
+            shutdownServer.Name = "shutdownServer";
+            shutdownServer.Size = new Size(168, 22);
+            shutdownServer.Text = "Shutdown Server";
+            shutdownServer.Click += shutdownServer_Click;
+            BottomToolStripPanel.Location = new Point(0, 0);
+            BottomToolStripPanel.Name = "BottomToolStripPanel";
+            BottomToolStripPanel.Orientation = 0;
+            BottomToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            BottomToolStripPanel.Size = new Size(0, 0);
+            TopToolStripPanel.Location = new Point(0, 0);
+            TopToolStripPanel.Name = "TopToolStripPanel";
+            TopToolStripPanel.Orientation = 0;
+            TopToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            TopToolStripPanel.Size = new Size(0, 0);
+            RightToolStripPanel.Location = new Point(0, 0);
+            RightToolStripPanel.Name = "RightToolStripPanel";
+            RightToolStripPanel.Orientation = 0;
+            RightToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            RightToolStripPanel.Size = new Size(0, 0);
+            LeftToolStripPanel.Location = new Point(0, 0);
+            LeftToolStripPanel.Name = "LeftToolStripPanel";
+            LeftToolStripPanel.Orientation = 0;
+            LeftToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            LeftToolStripPanel.Size = new Size(0, 0);
+            ContentPanel.AutoScroll = true;
+            ContentPanel.Size = new Size(709, 514);
+            toolStripContainer1.BottomToolStripPanelVisible = false;
+            toolStripContainer1.ContentPanel.Size = new Size(709, 514);
+            toolStripContainer1.Dock = (DockStyle)5;
+            toolStripContainer1.LeftToolStripPanel.Padding = new Padding(0, 0, 25, 0);
+            toolStripContainer1.Location = new Point(0, 0);
+            toolStripContainer1.Name = "toolStripContainer1";
+            toolStripContainer1.RightToolStripPanelVisible = false;
+            toolStripContainer1.Size = new Size(709, 514);
+            toolStripContainer1.TabIndex = 52;
+            toolStripContainer1.Text = "toolStripContainer1";
+            toolStripContainer1.TopToolStripPanel.Padding = new Padding(0, 0, 25, 25);
+            toolStripContainer1.TopToolStripPanelVisible = false;
+            mainTabs.Anchor = (AnchorStyles)15;
+            mainTabs.Controls.Add(mainTab);
+            mainTabs.Controls.Add(chatTab);
+            mainTabs.Controls.Add(tabPagePlugins);
+            mainTabs.Controls.Add(playersTab);
+            mainTabs.Controls.Add(mapsTab);
+            mainTabs.Controls.Add(lavaTab);
+            mainTabs.Controls.Add(systemTab);
+            mainTabs.Controls.Add(changelogTab);
+            mainTabs.Controls.Add(errorsTab);
+            mainTabs.Cursor = Cursors.Default;
+            mainTabs.Font = new Font("Calibri", 8.25f);
+            mainTabs.Location = new Point(2, 13);
+            mainTabs.MinimumSize = new Size(710, 512);
+            mainTabs.Name = "mainTabs";
+            mainTabs.SelectedIndex = 0;
+            mainTabs.Size = new Size(728, 512);
+            mainTabs.TabIndex = 2;
+            mainTabs.Click += tabControl1_Click;
+            mainTab.BackColor = Color.Transparent;
+            mainTab.Controls.Add(splitContainer5);
+            mainTab.Controls.Add(label17);
+            mainTab.Controls.Add(mode);
+            mainTab.Controls.Add(txtUrl);
+            mainTab.Controls.Add(splitContainer3);
+            mainTab.Location = new Point(4, 22);
+            mainTab.Name = "mainTab";
+            mainTab.Padding = new Padding(3);
+            mainTab.Size = new Size(720, 486);
+            mainTab.TabIndex = 0;
+            mainTab.Text = "Main";
+            splitContainer5.Anchor = (AnchorStyles)14;
+            splitContainer5.Location = new Point(13, 442);
+            splitContainer5.Name = "splitContainer5";
+            splitContainer5.Panel1.Controls.Add(txtInput);
+            splitContainer5.Panel1.Controls.Add(label1);
+            splitContainer5.Panel2.Controls.Add(txtCommands);
+            splitContainer5.Panel2.Controls.Add(label2);
+            splitContainer5.Size = new Size(688, 34);
+            splitContainer5.SplitterDistance = 451;
+            splitContainer5.TabIndex = 47;
+            txtInput.Anchor = (AnchorStyles)14;
+            txtInput.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            txtInput.Location = new Point(53, 7);
+            txtInput.Name = "txtInput";
+            txtInput.Size = new Size(395, 21);
+            txtInput.TabIndex = 27;
+            txtInput.TextChanged += txtInput_TextChanged;
+            txtInput.KeyDown += txtInput_KeyDown;
+            label1.Anchor = (AnchorStyles)6;
+            label1.AutoSize = true;
+            label1.Font = new Font("Calibri", 9f, (FontStyle)1);
+            label1.Location = new Point(15, 10);
+            label1.Name = "label1";
+            label1.Size = new Size(32, 14);
+            label1.TabIndex = 26;
+            label1.Text = "Chat:";
+            txtCommands.Anchor = (AnchorStyles)14;
+            txtCommands.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            txtCommands.Location = new Point(72, 8);
+            txtCommands.Name = "txtCommands";
+            txtCommands.Size = new Size(158, 21);
+            txtCommands.TabIndex = 28;
+            txtCommands.KeyDown += txtCommands_KeyDown;
+            label2.Anchor = (AnchorStyles)6;
+            label2.AutoSize = true;
+            label2.Font = new Font("Calibri", 9f, (FontStyle)1);
+            label2.Location = new Point(6, 10);
+            label2.Name = "label2";
+            label2.Size = new Size(60, 14);
+            label2.TabIndex = 29;
+            label2.Text = "Command:";
+            label2.Click += label2_Click;
+            label17.Anchor = (AnchorStyles)9;
+            label17.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label17.Location = new Point(481, 13);
+            label17.Name = "label17";
+            label17.Size = new Size(78, 18);
+            label17.TabIndex = 40;
+            label17.Text = "Game mode:";
+            mode.Anchor = (AnchorStyles)9;
+            mode.DropDownStyle = (ComboBoxStyle)2;
+            mode.FormattingEnabled = true;
+            mode.Items.AddRange(new object[4]
+            {
+                "Lava Survival", "Lava/Freebuild", "Freebuild", "Zombie(Beta)"
+            });
+            mode.Location = new Point(565, 10);
+            mode.Name = "mode";
+            mode.Size = new Size(136, 21);
+            mode.TabIndex = 39;
+            mode.SelectedIndexChanged += mode_SelectedIndexChanged;
+            txtUrl.Anchor = (AnchorStyles)13;
+            txtUrl.Cursor = Cursors.Default;
+            txtUrl.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            txtUrl.Location = new Point(13, 7);
+            txtUrl.Name = "txtUrl";
+            txtUrl.ReadOnly = true;
+            txtUrl.Size = new Size(446, 21);
+            txtUrl.TabIndex = 25;
+            splitContainer3.Anchor = (AnchorStyles)15;
+            splitContainer3.Location = new Point(13, 34);
+            splitContainer3.Name = "splitContainer3";
+            splitContainer3.Panel1.Controls.Add(splitContainer4);
+            splitContainer3.Panel2.Controls.Add(splitContainer2);
+            splitContainer3.Size = new Size(688, 406);
+            splitContainer3.SplitterDistance = 406;
+            splitContainer3.TabIndex = 46;
+            splitContainer4.Anchor = (AnchorStyles)15;
+            splitContainer4.Location = new Point(3, 6);
+            splitContainer4.Name = "splitContainer4";
+            splitContainer4.Orientation = 0;
+            splitContainer4.Panel1.Controls.Add(gBChat);
+            splitContainer4.Panel2.Controls.Add(gBCommands);
+            splitContainer4.Panel2.Paint += splitContainer4_Panel2_Paint;
+            splitContainer4.Size = new Size(395, 396);
+            splitContainer4.SplitterDistance = 237;
+            splitContainer4.TabIndex = 35;
+            gBChat.Anchor = (AnchorStyles)15;
+            gBChat.Controls.Add(txtLog);
+            gBChat.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            gBChat.Location = new Point(3, 8);
+            gBChat.Name = "gBChat";
+            gBChat.Size = new Size(389, 219);
+            gBChat.TabIndex = 32;
+            gBChat.TabStop = false;
+            gBChat.Text = "Chat";
+            txtLog.Anchor = (AnchorStyles)15;
+            txtLog.BackColor = SystemColors.Window;
+            txtLog.BorderStyle = 0;
+            txtLog.Cursor = Cursors.Default;
+            txtLog.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            txtLog.Location = new Point(6, 19);
+            txtLog.Multiline = true;
+            txtLog.Name = "txtLog";
+            txtLog.ReadOnly = true;
+            txtLog.ScrollBars = (ScrollBars)3;
+            txtLog.Size = new Size(383, 200);
+            txtLog.TabIndex = 1;
+            txtLog.TextChanged += txtLog_TextChanged;
+            gBCommands.Anchor = (AnchorStyles)15;
+            gBCommands.Controls.Add(txtCommandsUsed);
+            gBCommands.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            gBCommands.Location = new Point(3, 3);
+            gBCommands.Name = "gBCommands";
+            gBCommands.Size = new Size(389, 149);
+            gBCommands.TabIndex = 34;
+            gBCommands.TabStop = false;
+            gBCommands.Text = "Commands";
+            gBCommands.Enter += gBCommands_Enter;
+            txtCommandsUsed.Anchor = (AnchorStyles)15;
+            txtCommandsUsed.BackColor = Color.White;
+            txtCommandsUsed.Cursor = Cursors.Default;
+            txtCommandsUsed.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            txtCommandsUsed.Location = new Point(9, 21);
+            txtCommandsUsed.Multiline = true;
+            txtCommandsUsed.Name = "txtCommandsUsed";
+            txtCommandsUsed.ReadOnly = true;
+            txtCommandsUsed.ScrollBars = (ScrollBars)2;
+            txtCommandsUsed.Size = new Size(380, 125);
+            txtCommandsUsed.TabIndex = 0;
+            splitContainer2.Anchor = (AnchorStyles)15;
+            splitContainer2.Location = new Point(3, 3);
+            splitContainer2.Name = "splitContainer2";
+            splitContainer2.Orientation = 0;
+            splitContainer2.Panel1.Controls.Add(listViewPlayers);
+            splitContainer2.Panel1.Controls.Add(label3);
+            splitContainer2.Panel1.Controls.Add(pCount);
+            splitContainer2.Panel1.Paint += splitContainer2_Panel1_Paint;
+            splitContainer2.Panel2.Controls.Add(listViewMaps);
+            splitContainer2.Panel2.Controls.Add(mCount);
+            splitContainer2.Panel2.Controls.Add(label4);
+            splitContainer2.Size = new Size(272, 399);
+            splitContainer2.SplitterDistance = 213;
+            splitContainer2.SplitterWidth = 8;
+            splitContainer2.TabIndex = 45;
+            listViewPlayers.Anchor = (AnchorStyles)15;
+            listViewPlayers.Columns.AddRange(new ColumnHeader[3]
+            {
+                PlayersColumnName, PlayersColumnMap, PlayersColumnAfk
+            });
+            listViewPlayers.ContextMenuStrip = playerStrip;
+            listViewPlayers.FullRowSelect = true;
+            listViewPlayers.Location = new Point(7, 23);
+            listViewPlayers.MultiSelect = false;
+            listViewPlayers.Name = "listViewPlayers";
+            listViewPlayers.Size = new Size(262, 176);
+            listViewPlayers.Sorting = (SortOrder)1;
+            listViewPlayers.TabIndex = 44;
+            listViewPlayers.UseCompatibleStateImageBehavior = false;
+            listViewPlayers.View = (View)1;
+            listViewPlayers.SelectedIndexChanged += listViewPlayers_SelectedIndexChanged;
+            PlayersColumnName.Text = "Name";
+            PlayersColumnName.Width = 101;
+            PlayersColumnMap.Text = "Map";
+            PlayersColumnMap.Width = 92;
+            PlayersColumnAfk.Text = "Afk";
+            PlayersColumnAfk.TextAlign = (HorizontalAlignment)1;
+            PlayersColumnAfk.Width = 51;
+            label3.AutoSize = true;
+            label3.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label3.Location = new Point(4, 6);
+            label3.Name = "label3";
+            label3.Size = new Size(46, 14);
+            label3.TabIndex = 41;
+            label3.Text = "Players";
+            pCount.AutoSize = true;
+            pCount.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            pCount.Location = new Point(107, 6);
+            pCount.Name = "pCount";
+            pCount.Size = new Size(13, 14);
+            pCount.TabIndex = 43;
+            pCount.Text = "0";
+            listViewMaps.Anchor = (AnchorStyles)15;
+            listViewMaps.Columns.AddRange(new ColumnHeader[4]
+            {
+                mapColumnName, mapColumnPhysics, mapColumnPlayers, mapColumnWeight
+            });
+            listViewMaps.ContextMenuStrip = mapsStrip;
+            listViewMaps.FullRowSelect = true;
+            listViewMaps.Location = new Point(7, 18);
+            listViewMaps.MultiSelect = false;
+            listViewMaps.Name = "listViewMaps";
+            listViewMaps.Size = new Size(262, 148);
+            listViewMaps.Sorting = (SortOrder)1;
+            listViewMaps.TabIndex = 45;
+            listViewMaps.UseCompatibleStateImageBehavior = false;
+            listViewMaps.View = (View)1;
+            mapColumnName.Text = "Name";
+            mapColumnName.Width = 84;
+            mapColumnPhysics.Text = "Physics";
+            mapColumnPhysics.TextAlign = (HorizontalAlignment)2;
+            mapColumnPhysics.Width = 47;
+            mapColumnPlayers.Text = "Players";
+            mapColumnPlayers.TextAlign = (HorizontalAlignment)1;
+            mapColumnPlayers.Width = 47;
+            mapColumnWeight.Text = "Weight";
+            mapColumnWeight.TextAlign = (HorizontalAlignment)1;
+            mapColumnWeight.Width = 67;
+            mCount.AutoSize = true;
+            mCount.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            mCount.Location = new Point(107, 2);
+            mCount.Name = "mCount";
+            mCount.Size = new Size(13, 14);
+            mCount.TabIndex = 44;
+            mCount.Text = "0";
+            label4.AutoSize = true;
+            label4.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label4.Location = new Point(4, 2);
+            label4.Name = "label4";
+            label4.Size = new Size(37, 14);
+            label4.TabIndex = 42;
+            label4.Text = "Maps";
+            chatTab.BackColor = Color.Transparent;
+            chatTab.Controls.Add(chatWarningLabel);
+            chatTab.Controls.Add(pictureBox1);
+            chatTab.Controls.Add(chatPlayerList);
+            chatTab.Controls.Add(chatMainBox);
+            chatTab.Controls.Add(chatOnOff_btn);
+            chatTab.Controls.Add(chatInputBox);
+            chatTab.Controls.Add(cBlack);
+            chatTab.Controls.Add(cWhite);
+            chatTab.Controls.Add(cDarkBlue);
+            chatTab.Controls.Add(cYellow);
+            chatTab.Controls.Add(cDarkGreen);
+            chatTab.Controls.Add(cPink);
+            chatTab.Controls.Add(cTeal);
+            chatTab.Controls.Add(cRed);
+            chatTab.Controls.Add(cDarkRed);
+            chatTab.Controls.Add(cAqua);
+            chatTab.Controls.Add(cPurple);
+            chatTab.Controls.Add(cBrightGreen);
+            chatTab.Controls.Add(cGold);
+            chatTab.Controls.Add(cBlue);
+            chatTab.Controls.Add(cGray);
+            chatTab.Controls.Add(cDarkGray);
+            chatTab.Controls.Add(label25);
+            chatTab.Location = new Point(4, 22);
+            chatTab.Name = "chatTab";
+            chatTab.Padding = new Padding(3);
+            chatTab.Size = new Size(720, 486);
+            chatTab.TabIndex = 7;
+            chatTab.Text = "Chat";
+            chatTab.Click += chatTab_Click_1;
+            chatWarningLabel.AutoSize = true;
+            chatWarningLabel.Font = new Font("Calibri", 10f, (FontStyle)1);
+            chatWarningLabel.ForeColor = Color.Red;
+            chatWarningLabel.Location = new Point(123, 16);
+            chatWarningLabel.Name = "chatWarningLabel";
+            chatWarningLabel.Size = new Size(574, 17);
+            chatWarningLabel.TabIndex = 64;
+            chatWarningLabel.Text = "You have to update MCDzienny.exe file manually in order to make the color chat work properly!";
+            pictureBox1.Anchor = (AnchorStyles)6;
+            pictureBox1.Cursor = Cursors.Hand;
+            pictureBox1.Image = Resources.sprocket_dark;
+            pictureBox1.Location = new Point(147, 354);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(16, 16);
+            pictureBox1.TabIndex = 63;
+            pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click;
+            chatPlayerList.Anchor = (AnchorStyles)11;
+            chatPlayerList.FormattingEnabled = true;
+            chatPlayerList.Location = new Point(581, 43);
+            chatPlayerList.Name = "chatPlayerList";
+            chatPlayerList.Size = new Size(117, 420);
+            chatPlayerList.Sorted = true;
+            chatPlayerList.TabIndex = 42;
+            chatMainBox.Anchor = (AnchorStyles)15;
+            chatMainBox.BackColor = Color.FromArgb(100, 100, 100);
+            chatMainBox.BorderStyle = 0;
+            chatMainBox.Cursor = Cursors.Default;
+            chatMainBox.Font = new Font("Calibri", 12f, 0, (GraphicsUnit)3, 238);
+            chatMainBox.Location = new Point(24, 45);
+            chatMainBox.MaxLength = 10000;
+            chatMainBox.Name = "chatMainBox";
+            chatMainBox.ReadOnly = true;
+            chatMainBox.Size = new Size(551, 296);
+            chatMainBox.TabIndex = 40;
+            chatMainBox.Text = Lang.Command.ChangePlayerExpName;
+            chatOnOff_btn.BackColor = Color.Transparent;
+            chatOnOff_btn.Location = new Point(24, 16);
+            chatOnOff_btn.Name = "chatOnOff_btn";
+            chatOnOff_btn.Size = new Size(75, 23);
+            chatOnOff_btn.TabIndex = 62;
+            chatOnOff_btn.Text = "Deactivated";
+            chatOnOff_btn.UseVisualStyleBackColor = false;
+            chatOnOff_btn.Click += chatOnOff_btn_Click;
+            chatInputBox.AcceptsReturn = true;
+            chatInputBox.Anchor = (AnchorStyles)14;
+            chatInputBox.Font = new Font("Calibri", 12f, 0, (GraphicsUnit)3, 238);
+            chatInputBox.Location = new Point(147, 374);
+            chatInputBox.Multiline = true;
+            chatInputBox.Name = "chatInputBox";
+            chatInputBox.ScrollBars = (ScrollBars)2;
+            chatInputBox.Size = new Size(426, 98);
+            chatInputBox.TabIndex = 41;
+            chatInputBox.KeyDown += chatInputBox_KeyDown;
+            cBlack.Anchor = (AnchorStyles)6;
+            cBlack.AutoSize = true;
+            cBlack.BackColor = Color.Black;
+            cBlack.Cursor = Cursors.Hand;
+            cBlack.ForeColor = Color.Black;
+            cBlack.Location = new Point(31, 362);
+            cBlack.MinimumSize = new Size(20, 20);
+            cBlack.Name = "cBlack";
+            cBlack.Size = new Size(20, 20);
+            cBlack.TabIndex = 45;
+            cBlack.Tag = "%0";
+            toolTip1.SetToolTip(cBlack, "%0");
+            cBlack.Click += Color_Click;
+            cWhite.Anchor = (AnchorStyles)6;
+            cWhite.AutoSize = true;
+            cWhite.BackColor = Color.White;
+            cWhite.Cursor = Cursors.Hand;
+            cWhite.ForeColor = Color.DarkBlue;
+            cWhite.Location = new Point(109, 362);
+            cWhite.MinimumSize = new Size(20, 20);
+            cWhite.Name = "cWhite";
+            cWhite.Size = new Size(20, 20);
+            cWhite.TabIndex = 60;
+            cWhite.Tag = "%f";
+            toolTip1.SetToolTip(cWhite, "%f");
+            cWhite.Click += Color_Click;
+            cDarkBlue.Anchor = (AnchorStyles)6;
+            cDarkBlue.AutoSize = true;
+            cDarkBlue.BackColor = Color.FromArgb(0, 0, 170);
+            cDarkBlue.Cursor = Cursors.Hand;
+            cDarkBlue.ForeColor = Color.DarkBlue;
+            cDarkBlue.Location = new Point(31, 388);
+            cDarkBlue.MinimumSize = new Size(20, 20);
+            cDarkBlue.Name = "cDarkBlue";
+            cDarkBlue.Size = new Size(20, 20);
+            cDarkBlue.TabIndex = 46;
+            cDarkBlue.Tag = "%1";
+            toolTip1.SetToolTip(cDarkBlue, "%1");
+            cDarkBlue.Click += Color_Click;
+            cYellow.Anchor = (AnchorStyles)6;
+            cYellow.AutoSize = true;
+            cYellow.BackColor = Color.FromArgb(255, 255, 85);
+            cYellow.Cursor = Cursors.Hand;
+            cYellow.ForeColor = Color.DarkBlue;
+            cYellow.Location = new Point(109, 414);
+            cYellow.MinimumSize = new Size(20, 20);
+            cYellow.Name = "cYellow";
+            cYellow.Size = new Size(20, 20);
+            cYellow.TabIndex = 59;
+            cYellow.Tag = "%e";
+            toolTip1.SetToolTip(cYellow, "%e");
+            cYellow.Click += Color_Click;
+            cDarkGreen.Anchor = (AnchorStyles)6;
+            cDarkGreen.AutoSize = true;
+            cDarkGreen.BackColor = Color.FromArgb(0, 170, 0);
+            cDarkGreen.Cursor = Cursors.Hand;
+            cDarkGreen.ForeColor = Color.DarkBlue;
+            cDarkGreen.Location = new Point(31, 414);
+            cDarkGreen.MinimumSize = new Size(20, 20);
+            cDarkGreen.Name = "cDarkGreen";
+            cDarkGreen.Size = new Size(20, 20);
+            cDarkGreen.TabIndex = 47;
+            cDarkGreen.Tag = "%2";
+            toolTip1.SetToolTip(cDarkGreen, "%2");
+            cDarkGreen.Click += Color_Click;
+            cPink.Anchor = (AnchorStyles)6;
+            cPink.AutoSize = true;
+            cPink.BackColor = Color.FromArgb(255, 85, 255);
+            cPink.Cursor = Cursors.Hand;
+            cPink.ForeColor = Color.DarkBlue;
+            cPink.Location = new Point(109, 440);
+            cPink.MinimumSize = new Size(20, 20);
+            cPink.Name = "cPink";
+            cPink.Size = new Size(20, 20);
+            cPink.TabIndex = 58;
+            cPink.Tag = "%d";
+            toolTip1.SetToolTip(cPink, "%d");
+            cPink.Click += Color_Click;
+            cTeal.Anchor = (AnchorStyles)6;
+            cTeal.AutoSize = true;
+            cTeal.BackColor = Color.FromArgb(0, 170, 170);
+            cTeal.Cursor = Cursors.Hand;
+            cTeal.ForeColor = Color.DarkBlue;
+            cTeal.Location = new Point(83, 388);
+            cTeal.MinimumSize = new Size(20, 20);
+            cTeal.Name = "cTeal";
+            cTeal.Size = new Size(20, 20);
+            cTeal.TabIndex = 48;
+            cTeal.Tag = "%3";
+            toolTip1.SetToolTip(cTeal, "%3");
+            cTeal.Click += Color_Click;
+            cRed.Anchor = (AnchorStyles)6;
+            cRed.AutoSize = true;
+            cRed.BackColor = Color.FromArgb(255, 85, 85);
+            cRed.Cursor = Cursors.Hand;
+            cRed.ForeColor = Color.DarkBlue;
+            cRed.Location = new Point(57, 440);
+            cRed.MinimumSize = new Size(20, 20);
+            cRed.Name = "cRed";
+            cRed.Size = new Size(20, 20);
+            cRed.TabIndex = 57;
+            cRed.Tag = "%c";
+            toolTip1.SetToolTip(cRed, "%c");
+            cRed.Click += Color_Click;
+            cDarkRed.Anchor = (AnchorStyles)6;
+            cDarkRed.AutoSize = true;
+            cDarkRed.BackColor = Color.FromArgb(170, 0, 0);
+            cDarkRed.Cursor = Cursors.Hand;
+            cDarkRed.ForeColor = Color.DarkBlue;
+            cDarkRed.Location = new Point(31, 440);
+            cDarkRed.MinimumSize = new Size(20, 20);
+            cDarkRed.Name = "cDarkRed";
+            cDarkRed.Size = new Size(20, 20);
+            cDarkRed.TabIndex = 49;
+            cDarkRed.Tag = "%4";
+            toolTip1.SetToolTip(cDarkRed, "%4");
+            cDarkRed.Click += Color_Click;
+            cAqua.Anchor = (AnchorStyles)6;
+            cAqua.AutoSize = true;
+            cAqua.BackColor = Color.FromArgb(85, 255, 255);
+            cAqua.Cursor = Cursors.Hand;
+            cAqua.ForeColor = Color.DarkBlue;
+            cAqua.Location = new Point(109, 388);
+            cAqua.MinimumSize = new Size(20, 20);
+            cAqua.Name = "cAqua";
+            cAqua.Size = new Size(20, 20);
+            cAqua.TabIndex = 56;
+            cAqua.Tag = "%b";
+            toolTip1.SetToolTip(cAqua, "%b");
+            cAqua.Click += Color_Click;
+            cPurple.Anchor = (AnchorStyles)6;
+            cPurple.AutoSize = true;
+            cPurple.BackColor = Color.FromArgb(170, 0, 170);
+            cPurple.Cursor = Cursors.Hand;
+            cPurple.ForeColor = Color.DarkBlue;
+            cPurple.Location = new Point(83, 440);
+            cPurple.MinimumSize = new Size(20, 20);
+            cPurple.Name = "cPurple";
+            cPurple.Size = new Size(20, 20);
+            cPurple.TabIndex = 50;
+            cPurple.Tag = "%5";
+            toolTip1.SetToolTip(cPurple, "%5");
+            cPurple.Click += Color_Click;
+            cBrightGreen.Anchor = (AnchorStyles)6;
+            cBrightGreen.AutoSize = true;
+            cBrightGreen.BackColor = Color.FromArgb(85, 255, 85);
+            cBrightGreen.Cursor = Cursors.Hand;
+            cBrightGreen.ForeColor = Color.DarkBlue;
+            cBrightGreen.Location = new Point(57, 414);
+            cBrightGreen.MinimumSize = new Size(20, 20);
+            cBrightGreen.Name = "cBrightGreen";
+            cBrightGreen.Size = new Size(20, 20);
+            cBrightGreen.TabIndex = 55;
+            cBrightGreen.Tag = "%a";
+            toolTip1.SetToolTip(cBrightGreen, "%a");
+            cBrightGreen.Click += Color_Click;
+            cGold.Anchor = (AnchorStyles)6;
+            cGold.AutoSize = true;
+            cGold.BackColor = Color.Gold;
+            cGold.Cursor = Cursors.Hand;
+            cGold.ForeColor = Color.DarkBlue;
+            cGold.Location = new Point(83, 414);
+            cGold.MinimumSize = new Size(20, 20);
+            cGold.Name = "cGold";
+            cGold.Size = new Size(20, 20);
+            cGold.TabIndex = 51;
+            cGold.Tag = "%6";
+            toolTip1.SetToolTip(cGold, "%6");
+            cGold.Click += Color_Click;
+            cBlue.Anchor = (AnchorStyles)6;
+            cBlue.AutoSize = true;
+            cBlue.BackColor = Color.FromArgb(85, 85, 255);
+            cBlue.Cursor = Cursors.Hand;
+            cBlue.ForeColor = Color.DarkBlue;
+            cBlue.Location = new Point(57, 388);
+            cBlue.MinimumSize = new Size(20, 20);
+            cBlue.Name = "cBlue";
+            cBlue.Size = new Size(20, 20);
+            cBlue.TabIndex = 54;
+            cBlue.Tag = "%9";
+            toolTip1.SetToolTip(cBlue, "%9");
+            cBlue.Click += Color_Click;
+            cGray.Anchor = (AnchorStyles)6;
+            cGray.AutoSize = true;
+            cGray.BackColor = Color.FromArgb(170, 170, 170);
+            cGray.Cursor = Cursors.Hand;
+            cGray.ForeColor = Color.DarkBlue;
+            cGray.Location = new Point(83, 362);
+            cGray.MinimumSize = new Size(20, 20);
+            cGray.Name = "cGray";
+            cGray.Size = new Size(20, 20);
+            cGray.TabIndex = 52;
+            cGray.Tag = "%7";
+            toolTip1.SetToolTip(cGray, "%7");
+            cGray.Click += Color_Click;
+            cDarkGray.Anchor = (AnchorStyles)6;
+            cDarkGray.AutoSize = true;
+            cDarkGray.BackColor = Color.FromArgb(85, 85, 85);
+            cDarkGray.Cursor = Cursors.Hand;
+            cDarkGray.ForeColor = Color.DarkBlue;
+            cDarkGray.Location = new Point(57, 362);
+            cDarkGray.MinimumSize = new Size(20, 20);
+            cDarkGray.Name = "cDarkGray";
+            cDarkGray.Size = new Size(20, 20);
+            cDarkGray.TabIndex = 53;
+            cDarkGray.Tag = "%8";
+            toolTip1.SetToolTip(cDarkGray, "%8");
+            cDarkGray.Click += Color_Click;
+            label25.Anchor = (AnchorStyles)6;
+            label25.AutoSize = true;
+            label25.BackColor = Color.Gray;
+            label25.ForeColor = Color.DarkBlue;
+            label25.Location = new Point(21, 350);
+            label25.MinimumSize = new Size(120, 120);
+            label25.Name = "label25";
+            label25.Size = new Size(120, 120);
+            label25.TabIndex = 61;
+            tabPagePlugins.BackColor = SystemColors.Control;
+            tabPagePlugins.Controls.Add(pnlPlugin);
+            tabPagePlugins.Controls.Add(groupBox4);
+            tabPagePlugins.Controls.Add(treeView1);
+            tabPagePlugins.Location = new Point(4, 22);
+            tabPagePlugins.Name = "tabPagePlugins";
+            tabPagePlugins.Padding = new Padding(3);
+            tabPagePlugins.Size = new Size(720, 486);
+            tabPagePlugins.TabIndex = 10;
+            tabPagePlugins.Text = "Plugins";
+            pnlPlugin.Anchor = (AnchorStyles)15;
+            pnlPlugin.BorderStyle = (BorderStyle)1;
+            pnlPlugin.Location = new Point(201, 6);
+            pnlPlugin.Name = "pnlPlugin";
+            pnlPlugin.Size = new Size(513, 474);
+            pnlPlugin.TabIndex = 5;
+            groupBox4.Anchor = (AnchorStyles)6;
+            groupBox4.Controls.Add(lblPluginDesc);
+            groupBox4.Controls.Add(lblPluginAuthor);
+            groupBox4.Controls.Add(lblPluginVersion);
+            groupBox4.Controls.Add(lblPluginName);
+            groupBox4.Location = new Point(7, 336);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(188, 144);
+            groupBox4.TabIndex = 1;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Plugin Information:";
+            lblPluginDesc.Anchor = (AnchorStyles)15;
+            lblPluginDesc.Location = new Point(6, 65);
+            lblPluginDesc.Name = "lblPluginDesc";
+            lblPluginDesc.Size = new Size(176, 64);
+            lblPluginDesc.TabIndex = 4;
+            lblPluginDesc.Text = "   Plugin Description Goes Here... Test One Two Three, This is a Test...";
+            lblPluginAuthor.Anchor = (AnchorStyles)13;
+            lblPluginAuthor.Location = new Point(6, 49);
+            lblPluginAuthor.Name = "lblPluginAuthor";
+            lblPluginAuthor.Size = new Size(176, 16);
+            lblPluginAuthor.TabIndex = 3;
+            lblPluginAuthor.Text = "By: <Author's Name>";
+            lblPluginVersion.Anchor = (AnchorStyles)13;
+            lblPluginVersion.Location = new Point(6, 33);
+            lblPluginVersion.Name = "lblPluginVersion";
+            lblPluginVersion.Size = new Size(176, 16);
+            lblPluginVersion.TabIndex = 2;
+            lblPluginVersion.Text = "(<Version>)";
+            lblPluginName.Anchor = (AnchorStyles)13;
+            lblPluginName.Font = new Font("Microsoft Sans Serif", 8.25f, (FontStyle)1, (GraphicsUnit)3, 0);
+            lblPluginName.Location = new Point(6, 17);
+            lblPluginName.Name = "lblPluginName";
+            lblPluginName.Size = new Size(176, 16);
+            lblPluginName.TabIndex = 1;
+            lblPluginName.Text = "<Plugin Name Here>";
+            treeView1.Anchor = (AnchorStyles)7;
+            treeView1.FullRowSelect = true;
+            treeView1.Location = new Point(6, 6);
+            treeView1.Name = "treeView1";
+            treeView1.ShowLines = false;
+            treeView1.ShowPlusMinus = false;
+            treeView1.ShowRootLines = false;
+            treeView1.Size = new Size(189, 323);
+            treeView1.TabIndex = 0;
+            treeView1.AfterSelect += treeView1_AfterSelect;
+            playersTab.BackColor = Color.Transparent;
+            playersTab.Controls.Add(playerColorCombo);
+            playersTab.Controls.Add(targetMapCombo);
+            playersTab.Controls.Add(button15);
+            playersTab.Controls.Add(button14);
+            playersTab.Controls.Add(banCheck);
+            playersTab.Controls.Add(kickCheck);
+            playersTab.Controls.Add(playersListView);
+            playersTab.Controls.Add(titleText);
+            playersTab.Controls.Add(banText);
+            playersTab.Controls.Add(kickText);
+            playersTab.Controls.Add(label12);
+            playersTab.Controls.Add(button8);
+            playersTab.Controls.Add(button7);
+            playersTab.Controls.Add(button6);
+            playersTab.Controls.Add(btnMute);
+            playersTab.Controls.Add(button3);
+            playersTab.Controls.Add(button2);
+            playersTab.Controls.Add(label10);
+            playersTab.Controls.Add(label7);
+            playersTab.Controls.Add(playersGrid);
+            playersTab.Controls.Add(button4);
+            playersTab.Controls.Add(xbanCheck);
+            playersTab.Controls.Add(xbanText);
+            playersTab.Location = new Point(4, 22);
+            playersTab.Name = "playersTab";
+            playersTab.Padding = new Padding(3);
+            playersTab.Size = new Size(720, 486);
+            playersTab.TabIndex = 8;
+            playersTab.Text = "Players";
+            playerColorCombo.Anchor = (AnchorStyles)6;
+            playerColorCombo.DropDownStyle = (ComboBoxStyle)2;
+            playerColorCombo.FormattingEnabled = true;
+            playerColorCombo.Location = new Point(500, 395);
+            playerColorCombo.Name = "playerColorCombo";
+            playerColorCombo.Size = new Size(102, 21);
+            playerColorCombo.TabIndex = 66;
+            targetMapCombo.Anchor = (AnchorStyles)6;
+            targetMapCombo.DropDownStyle = (ComboBoxStyle)2;
+            targetMapCombo.FormattingEnabled = true;
+            targetMapCombo.Location = new Point(501, 422);
+            targetMapCombo.Name = "targetMapCombo";
+            targetMapCombo.Size = new Size(101, 21);
+            targetMapCombo.TabIndex = 65;
+            targetMapCombo.SelectedIndexChanged += comboBox2_SelectedIndexChanged;
+            button15.Anchor = (AnchorStyles)6;
+            button15.Location = new Point(338, 364);
+            button15.Name = "button15";
+            button15.Size = new Size(75, 23);
+            button15.TabIndex = 64;
+            button15.Text = "Undo All";
+            button15.UseVisualStyleBackColor = true;
+            button15.Click += button15_Click;
+            button14.Anchor = (AnchorStyles)6;
+            button14.Location = new Point(419, 422);
+            button14.Name = "button14";
+            button14.Size = new Size(75, 23);
+            button14.TabIndex = 63;
+            button14.Text = "Move";
+            button14.UseVisualStyleBackColor = true;
+            button14.Click += button14_Click;
+            banCheck.Anchor = (AnchorStyles)6;
+            banCheck.AutoSize = true;
+            banCheck.Location = new Point(95, 425);
+            banCheck.Name = "banCheck";
+            banCheck.Size = new Size(16, 15);
+            banCheck.TabIndex = 61;
+            banCheck.UseVisualStyleBackColor = true;
+            banCheck.Visible = false;
+            banCheck.CheckedChanged += banCheck_CheckedChanged;
+            kickCheck.Anchor = (AnchorStyles)6;
+            kickCheck.AutoSize = true;
+            kickCheck.Location = new Point(95, 369);
+            kickCheck.Name = "kickCheck";
+            kickCheck.Size = new Size(16, 15);
+            kickCheck.TabIndex = 60;
+            kickCheck.UseVisualStyleBackColor = true;
+            kickCheck.CheckedChanged += kickCheck_CheckedChanged;
+            playersListView.Anchor = (AnchorStyles)7;
+            playersListView.Columns.AddRange(new ColumnHeader[3]
+            {
+                PlName, PlRank, PlMap
+            });
+            playersListView.FullRowSelect = true;
+            playersListView.HideSelection = false;
+            playersListView.Location = new Point(18, 34);
+            playersListView.MultiSelect = false;
+            playersListView.Name = "playersListView";
+            playersListView.Size = new Size(304, 284);
+            playersListView.Sorting = (SortOrder)1;
+            playersListView.TabIndex = 59;
+            playersListView.UseCompatibleStateImageBehavior = false;
+            playersListView.View = (View)1;
+            playersListView.SelectedIndexChanged += playersListView_SelectedIndexChanged;
+            PlName.Text = "Name";
+            PlName.Width = 100;
+            PlRank.Text = "Rank";
+            PlRank.Width = 100;
+            PlMap.Text = "Map";
+            PlMap.Width = 100;
+            titleText.Anchor = (AnchorStyles)6;
+            titleText.Location = new Point(500, 366);
+            titleText.MaxLength = 17;
+            titleText.Name = "titleText";
+            titleText.Size = new Size(102, 21);
+            titleText.TabIndex = 57;
+            banText.Anchor = (AnchorStyles)6;
+            banText.Location = new Point(114, 424);
+            banText.Name = "banText";
+            banText.ReadOnly = true;
+            banText.Size = new Size(207, 21);
+            banText.TabIndex = 55;
+            banText.Visible = false;
+            kickText.Anchor = (AnchorStyles)6;
+            kickText.Location = new Point(114, 366);
+            kickText.Name = "kickText";
+            kickText.ReadOnly = true;
+            kickText.Size = new Size(207, 21);
+            kickText.TabIndex = 54;
+            kickText.TextChanged += kickText_TextChanged;
+            label12.Anchor = (AnchorStyles)6;
+            label12.AutoSize = true;
+            label12.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label12.Location = new Point(15, 344);
+            label12.Name = "label12";
+            label12.Size = new Size(67, 14);
+            label12.TabIndex = 53;
+            label12.Text = "Commands";
+            button8.Anchor = (AnchorStyles)6;
+            button8.Location = new Point(338, 393);
+            button8.Name = "button8";
+            button8.Size = new Size(75, 23);
+            button8.TabIndex = 51;
+            button8.Text = "Kill";
+            button8.UseVisualStyleBackColor = true;
+            button8.Click += button8_Click;
+            button7.Anchor = (AnchorStyles)6;
+            button7.Location = new Point(419, 393);
+            button7.Name = "button7";
+            button7.Size = new Size(75, 23);
+            button7.TabIndex = 47;
+            button7.Text = "Color";
+            button7.UseVisualStyleBackColor = true;
+            button7.Click += button7_Click;
+            button6.Anchor = (AnchorStyles)6;
+            button6.Location = new Point(419, 364);
+            button6.Name = "button6";
+            button6.Size = new Size(75, 23);
+            button6.TabIndex = 50;
+            button6.Text = "Title";
+            button6.UseVisualStyleBackColor = true;
+            button6.Click += button6_Click;
+            btnMute.Anchor = (AnchorStyles)6;
+            btnMute.Location = new Point(338, 422);
+            btnMute.Name = "btnMute";
+            btnMute.Size = new Size(75, 23);
+            btnMute.TabIndex = 49;
+            btnMute.Text = "Mute";
+            btnMute.UseVisualStyleBackColor = true;
+            btnMute.Click += button5_Click;
+            button3.Anchor = (AnchorStyles)6;
+            button3.Location = new Point(18, 364);
+            button3.Name = "button3";
+            button3.Size = new Size(75, 23);
+            button3.TabIndex = 47;
+            button3.Text = "Kick";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            button2.Anchor = (AnchorStyles)6;
+            button2.Location = new Point(18, 422);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 46;
+            button2.Text = "Ban";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            label10.AutoSize = true;
+            label10.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label10.Location = new Point(367, 15);
+            label10.Name = "label10";
+            label10.Size = new Size(63, 14);
+            label10.TabIndex = 45;
+            label10.Text = "Properties";
+            label7.AutoSize = true;
+            label7.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label7.Location = new Point(15, 15);
+            label7.Name = "label7";
+            label7.Size = new Size(46, 14);
+            label7.TabIndex = 42;
+            label7.Text = "Players";
+            playersGrid.Anchor = (AnchorStyles)15;
+            playersGrid.Location = new Point(370, 34);
+            playersGrid.Name = "playersGrid";
+            playersGrid.Size = new Size(300, 284);
+            playersGrid.TabIndex = 1;
+            playersGrid.ToolbarVisible = false;
+            button4.Anchor = (AnchorStyles)6;
+            button4.Location = new Point(18, 393);
+            button4.Name = "button4";
+            button4.Size = new Size(75, 23);
+            button4.TabIndex = 48;
+            button4.Text = "XBan";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
+            xbanCheck.Anchor = (AnchorStyles)6;
+            xbanCheck.AutoSize = true;
+            xbanCheck.Location = new Point(95, 398);
+            xbanCheck.Name = "xbanCheck";
+            xbanCheck.Size = new Size(16, 15);
+            xbanCheck.TabIndex = 62;
+            xbanCheck.UseVisualStyleBackColor = true;
+            xbanCheck.CheckedChanged += xbanCheck_CheckedChanged;
+            xbanText.Anchor = (AnchorStyles)6;
+            xbanText.Location = new Point(114, 395);
+            xbanText.Name = "xbanText";
+            xbanText.ReadOnly = true;
+            xbanText.Size = new Size(207, 21);
+            xbanText.TabIndex = 56;
+            mapsTab.BackColor = Color.Transparent;
+            mapsTab.Controls.Add(mapsList);
+            mapsTab.Controls.Add(button13);
+            mapsTab.Controls.Add(label11);
+            mapsTab.Controls.Add(unloadedMapsList);
+            mapsTab.Controls.Add(button12);
+            mapsTab.Controls.Add(button11);
+            mapsTab.Controls.Add(button10);
+            mapsTab.Controls.Add(btnCreateMap);
+            mapsTab.Controls.Add(label9);
+            mapsTab.Controls.Add(label8);
+            mapsTab.Controls.Add(allMapsGrid);
+            mapsTab.Location = new Point(4, 22);
+            mapsTab.Name = "mapsTab";
+            mapsTab.Padding = new Padding(3);
+            mapsTab.Size = new Size(720, 486);
+            mapsTab.TabIndex = 9;
+            mapsTab.Text = "Maps";
+            mapsList.FormattingEnabled = true;
+            mapsList.Location = new Point(33, 38);
+            mapsList.Name = "mapsList";
+            mapsList.Size = new Size(132, 199);
+            mapsList.TabIndex = 0;
+            mapsList.SelectedIndexChanged += mapsList_SelectedIndexChanged;
+            button13.Location = new Point(191, 38);
+            button13.Name = "button13";
+            button13.Size = new Size(75, 23);
+            button13.TabIndex = 53;
+            button13.Text = "Unload";
+            button13.UseVisualStyleBackColor = true;
+            button13.Click += button13_Click;
+            label11.AutoSize = true;
+            label11.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label11.Location = new Point(30, 255);
+            label11.Name = "label11";
+            label11.Size = new Size(94, 14);
+            label11.TabIndex = 52;
+            label11.Text = "Unloaded maps";
+            unloadedMapsList.Anchor = (AnchorStyles)7;
+            unloadedMapsList.FormattingEnabled = true;
+            unloadedMapsList.Location = new Point(33, 275);
+            unloadedMapsList.Name = "unloadedMapsList";
+            unloadedMapsList.Size = new Size(132, 173);
+            unloadedMapsList.TabIndex = 51;
+            button12.Location = new Point(191, 96);
+            button12.Name = "button12";
+            button12.Size = new Size(75, 23);
+            button12.TabIndex = 50;
+            button12.Text = "Delete";
+            button12.UseVisualStyleBackColor = true;
+            button12.Click += button12_Click;
+            button11.Enabled = false;
+            button11.Location = new Point(191, 67);
+            button11.Name = "button11";
+            button11.Size = new Size(75, 23);
+            button11.TabIndex = 49;
+            button11.Text = "Rename";
+            button11.UseVisualStyleBackColor = true;
+            button10.Anchor = (AnchorStyles)6;
+            button10.Location = new Point(191, 436);
+            button10.Name = "button10";
+            button10.Size = new Size(75, 23);
+            button10.TabIndex = 48;
+            button10.Text = "Load";
+            button10.UseVisualStyleBackColor = true;
+            button10.Click += button10_Click;
+            btnCreateMap.Location = new Point(191, 214);
+            btnCreateMap.Name = "btnCreateMap";
+            btnCreateMap.Size = new Size(75, 23);
+            btnCreateMap.TabIndex = 47;
+            btnCreateMap.Text = "Create";
+            btnCreateMap.UseVisualStyleBackColor = true;
+            btnCreateMap.Click += button9_Click;
+            label9.AutoSize = true;
+            label9.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label9.Location = new Point(395, 20);
+            label9.Name = "label9";
+            label9.Size = new Size(63, 14);
+            label9.TabIndex = 44;
+            label9.Text = "Properties";
+            label8.AutoSize = true;
+            label8.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label8.Location = new Point(30, 19);
+            label8.Name = "label8";
+            label8.Size = new Size(37, 14);
+            label8.TabIndex = 43;
+            label8.Text = "Maps";
+            allMapsGrid.Anchor = (AnchorStyles)15;
+            allMapsGrid.Location = new Point(398, 38);
+            allMapsGrid.Name = "allMapsGrid";
+            allMapsGrid.Size = new Size(278, 409);
+            allMapsGrid.TabIndex = 1;
+            lavaTab.BackColor = Color.Transparent;
+            lavaTab.Controls.Add(label6);
+            lavaTab.Controls.Add(mapsGrid);
+            lavaTab.Location = new Point(4, 22);
+            lavaTab.Name = "lavaTab";
+            lavaTab.Padding = new Padding(3);
+            lavaTab.Size = new Size(720, 486);
+            lavaTab.TabIndex = 6;
+            lavaTab.Text = "Lava Survival";
+            lavaTab.Click += lavaTab_Click;
+            label6.Font = new Font("Calibri", 9f, 0, (GraphicsUnit)3, 238);
+            label6.Location = new Point(42, 21);
+            label6.Name = "label6";
+            label6.Size = new Size(96, 19);
+            label6.TabIndex = 5;
+            label6.Text = "Lava maps:";
+            mapsGrid.Anchor = (AnchorStyles)15;
+            mapsGrid.AutoSizeColumnsMode = (DataGridViewAutoSizeColumnsMode)16;
+            mapsGrid.BackgroundColor = SystemColors.Control;
+            mapsGrid.BorderStyle = (BorderStyle)2;
+            mapsGrid.ColumnHeadersHeightSizeMode = (DataGridViewColumnHeadersHeightSizeMode)2;
+            mapsGrid.Columns.AddRange(mapName, sourceX, sourceY, sourceZ, phase1, phase2, typeOfLava);
+            mapsGrid.EditMode = (DataGridViewEditMode)4;
+            mapsGrid.Location = new Point(43, 49);
+            mapsGrid.Name = "mapsGrid";
+            val3.Alignment = (DataGridViewContentAlignment)32;
+            val3.BackColor = SystemColors.Control;
+            val3.Font = new Font("Calibri", 8.25f);
+            val3.ForeColor = SystemColors.WindowText;
+            val3.SelectionBackColor = SystemColors.Highlight;
+            val3.SelectionForeColor = SystemColors.HighlightText;
+            val3.WrapMode = (DataGridViewTriState)1;
+            mapsGrid.RowHeadersDefaultCellStyle = val3;
+            val4.Alignment = (DataGridViewContentAlignment)32;
+            mapsGrid.RowsDefaultCellStyle = val4;
+            mapsGrid.SelectionMode = 0;
+            mapsGrid.Size = new Size(616, 404);
+            mapsGrid.TabIndex = 0;
+            mapsGrid.CellContentClick += mapsGrid_CellContentClick;
+            mapName.FillWeight = 135.3597f;
+            mapName.HeaderText = "Map Name";
+            mapName.MinimumWidth = 40;
+            mapName.Name = "mapName";
+            sourceX.FillWeight = 88.54781f;
+            sourceX.HeaderText = "x";
+            sourceX.MinimumWidth = 15;
+            sourceX.Name = "sourceX";
+            sourceY.FillWeight = 88.54781f;
+            sourceY.HeaderText = "y";
+            sourceY.MinimumWidth = 15;
+            sourceY.Name = "sourceY";
+            sourceZ.FillWeight = 88.54781f;
+            sourceZ.HeaderText = "z";
+            sourceZ.MinimumWidth = 15;
+            sourceZ.Name = "sourceZ";
+            phase1.FillWeight = 103.8501f;
+            phase1.HeaderText = "Phase I";
+            phase1.MinimumWidth = 30;
+            phase1.Name = "phase1";
+            phase2.FillWeight = 106.599f;
+            phase2.HeaderText = "Phase II";
+            phase2.MinimumWidth = 30;
+            phase2.Name = "phase2";
+            typeOfLava.FillWeight = 88.54781f;
+            typeOfLava.HeaderText = "Block";
+            typeOfLava.MinimumWidth = 30;
+            typeOfLava.Name = "typeOfLava";
+            systemTab.BackColor = Color.Transparent;
+            systemTab.Controls.Add(groupBox1);
+            systemTab.Controls.Add(groupBox2);
+            systemTab.Controls.Add(groupBox3);
+            systemTab.Location = new Point(4, 22);
+            systemTab.Name = "systemTab";
+            systemTab.Padding = new Padding(7, 6, 20, 11);
+            systemTab.Size = new Size(720, 486);
+            systemTab.TabIndex = 4;
+            systemTab.Text = "Remote Console";
+            groupBox1.BackColor = Color.FromArgb(224, 224, 224);
+            groupBox1.Controls.Add(button9);
+            groupBox1.Controls.Add(checkBox1);
+            groupBox1.Controls.Add(label20);
+            groupBox1.Controls.Add(textBox1);
+            groupBox1.Controls.Add(checkBox2);
+            groupBox1.Controls.Add(button18);
+            groupBox1.Location = new Point(27, 33);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(311, 201);
+            groupBox1.TabIndex = 23;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Remote Connection Settings";
+            button9.Location = new Point(150, 62);
+            button9.Name = "button9";
+            button9.Size = new Size(45, 23);
+            button9.TabIndex = 22;
+            button9.Text = "Set";
+            button9.UseVisualStyleBackColor = true;
+            button9.Click += button9_Click_2;
+            checkBox1.AutoSize = true;
+            checkBox1.Checked = true;
+            checkBox1.CheckState = (CheckState)1;
+            checkBox1.Location = new Point(20, 39);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(124, 17);
+            checkBox1.TabIndex = 2;
+            checkBox1.Text = "Allow remote access";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged_1;
+            label20.AutoSize = true;
+            label20.Location = new Point(17, 67);
+            label20.Name = "label20";
+            label20.Size = new Size(69, 13);
+            label20.TabIndex = 0;
+            label20.Text = "Remote port:";
+            textBox1.Location = new Point(92, 62);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(50, 21);
+            textBox1.TabIndex = 1;
+            textBox1.Text = "33434";
+            textBox1.TextAlign = (HorizontalAlignment)1;
+            textBox1.Validating += textBox1_Validating;
+            checkBox2.AutoSize = true;
+            checkBox2.Checked = true;
+            checkBox2.CheckState = (CheckState)1;
+            checkBox2.Location = new Point(20, 95);
+            checkBox2.Name = "checkBox2";
+            checkBox2.Size = new Size(168, 17);
+            checkBox2.TabIndex = 8;
+            checkBox2.Text = "Listed for web browser access";
+            checkBox2.UseVisualStyleBackColor = true;
+            checkBox2.CheckedChanged += checkBox2_CheckedChanged;
+            button18.Enabled = false;
+            button18.Location = new Point(200, 62);
+            button18.Name = "button18";
+            button18.Size = new Size(45, 23);
+            button18.TabIndex = 10;
+            button18.Text = "Test";
+            button18.UseVisualStyleBackColor = true;
+            button18.Click += button18_Click;
+            groupBox2.BackColor = Color.FromArgb(224, 224, 224);
+            groupBox2.Controls.Add(accountsList);
+            groupBox2.Controls.Add(newAccountBtn);
+            groupBox2.Controls.Add(removeAccountBtn);
+            groupBox2.Controls.Add(changeAccountBtn);
+            groupBox2.Location = new Point(362, 33);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(325, 201);
+            groupBox2.TabIndex = 24;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "AccountManager";
+            accountsList.Columns.AddRange(new ColumnHeader[1]
+            {
+                remoteAccount
+            });
+            accountsList.FullRowSelect = true;
+            accountsList.Location = new Point(131, 39);
+            accountsList.MultiSelect = false;
+            accountsList.Name = "accountsList";
+            accountsList.Size = new Size(121, 135);
+            accountsList.Sorting = (SortOrder)1;
+            accountsList.TabIndex = 21;
+            accountsList.UseCompatibleStateImageBehavior = false;
+            accountsList.View = (View)1;
+            remoteAccount.Text = "Remote Account";
+            remoteAccount.Width = 100;
+            newAccountBtn.Location = new Point(27, 63);
+            newAccountBtn.Name = "newAccountBtn";
+            newAccountBtn.Size = new Size(75, 23);
+            newAccountBtn.TabIndex = 5;
+            newAccountBtn.Text = "New";
+            newAccountBtn.UseVisualStyleBackColor = true;
+            newAccountBtn.Click += newAccountBtn_Click;
+            removeAccountBtn.Location = new Point(27, 121);
+            removeAccountBtn.Name = "removeAccountBtn";
+            removeAccountBtn.Size = new Size(75, 23);
+            removeAccountBtn.TabIndex = 6;
+            removeAccountBtn.Text = "Remove";
+            removeAccountBtn.UseVisualStyleBackColor = true;
+            removeAccountBtn.Click += removeAccountBtn_Click;
+            changeAccountBtn.Location = new Point(27, 92);
+            changeAccountBtn.Name = "changeAccountBtn";
+            changeAccountBtn.Size = new Size(75, 23);
+            changeAccountBtn.TabIndex = 7;
+            changeAccountBtn.Text = "Change";
+            changeAccountBtn.UseVisualStyleBackColor = true;
+            changeAccountBtn.Click += changeAccountBtn_Click;
+            groupBox3.BackColor = Color.FromArgb(224, 224, 224);
+            groupBox3.Controls.Add(linkLabel1);
+            groupBox3.Controls.Add(textBox4);
+            groupBox3.Controls.Add(label22);
+            groupBox3.Location = new Point(27, 259);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(660, 215);
+            groupBox3.TabIndex = 25;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Guide";
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(22, 36);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(180, 13);
+            linkLabel1.TabIndex = 22;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "http://mcdzienny.cba.pl/remote.php";
+            linkLabel1.VisitedLinkColor = Color.Blue;
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            textBox4.Location = new Point(283, 20);
+            textBox4.Multiline = true;
+            textBox4.Name = "textBox4";
+            textBox4.ReadOnly = true;
+            textBox4.ScrollBars = (ScrollBars)2;
+            textBox4.Size = new Size(354, 174);
+            textBox4.TabIndex = 21;
+            textBox4.Text = componentResourceManager.GetString("textBox4.Text");
+            label22.AutoSize = true;
+            label22.Location = new Point(22, 23);
+            label22.Name = "label22";
+            label22.Size = new Size(164, 13);
+            label22.TabIndex = 11;
+            label22.Text = "You can find the remote client on:";
+            changelogTab.BackColor = Color.Transparent;
+            changelogTab.Controls.Add(tabControl1);
+            changelogTab.Location = new Point(4, 22);
+            changelogTab.Name = "changelogTab";
+            changelogTab.Padding = new Padding(7, 6, 20, 11);
+            changelogTab.Size = new Size(720, 486);
+            changelogTab.TabIndex = 2;
+            changelogTab.Text = "Info";
+            tabControl1.Controls.Add(tabPage1);
+            tabControl1.Controls.Add(tabPage2);
+            tabControl1.Dock = (DockStyle)5;
+            tabControl1.Location = new Point(7, 6);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(693, 469);
+            tabControl1.TabIndex = 1;
+            tabPage1.BackColor = Color.Transparent;
+            tabPage1.Controls.Add(txtChangelog);
+            tabPage1.Location = new Point(4, 22);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(685, 443);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Changelog";
+            txtChangelog.BackColor = Color.White;
+            txtChangelog.Cursor = Cursors.Arrow;
+            txtChangelog.Dock = (DockStyle)5;
+            txtChangelog.Location = new Point(3, 3);
+            txtChangelog.Margin = new Padding(10, 10, 30, 30);
+            txtChangelog.Multiline = true;
+            txtChangelog.Name = "txtChangelog";
+            txtChangelog.ReadOnly = true;
+            txtChangelog.ScrollBars = (ScrollBars)2;
+            txtChangelog.Size = new Size(679, 437);
+            txtChangelog.TabIndex = 0;
+            tabPage2.BackColor = Color.Transparent;
+            tabPage2.Controls.Add(txtSystem);
+            tabPage2.Location = new Point(4, 22);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(685, 443);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "System Log";
+            txtSystem.BackColor = Color.White;
+            txtSystem.Cursor = Cursors.Arrow;
+            txtSystem.Dock = (DockStyle)5;
+            txtSystem.Location = new Point(3, 3);
+            txtSystem.Multiline = true;
+            txtSystem.Name = "txtSystem";
+            txtSystem.ReadOnly = true;
+            txtSystem.ScrollBars = (ScrollBars)2;
+            txtSystem.Size = new Size(679, 437);
+            txtSystem.TabIndex = 2;
+            errorsTab.BackColor = Color.Transparent;
+            errorsTab.Controls.Add(txtErrors);
+            errorsTab.Location = new Point(4, 22);
+            errorsTab.Name = "errorsTab";
+            errorsTab.Padding = new Padding(7, 6, 20, 11);
+            errorsTab.Size = new Size(720, 486);
+            errorsTab.TabIndex = 3;
+            errorsTab.Text = "Errors";
+            txtErrors.BackColor = Color.White;
+            txtErrors.Cursor = Cursors.Arrow;
+            txtErrors.Dock = (DockStyle)5;
+            txtErrors.Location = new Point(7, 6);
+            txtErrors.Multiline = true;
+            txtErrors.Name = "txtErrors";
+            txtErrors.ReadOnly = true;
+            txtErrors.ScrollBars = (ScrollBars)2;
+            txtErrors.Size = new Size(693, 469);
+            txtErrors.TabIndex = 1;
+            txtErrors.TextChanged += txtErrors_TextChanged;
+            minimizeButton.Anchor = (AnchorStyles)9;
+            minimizeButton.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            minimizeButton.Location = new Point(659, 5);
+            minimizeButton.Name = "minimizeButton";
+            minimizeButton.Size = new Size(64, 23);
+            minimizeButton.TabIndex = 36;
+            minimizeButton.Text = "Minimize";
+            minimizeButton.Click += minimizeButton_Click;
+            btnProperties.Anchor = (AnchorStyles)9;
+            btnProperties.Cursor = Cursors.Hand;
+            btnProperties.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            btnProperties.Location = new Point(585, 5);
+            btnProperties.Name = "btnProperties";
+            btnProperties.Size = new Size(70, 23);
+            btnProperties.TabIndex = 34;
+            btnProperties.Text = "Properties";
+            btnProperties.UseVisualStyleBackColor = true;
+            btnProperties.Click += btnProperties_Click_1;
+            button5.Anchor = (AnchorStyles)9;
+            button5.Cursor = Cursors.Hand;
+            button5.Font = new Font("Calibri", 8.25f, 0, (GraphicsUnit)3, 0);
+            button5.Location = new Point(535, 5);
+            button5.Name = "button5";
+            button5.Size = new Size(46, 23);
+            button5.TabIndex = 37;
+            button5.Text = "Tools";
+            button5.UseVisualStyleBackColor = true;
+            button5.Click += button5_Click_1;
+            statusStrip1.Items.AddRange(new ToolStripItem[3]
+            {
+                toolStripStatusLabelUptime, toolStripStatusLabelRoundTime, toolStripStatusLabelLagometer
+            });
+            statusStrip1.Location = new Point(2, 525);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.RenderMode = (ToolStripRenderMode)2;
+            statusStrip1.Size = new Size(727, 23);
+            statusStrip1.TabIndex = 38;
+            statusStrip1.Text = "statusStrip1";
+            toolStripStatusLabelUptime.AutoSize = false;
+            toolStripStatusLabelUptime.DisplayStyle = (ToolStripItemDisplayStyle)1;
+            toolStripStatusLabelUptime.Margin = new Padding(10, 3, 0, 2);
+            toolStripStatusLabelUptime.Name = "toolStripStatusLabelUptime";
+            toolStripStatusLabelUptime.Size = new Size(128, 18);
+            toolStripStatusLabelUptime.Text = "Uptime : 0min";
+            toolStripStatusLabelUptime.TextAlign = (ContentAlignment)16;
+            toolStripStatusLabelRoundTime.AutoSize = false;
+            toolStripStatusLabelRoundTime.Margin = new Padding(5, 3, 0, 2);
+            toolStripStatusLabelRoundTime.Name = "toolStripStatusLabelRoundTime";
+            toolStripStatusLabelRoundTime.Size = new Size(260, 18);
+            toolStripStatusLabelRoundTime.Text = "Flood starts in : 1h 59min    Round ends in : 1h 59min";
+            toolStripStatusLabelRoundTime.TextAlign = (ContentAlignment)16;
+            toolStripStatusLabelLagometer.Margin = new Padding(5, 3, 0, 2);
+            toolStripStatusLabelLagometer.Name = "toolStripStatusLabelLagometer";
+            toolStripStatusLabelLagometer.Size = new Size(304, 18);
+            toolStripStatusLabelLagometer.Spring = true;
+            toolStripStatusLabelLagometer.Text = "Lag (avg.) : ";
+            toolStripStatusLabelLagometer.TextAlign = (ContentAlignment)16;
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = (AutoScaleMode)1;
+            ClientSize = new Size(732, 549);
+            Controls.Add(statusStrip1);
+            Controls.Add(button5);
+            Controls.Add(btnProperties);
+            Controls.Add(minimizeButton);
+            Controls.Add(mainTabs);
+            MinimumSize = new Size(740, 580);
+            Name = "Window";
+            Padding = new Padding(2, 13, 3, 1);
+            FormClosing += Window_FormClosing;
+            Load += Window_Load;
+            mapsStrip.ResumeLayout(false);
+            playerStrip.ResumeLayout(false);
+            zombieSurvivalTab.ResumeLayout(false);
+            ((ISupportInitialize)infectionMapsGrid).EndInit();
+            iconContext.ResumeLayout(false);
+            toolStripContainer1.ResumeLayout(false);
+            toolStripContainer1.PerformLayout();
+            mainTabs.ResumeLayout(false);
+            mainTab.ResumeLayout(false);
+            mainTab.PerformLayout();
+            splitContainer5.Panel1.ResumeLayout(false);
+            splitContainer5.Panel1.PerformLayout();
+            splitContainer5.Panel2.ResumeLayout(false);
+            splitContainer5.Panel2.PerformLayout();
+            splitContainer5.ResumeLayout(false);
+            splitContainer3.Panel1.ResumeLayout(false);
+            splitContainer3.Panel2.ResumeLayout(false);
+            splitContainer3.ResumeLayout(false);
+            splitContainer4.Panel1.ResumeLayout(false);
+            splitContainer4.Panel2.ResumeLayout(false);
+            splitContainer4.ResumeLayout(false);
+            gBChat.ResumeLayout(false);
+            gBChat.PerformLayout();
+            gBCommands.ResumeLayout(false);
+            gBCommands.PerformLayout();
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel1.PerformLayout();
+            splitContainer2.Panel2.ResumeLayout(false);
+            splitContainer2.Panel2.PerformLayout();
+            splitContainer2.ResumeLayout(false);
+            chatTab.ResumeLayout(false);
+            chatTab.PerformLayout();
+            ((ISupportInitialize)pictureBox1).EndInit();
+            tabPagePlugins.ResumeLayout(false);
+            groupBox4.ResumeLayout(false);
+            playersTab.ResumeLayout(false);
+            playersTab.PerformLayout();
+            mapsTab.ResumeLayout(false);
+            mapsTab.PerformLayout();
+            lavaTab.ResumeLayout(false);
+            ((ISupportInitialize)mapsGrid).EndInit();
+            systemTab.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
+            changelogTab.ResumeLayout(false);
+            tabControl1.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
+            errorsTab.ResumeLayout(false);
+            errorsTab.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
-        // Token: 0x02000360 RID: 864
+        void mapsStrip_Opening(object sender, CancelEventArgs e)
+        {
+            if (listViewMaps.SelectedIndices.Count <= 0)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        void playerStrip_Opening(object sender, CancelEventArgs e)
+        {
+            if (listViewPlayers.SelectedIndices.Count <= 0)
+            {
+                e.Cancel = true;
+            }
+        }
+
         public struct SCROLLBARINFO
         {
-            // Token: 0x04000DCF RID: 3535
             public int cbSize;
 
-            // Token: 0x04000DD0 RID: 3536
             public RECT rcScrollBar;
 
-            // Token: 0x04000DD1 RID: 3537
             public int dxyLineButton;
 
-            // Token: 0x04000DD2 RID: 3538
             public int xyThumbTop;
 
-            // Token: 0x04000DD3 RID: 3539
             public int xyThumbBottom;
 
-            // Token: 0x04000DD4 RID: 3540
             public int reserved;
 
-            // Token: 0x04000DD5 RID: 3541
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
             public int[] rgstate;
         }
 
-        // Token: 0x02000361 RID: 865
         public struct RECT
         {
-            // Token: 0x04000DD6 RID: 3542
             public int Left;
 
-            // Token: 0x04000DD7 RID: 3543
             public int Top;
 
-            // Token: 0x04000DD8 RID: 3544
             public int Right;
 
-            // Token: 0x04000DD9 RID: 3545
             public int Bottom;
         }
 
-        // Token: 0x02000362 RID: 866
-        // (Invoke) Token: 0x0600195D RID: 6493
-        private delegate void StringCallback(string s);
+        delegate void StringCallback(string s);
 
-        // Token: 0x02000363 RID: 867
-        // (Invoke) Token: 0x06001961 RID: 6497
-        private delegate void PlayerListCallback();
+        delegate void PlayerListCallback();
 
-        // Token: 0x02000364 RID: 868
-        // (Invoke) Token: 0x06001965 RID: 6501
-        private delegate void ReportCallback(Report r);
+        delegate void ReportCallback(Report r);
 
-        // Token: 0x02000365 RID: 869
-        // (Invoke) Token: 0x06001969 RID: 6505
-        private delegate void VoidDelegate();
+        delegate void VoidDelegate();
 
-        // Token: 0x02000366 RID: 870
-        // (Invoke) Token: 0x0600196D RID: 6509
-        private delegate void RefreshMapList();
+        delegate void RefreshMapList();
 
-        // Token: 0x02000367 RID: 871
-        // (Invoke) Token: 0x06001971 RID: 6513
-        private delegate void LogDelegate(string message);
+        delegate void LogDelegate(string message);
 
-        // Token: 0x02000368 RID: 872
-        // (Invoke) Token: 0x06001975 RID: 6517
-        private delegate void ChatDelegate(string message);
+        delegate void ChatDelegate(string message);
 
-        // Token: 0x02000369 RID: 873
-        // (Invoke) Token: 0x06001979 RID: 6521
-        private delegate void SystemDelegate(string message);
+        delegate void SystemDelegate(string message);
 
-        // Token: 0x0200036A RID: 874
-        // (Invoke) Token: 0x0600197D RID: 6525
-        private delegate void ErrorDelegate(string message);
+        delegate void ErrorDelegate(string message);
 
-        // Token: 0x0200036B RID: 875
         public class Coloring
         {
-            // Token: 0x04000DDB RID: 3547
-            public Color color;
 
-            // Token: 0x04000DDA RID: 3546
+            public Color color;
             public int index;
         }
 
-        // Token: 0x0200036C RID: 876
-        // (Invoke) Token: 0x06001982 RID: 6530
-        private delegate void UpdateListViewDelegate(List<string[]> listElements);
+        delegate void UpdateListViewDelegate(List<string[]> listElements);
     }
 }

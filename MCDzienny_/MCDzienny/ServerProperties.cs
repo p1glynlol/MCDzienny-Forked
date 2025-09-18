@@ -1,43 +1,54 @@
-﻿using System;
+using System;
 using System.IO;
 using MCDzienny.Settings;
 
 namespace MCDzienny
 {
-    // Token: 0x0200035E RID: 862
     public static class ServerProperties
     {
-        // Token: 0x04000CEA RID: 3306
-        private static string lastPath;
+        static string lastPath;
 
-        // Token: 0x060018B4 RID: 6324 RVA: 0x000A78B8 File Offset: 0x000A5AB8
         public static void Load(string givenPath, bool skipsalt = false)
         {
             lastPath = givenPath;
-            if (!skipsalt) Server.salt = "";
+            if (!skipsalt)
+            {
+                Server.salt = "";
+            }
             if (File.Exists(givenPath))
             {
-                var array = File.ReadAllLines(givenPath);
-                var array2 = array;
-                foreach (var text in array2)
+                string[] array = File.ReadAllLines(givenPath);
+                string[] array2 = array;
+                foreach (string text in array2)
                 {
-                    if (!(text != "") || text[0] == '#') continue;
-                    var text2 = text.Split('=')[0].Trim();
-                    var text3 = text.Substring(text.IndexOf('=') + 1).Trim();
-                    var text4 = "";
+                    if (!(text != "") || text[0] == '#')
+                    {
+                        continue;
+                    }
+                    string text2 = text.Split('=')[0].Trim();
+                    string text3 = text.Substring(text.IndexOf('=') + 1).Trim();
+                    string text4 = "";
                     switch (text2.ToLower())
                     {
                         case "server-name":
                             if (ValidString(text3, "![]:.,{}~-+()?_/\\ "))
+                            {
                                 Server.name = text3;
+                            }
                             else
+                            {
                                 Server.s.Log("server-name invalid! setting to default.");
+                            }
                             break;
                         case "motd":
                             if (ValidString(text3, "![]&:.,{}~-+()?_/\\= "))
+                            {
                                 Server.motd = text3;
+                            }
                             else
+                            {
                                 Server.s.Log("motd invalid! setting to default.");
+                            }
                             break;
                         case "port":
                             try
@@ -48,19 +59,18 @@ namespace MCDzienny
                             {
                                 Server.s.Log("port invalid! setting to default.");
                             }
-
                             break;
                         case "verify-names-security":
-                            Server.verify = text3.ToLower() == "true" ? true : false;
+                            Server.verify = text3.ToLower() == "true";
                             break;
                         case "public":
-                            Server.isPublic = text3.ToLower() == "true" ? true : false;
+                            Server.isPublic = text3.ToLower() == "true";
                             break;
                         case "world-chat":
-                            Server.worldChat = text3.ToLower() == "true" ? true : false;
+                            Server.worldChat = text3.ToLower() == "true";
                             break;
                         case "guest-goto":
-                            Server.guestGoto = text3.ToLower() == "true" ? true : false;
+                            Server.guestGoto = text3.ToLower() == "true";
                             break;
                         case "max-players":
                             try
@@ -75,14 +85,12 @@ namespace MCDzienny
                                     text3 = "0";
                                     Server.s.Log("Max players has been set to 0.");
                                 }
-
                                 Server.players = Convert.ToByte(text3);
                             }
                             catch
                             {
                                 Server.s.Log("max-players invalid! setting to default.");
                             }
-
                             break;
                         case "max-maps":
                             try
@@ -97,17 +105,15 @@ namespace MCDzienny
                                     text3 = "1";
                                     Server.s.Log("Max maps has been increased to 1.");
                                 }
-
                                 Server.maps = Convert.ToByte(text3);
                             }
                             catch
                             {
                                 Server.s.Log("max-maps invalid! setting to default.");
                             }
-
                             break;
                         case "irc-use":
-                            Server.irc = text3.ToLower() == "true" ? true : false;
+                            Server.irc = text3.ToLower() == "true";
                             break;
                         case "irc-server":
                             Server.ircServer = text3;
@@ -130,7 +136,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("irc-port invalid! setting to default.");
                             }
-
                             break;
                         case "irc-identify":
                             try
@@ -139,16 +144,14 @@ namespace MCDzienny
                             }
                             catch
                             {
-                                Server.s.Log("irc-identify boolean value invalid! Setting to the default of: " +
-                                             Server.ircIdentify + ".");
+                                Server.s.Log("irc-identify boolean value invalid! Setting to the default of: " + Server.ircIdentify + ".");
                             }
-
                             break;
                         case "irc-password":
                             Server.ircPassword = text3;
                             break;
                         case "anti-tunnels":
-                            Server.antiTunnel = text3.ToLower() == "true" ? true : false;
+                            Server.antiTunnel = text3.ToLower() == "true";
                             break;
                         case "max-depth":
                             try
@@ -159,7 +162,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("maxDepth invalid! setting to default.");
                             }
-
                             break;
                         case "rplimit":
                             try
@@ -170,7 +172,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("rpLimit invalid! setting to default.");
                             }
-
                             break;
                         case "rplimit-norm":
                             try
@@ -181,35 +182,37 @@ namespace MCDzienny
                             {
                                 Server.s.Log("rpLimit-norm invalid! setting to default.");
                             }
-
                             break;
                         case "report-back":
-                            Server.reportBack = text3.ToLower() == "true" ? true : false;
+                            Server.reportBack = text3.ToLower() == "true";
                             break;
                         case "backup-time":
-                            if (Convert.ToInt32(text3) > 1) Server.backupInterval = Convert.ToInt32(text3);
+                            if (Convert.ToInt32(text3) > 1)
+                            {
+                                Server.backupInterval = Convert.ToInt32(text3);
+                            }
                             break;
                         case "backup-location":
                             try
                             {
-                                if (Directory.Exists(text3)) Server.backupLocation = text3;
+                                if (Directory.Exists(text3))
+                                {
+                                    Server.backupLocation = text3;
+                                }
                             }
-                            catch
-                            {
-                            }
-
+                            catch {}
                             break;
                         case "console-only":
-                            Server.console = text3.ToLower() == "true" ? true : false;
+                            Server.console = text3.ToLower() == "true";
                             break;
                         case "physicsrestart":
-                            Server.physicsRestart = text3.ToLower() == "true" ? true : false;
+                            Server.physicsRestart = text3.ToLower() == "true";
                             break;
                         case "deathcount":
-                            Server.deathcount = text3.ToLower() == "true" ? true : false;
+                            Server.deathcount = text3.ToLower() == "true";
                             break;
                         case "usemysql":
-                            Server.useMySQL = text3.ToLower() == "true" ? true : false;
+                            Server.useMySQL = text3.ToLower() == "true";
                             break;
                         case "host":
                             Server.MySQLHost = text3;
@@ -235,7 +238,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "defaultcolor":
                             text4 = c.Parse(text3);
@@ -247,10 +249,8 @@ namespace MCDzienny
                                     Server.s.Log("Could not find " + text3);
                                     return;
                                 }
-
                                 text4 = text3;
                             }
-
                             Server.DefaultColor = text4;
                             break;
                         case "irc-color":
@@ -263,10 +263,8 @@ namespace MCDzienny
                                     Server.s.Log("Could not find " + text3);
                                     return;
                                 }
-
                                 text4 = text3;
                             }
-
                             Server.IRCColour = text4;
                             break;
                         case "old-help":
@@ -278,20 +276,21 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "opchat-perm":
                             try
                             {
-                                var b = sbyte.Parse(text3);
-                                if (b < -50 || b > 120) throw new FormatException();
-                                Server.opchatperm = (LevelPermission) b;
+                                sbyte b = sbyte.Parse(text3);
+                                if (b < -50 || b > 120)
+                                {
+                                    throw new FormatException();
+                                }
+                                Server.opchatperm = (LevelPermission)b;
                             }
                             catch
                             {
                                 Server.s.Log("Invalid " + text2 + ".  Using default.");
                             }
-
                             break;
                         case "log-heartbeat":
                             try
@@ -302,7 +301,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ".  Using default.");
                             }
-
                             break;
                         case "force-cuboid":
                             try
@@ -313,7 +311,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ".  Using default.");
                             }
-
                             break;
                         case "cheapmessage":
                             try
@@ -324,10 +321,12 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "cheap-message-given":
-                            if (text3 != "") Server.cheapMessageGiven = text3;
+                            if (text3 != "")
+                            {
+                                Server.cheapMessageGiven = text3;
+                            }
                             break;
                         case "custom-ban":
                             try
@@ -338,10 +337,12 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "custom-ban-message":
-                            if (text3 != "") Server.customBanMessage = text3;
+                            if (text3 != "")
+                            {
+                                Server.customBanMessage = text3;
+                            }
                             break;
                         case "custom-shutdown":
                             try
@@ -352,10 +353,12 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "custom-shutdown-message":
-                            if (text3 != "") Server.customShutdownMessage = text3;
+                            if (text3 != "")
+                            {
+                                Server.customShutdownMessage = text3;
+                            }
                             break;
                         case "rank-super":
                             try
@@ -366,17 +369,13 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "default-rank":
                             try
                             {
                                 Server.defaultRank = text3.ToLower();
                             }
-                            catch
-                            {
-                            }
-
+                            catch {}
                             break;
                         case "afk-minutes":
                             try
@@ -387,7 +386,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("irc-port invalid! setting to default.");
                             }
-
                             break;
                         case "afk-kick":
                             try
@@ -398,7 +396,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("irc-port invalid! setting to default.");
                             }
-
                             break;
                         case "check-updates":
                             try
@@ -409,7 +406,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "autoload":
                             try
@@ -420,7 +416,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "auto-restart":
                             try
@@ -431,7 +426,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "restarttime":
                             try
@@ -442,7 +436,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using defualt.");
                             }
-
                             break;
                         case "parse-emotes":
                             try
@@ -453,16 +446,19 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "use-whitelist":
-                            Server.useWhitelist = text3.ToLower() == "true" ? true : false;
+                            Server.useWhitelist = text3.ToLower() == "true";
                             break;
                         case "main-name":
                             if (Player.ValidName(text3))
+                            {
                                 Server.level = text3;
+                            }
                             else
+                            {
                                 Server.s.Log("Invalid main name");
+                            }
                             break;
                         case "dollar-before-dollar":
                             try
@@ -473,10 +469,12 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "money-name":
-                            if (text3 != "") Server.moneys = text3;
+                            if (text3 != "")
+                            {
+                                Server.moneys = text3;
+                            }
                             break;
                         case "restart-on-error":
                             try
@@ -487,7 +485,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "repeat-messages":
                             try
@@ -498,10 +495,12 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid " + text2 + ". Using default.");
                             }
-
                             break;
                         case "host-state":
-                            if (text3 != "") Server.ConsoleName = text3;
+                            if (text3 != "")
+                            {
+                                Server.ConsoleName = text3;
+                            }
                             break;
                         case "lava-state":
                             switch (text3.ToLower())
@@ -522,7 +521,6 @@ namespace MCDzienny
                                     Server.s.Log("Invalid lava-state parameter. Using default.");
                                     break;
                             }
-
                             break;
                         case "global-time-before":
                             try
@@ -533,7 +531,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid global-time-before parameter. Using default.");
                             }
-
                             break;
                         case "global-time-after":
                             try
@@ -544,7 +541,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid global-time-after parameter. Using default.");
                             }
-
                             break;
                         case "flip-heads":
                             try
@@ -555,13 +551,16 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid flip-heads parameter. Using default.");
                             }
-
                             break;
                         case "reappearing-message":
                             if (ValidString(text3, "^*\"|'=%$![]&:;.,{}~-+()?_/\\ "))
+                            {
                                 Server.serverMessage = text3.Replace("^", Environment.NewLine);
+                            }
                             else
+                            {
                                 Server.s.Log("Invalid reappearing-message text. Reappearing message deactivated.");
+                            }
                             break;
                         case "reappearing-message-interval":
                             try
@@ -572,7 +571,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid reappearing-message-interval parameter. Using default.");
                             }
-
                             break;
                         case "use-heaven":
                             try
@@ -583,7 +581,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid use-heaven parameter. Using default.");
                             }
-
                             break;
                         case "heaven-map-name":
                             try
@@ -594,7 +591,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid heaven-map-name parameter. Using default.");
                             }
-
                             break;
                         case "chance-calm":
                             try
@@ -605,7 +601,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid chance-calm parameter. Using default.");
                             }
-
                             break;
                         case "chance-disturbed":
                             try
@@ -616,7 +611,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid chance-disturbed parameter. Using default.");
                             }
-
                             break;
                         case "chance-furious":
                             try
@@ -627,7 +621,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid chance-furious parameter. Using default.");
                             }
-
                             break;
                         case "chance-wild":
                             try
@@ -638,7 +631,6 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid chance-wild parameter. Using default.");
                             }
-
                             break;
                         case "game-mode":
                             switch (text3.ToLower())
@@ -659,19 +651,26 @@ namespace MCDzienny
                                     Server.s.Log("Invalid lava-state parameter. Using default.");
                                     break;
                             }
-
                             break;
                         case "server-description":
                             if (ValidString(text3, "![]:.,{}~-+()?_/\\ "))
+                            {
                                 Server.description = text3;
+                            }
                             else
+                            {
                                 Server.s.Log("Server-description invalid! Setting to default.");
+                            }
                             break;
                         case "server-flag":
                             if (ValidString(text3, "![]:.,{}~-+()?_/\\ "))
+                            {
                                 Server.Flag = text3;
+                            }
                             else
+                            {
                                 Server.s.Log("Server-flag invalid! Setting to default.");
+                            }
                             break;
                         case "auto-flag":
                             try
@@ -682,11 +681,9 @@ namespace MCDzienny
                             {
                                 Server.s.Log("Invalid auto-flag parameter. Using default.");
                             }
-
                             break;
                     }
                 }
-
                 Server.s.SettingsUpdate();
                 Save(givenPath);
             }
@@ -696,39 +693,37 @@ namespace MCDzienny
             }
         }
 
-        // Token: 0x060018B5 RID: 6325 RVA: 0x000A8F54 File Offset: 0x000A7154
         public static bool ValidString(string str, string allowed)
         {
-            var text = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890" + allowed;
-            foreach (var value in str)
+            string text = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890" + allowed;
+            foreach (char value in str)
+            {
                 if (text.IndexOf(value) == -1)
+                {
                     return false;
+                }
+            }
             return true;
         }
 
-        // Token: 0x060018B6 RID: 6326 RVA: 0x000A8FA0 File Offset: 0x000A71A0
         public static void Save()
         {
             Save(lastPath);
         }
 
-        // Token: 0x060018B7 RID: 6327 RVA: 0x000A8FAC File Offset: 0x000A71AC
-        private static void Save(string givenPath)
+        static void Save(string givenPath)
         {
             try
             {
-                var streamWriter = new StreamWriter(File.Create(givenPath));
+                StreamWriter streamWriter = new StreamWriter(File.Create(givenPath));
                 if (givenPath.IndexOf("server") != -1)
                 {
-                    streamWriter.WriteLine(
-                        "# Edit the settings below to modify how your server operates. This is an explanation of what each setting does.");
-                    streamWriter.WriteLine("#   server-name\t=\tThe name which displays on betacraft.uk");
+                    streamWriter.WriteLine("# Edit the settings below to modify how your server operates. This is an explanation of what each setting does.");
+                    streamWriter.WriteLine("#   server-name\t=\tThe name which displays on minecraft.net");
                     streamWriter.WriteLine("#   motd\t=\tThe message which displays when a player connects");
                     streamWriter.WriteLine("#   port\t=\tThe port to operate from");
-                    streamWriter.WriteLine(
-                        "#   console-only\t=\tRun without a GUI (useful for Linux servers with mono)");
-                    streamWriter.WriteLine(
-                        "#   verify-names-security\t=\tPerform user verification, keep it set to true");
+                    streamWriter.WriteLine("#   console-only\t=\tRun without a GUI (useful for Linux servers with mono)");
+                    streamWriter.WriteLine("#   verify-names-security\t=\tPerform user verification, keep it set to true");
                     streamWriter.WriteLine("#   public\t=\tSet to true to appear in the public server list");
                     streamWriter.WriteLine("#   max-players\t=\tThe maximum number of connections");
                     streamWriter.WriteLine("#   max-maps\t=\tThe maximum number of maps loaded at once");
@@ -742,28 +737,21 @@ namespace MCDzienny
                     streamWriter.WriteLine("#   irc-port\t=\tThe port to use to connect");
                     streamWriter.WriteLine(
                         "#   irc-identify\t=(true/false)\tDo you want the IRC bot to Identify itself with nickserv. Note: You will need to register it's name with nickserv manually.");
-                    streamWriter.WriteLine(
-                        "#   irc-password\t=\tThe password you want to use if you're identifying with nickserv");
+                    streamWriter.WriteLine("#   irc-password\t=\tThe password you want to use if you're identifying with nickserv");
                     streamWriter.WriteLine("#   anti-tunnels\t=\tStops people digging below max-depth");
                     streamWriter.WriteLine("#   max-depth\t=\tThe maximum allowed depth to dig down");
                     streamWriter.WriteLine("#   backup-time\t=\tThe number of seconds between automatic backups");
-                    streamWriter.WriteLine(
-                        "#   overload\t=\tThe higher this is, the longer the physics is allowed to lag. Default 1500");
-                    streamWriter.WriteLine(
-                        "#   use-whitelist\t=\tSwitch to allow use of a whitelist to override IP bans for certain players.  Default false.");
-                    streamWriter.WriteLine(
-                        "#   force-cuboid\t=\tRun cuboid until the limit is hit, instead of canceling the whole operation.  Default false.");
+                    streamWriter.WriteLine("#   overload\t=\tThe higher this is, the longer the physics is allowed to lag. Default 1500");
+                    streamWriter.WriteLine("#   use-whitelist\t=\tSwitch to allow use of a whitelist to override IP bans for certain players.  Default false.");
+                    streamWriter.WriteLine("#   force-cuboid\t=\tRun cuboid until the limit is hit, instead of canceling the whole operation.  Default false.");
                     streamWriter.WriteLine();
                     streamWriter.WriteLine("#   Host\t=\tThe host name for the database (usually 127.0.0.1)");
-                    streamWriter.WriteLine(
-                        "#   SQLPort\t=\tPort number to be used for MySQL.  Unless you manually changed the port, leave this alone.  Default 3306.");
-                    streamWriter.WriteLine(
-                        "#   Username\t=\tThe username you used to create the database (usually root)");
+                    streamWriter.WriteLine("#   SQLPort\t=\tPort number to be used for MySQL.  Unless you manually changed the port, leave this alone.  Default 3306.");
+                    streamWriter.WriteLine("#   Username\t=\tThe username you used to create the database (usually root)");
                     streamWriter.WriteLine("#   Password\t=\tThe password set while making the database");
                     streamWriter.WriteLine("#   DatabaseName\t=\tThe name of the database stored (Default = MCZall)");
                     streamWriter.WriteLine();
-                    streamWriter.WriteLine(
-                        "#   defaultColor\t=\tThe color code of the default messages (Default = &e)");
+                    streamWriter.WriteLine("#   defaultColor\t=\tThe color code of the default messages (Default = &e)");
                     streamWriter.WriteLine();
                     streamWriter.WriteLine("#   Super-limit\t=\tThe limit for building commands for SuperOPs");
                     streamWriter.WriteLine("#   Op-limit\t=\tThe limit for building commands for Operators");
@@ -811,7 +799,7 @@ namespace MCDzienny
                     streamWriter.WriteLine("dollar-before-dollar = " + Server.useDollarSign.ToString().ToLower());
                     streamWriter.WriteLine("use-whitelist = " + Server.useWhitelist.ToString().ToLower());
                     streamWriter.WriteLine("money-name = " + Server.moneys);
-                    streamWriter.WriteLine("opchat-perm = " + ((sbyte) Server.opchatperm));
+                    streamWriter.WriteLine("opchat-perm = " + (sbyte)Server.opchatperm);
                     streamWriter.WriteLine("log-heartbeat = " + Server.logbeat);
                     streamWriter.WriteLine("force-cuboid = " + Server.forceCuboid);
                     streamWriter.WriteLine("repeat-messages = " + Server.repeatMessage);
@@ -857,15 +845,12 @@ namespace MCDzienny
                     {
                         streamWriter.WriteLine("default-rank = guest");
                     }
-
                     streamWriter.WriteLine();
                     streamWriter.WriteLine("#Lava Settings");
-                    streamWriter.WriteLine(
-                        "lava-state = " + Enum.GetName(typeof(LavaState), LavaSettings.All.LavaState));
+                    streamWriter.WriteLine("lava-state = " + Enum.GetName(typeof(LavaState), LavaSettings.All.LavaState));
                     streamWriter.WriteLine("global-time-before = " + LavaSystem.stime);
                     streamWriter.WriteLine("global-time-after = " + LavaSystem.stime2);
-                    streamWriter.WriteLine("reappearing-message = " +
-                                           Server.serverMessage.Replace(Environment.NewLine, "^"));
+                    streamWriter.WriteLine("reappearing-message = " + Server.serverMessage.Replace(Environment.NewLine, "^"));
                     streamWriter.WriteLine("reappearing-message-interval = " + Server.serverMessageInterval);
                     streamWriter.WriteLine("use-heaven = " + Server.useHeaven);
                     streamWriter.WriteLine("heaven-map-name = " + Server.heavenMapName);
@@ -880,7 +865,6 @@ namespace MCDzienny
                     streamWriter.WriteLine("server-flag = " + Server.Flag);
                     streamWriter.WriteLine("auto-flag = " + Server.autoFlag);
                 }
-
                 streamWriter.Flush();
                 streamWriter.Close();
                 streamWriter.Dispose();

@@ -1,22 +1,23 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace MCDzienny.Misc
 {
-    // Token: 0x020001C8 RID: 456
-    internal partial class SplashScreen2 : PerPixelAlphaForm
+    class SplashScreen2 : PerPixelAlphaForm
     {
-        // Token: 0x06000CC1 RID: 3265 RVA: 0x00049AF8 File Offset: 0x00047CF8
         public override void SetBitmap(Bitmap bitmap)
         {
+            //IL_0050: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0056: Expected O, but got Unknown
+            //IL_0073: Unknown result type (might be due to invalid IL or missing references)
+            //IL_008c: Expected O, but got Unknown
             Left = Screen.GetWorkingArea(this).Width / 2 - bitmap.Width / 2;
             Top = Screen.GetWorkingArea(this).Height / 2 - bitmap.Height / 2;
-            var graphics = Graphics.FromImage(bitmap);
-            var font = new Font("Tahoma", 12f, FontStyle.Bold);
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.DrawString("Version: " + Server.Version, font, new SolidBrush(Color.White), 36f,
-                bitmap.Height - 45);
+            Graphics val = Graphics.FromImage(bitmap);
+            Font val2 = new Font("Tahoma", 12f, (FontStyle)1);
+            val.SmoothingMode = (SmoothingMode)4;
+            val.DrawString("Version: " + Server.Version, val2, new SolidBrush(Color.White), 36f, bitmap.Height - 45);
             base.SetBitmap(bitmap);
         }
     }

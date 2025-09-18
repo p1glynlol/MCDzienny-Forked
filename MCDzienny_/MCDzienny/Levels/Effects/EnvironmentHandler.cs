@@ -1,36 +1,28 @@
-﻿using System;
+using System;
 using MCDzienny.Cpe;
 
 namespace MCDzienny.Levels.Effects
 {
-    // Token: 0x02000031 RID: 49
     public class EnvironmentHandler
     {
-        // Token: 0x040000B4 RID: 180
-        public static readonly Environment Night = new Environment();
+        public static readonly Environment Night;
 
-        // Token: 0x040000B5 RID: 181
         public static readonly Environment Day;
 
-        // Token: 0x040000B6 RID: 182
         public static readonly Environment Cloudless;
 
-        // Token: 0x040000B7 RID: 183
         public static readonly Environment Darkness;
 
-        // Token: 0x040000B8 RID: 184
         public static readonly Environment Vanilla;
 
-        // Token: 0x040000B9 RID: 185
         public static readonly Environment Pinky;
 
-        // Token: 0x040000BA RID: 186
         public static readonly Environment Stormy;
 
-        // Token: 0x0600011E RID: 286 RVA: 0x000077F8 File Offset: 0x000059F8
         static EnvironmentHandler()
         {
-            var item = new EnvironmentItem
+            Night = new Environment();
+            EnvironmentItem item = new EnvironmentItem
             {
                 Type = EnvironmentType.Cloud,
                 Color = new RgbColor(0, 0, 0)
@@ -248,12 +240,13 @@ namespace MCDzienny.Levels.Effects
             Pinky.Items.Add(item);
         }
 
-        // Token: 0x0600011F RID: 287 RVA: 0x00008038 File Offset: 0x00006238
         public Environment Parse(string value)
         {
-            if (value == null) throw new NullReferenceException("value");
-            string key;
-            switch (key = value.ToLower())
+            if (value == null)
+            {
+                throw new NullReferenceException("value");
+            }
+            switch (value.ToLower())
             {
                 case "night":
                     return Night;
@@ -269,20 +262,29 @@ namespace MCDzienny.Levels.Effects
                     return Stormy;
                 case "pinky":
                     return Pinky;
+                default:
+                    return null;
             }
-
-            return null;
         }
 
-        // Token: 0x06000120 RID: 288 RVA: 0x0000812C File Offset: 0x0000632C
         public void SendToPlayer(Player player, Environment env)
         {
-            if (player == null) throw new NullReferenceException("player");
-            if (env == null) throw new NullReferenceException("env");
-            if (player.Cpe.EnvColors == 1)
-                foreach (var environmentItem in env.Items)
-                    V1.EnvSetColor(player, (byte) environmentItem.Type, environmentItem.Color.Red,
-                        environmentItem.Color.Green, environmentItem.Color.Blue);
+            if (player == null)
+            {
+                throw new NullReferenceException("player");
+            }
+            if (env == null)
+            {
+                throw new NullReferenceException("env");
+            }
+            if (player.Cpe.EnvColors != 1)
+            {
+                return;
+            }
+            foreach (EnvironmentItem item in env.Items)
+            {
+                V1.EnvSetColor(player, (byte)item.Type, item.Color.Red, item.Color.Green, item.Color.Blue);
+            }
         }
     }
 }

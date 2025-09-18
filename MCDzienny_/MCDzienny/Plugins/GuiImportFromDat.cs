@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -8,83 +8,101 @@ using System.Windows.Forms;
 
 namespace MCDzienny.Plugins
 {
-    // Token: 0x020001E4 RID: 484
     public class GuiImportFromDat : UserControl
     {
-        // Token: 0x04000715 RID: 1813
-        private CheckBox checkBoxLoadAfterImport;
 
-        // Token: 0x04000713 RID: 1811
-        private CheckBox checkBoxSaveSameName;
+        CheckBox checkBoxLoadAfterImport;
 
-        // Token: 0x04000710 RID: 1808
-        private IContainer components;
+        CheckBox checkBoxSaveSameName;
+        IContainer components;
 
-        // Token: 0x04000714 RID: 1812
-        private GroupBox groupBoxOptions;
+        GroupBox groupBoxOptions;
 
-        // Token: 0x04000712 RID: 1810
-        private Label labelDropbox;
+        Label labelDropbox;
 
-        // Token: 0x04000711 RID: 1809
-        private Panel panelDropbox;
+        Panel panelDropbox;
 
-        // Token: 0x06000D77 RID: 3447 RVA: 0x0004C8E0 File Offset: 0x0004AAE0
         public GuiImportFromDat()
         {
             InitializeComponent();
         }
 
-        // Token: 0x06000D78 RID: 3448 RVA: 0x0004C8F0 File Offset: 0x0004AAF0
-        private void panelDropbox_DragDrop(object sender, DragEventArgs e)
+        void panelDropbox_DragDrop(object sender, DragEventArgs e)
         {
-            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-            var paths = (string[]) e.Data.GetData(DataFormats.FileDrop);
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                return;
+            }
+            string[] paths = (string[])e.Data.GetData(DataFormats.FileDrop);
             ThreadPool.QueueUserWorkItem(delegate
             {
-                var stringBuilder = new StringBuilder();
-                var loadAfterImport = false;
-                Invoke((Action) delegate { loadAfterImport = checkBoxLoadAfterImport.Checked; });
-                var array = paths;
-                foreach (var path in array)
+                //IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+                StringBuilder stringBuilder = new StringBuilder();
+                bool loadAfterImport = false;
+                Invoke((Action)delegate { loadAfterImport = checkBoxLoadAfterImport.Checked; });
+                string[] array = paths;
+                foreach (string path in array)
                 {
-                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
                     if (ConvertDat.Load(new FileStream(path, FileMode.Open), fileNameWithoutExtension) != null)
                     {
-                        if (loadAfterImport) new CmdLoad().Use(null, fileNameWithoutExtension);
+                        if (loadAfterImport)
+                        {
+                            new CmdLoad().Use(null, fileNameWithoutExtension);
+                        }
                     }
                     else
                     {
                         stringBuilder.Append("Incorrect format. File: " + Path.GetFileName(path) + Environment.NewLine);
                     }
                 }
-
-                if (stringBuilder.Length > 0) MessageBox.Show(stringBuilder.ToString());
+                if (stringBuilder.Length > 0)
+                {
+                    MessageBox.Show(stringBuilder.ToString());
+                }
             });
         }
 
-        // Token: 0x06000D79 RID: 3449 RVA: 0x0004C94C File Offset: 0x0004AB4C
-        private void panelDropbox_DragEnter(object sender, DragEventArgs e)
+        void panelDropbox_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                e.Effect = DragDropEffects.Copy;
-                return;
+                e.Effect = (DragDropEffects)1;
             }
-
-            e.Effect = DragDropEffects.None;
+            else
+            {
+                e.Effect = 0;
+            }
         }
 
-        // Token: 0x06000D7A RID: 3450 RVA: 0x0004C970 File Offset: 0x0004AB70
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null) components.Dispose();
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
             base.Dispose(disposing);
         }
 
-        // Token: 0x06000D7B RID: 3451 RVA: 0x0004C990 File Offset: 0x0004AB90
-        private void InitializeComponent()
+        void InitializeComponent()
         {
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_000b: Expected O, but got Unknown
+            //IL_000c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0016: Expected O, but got Unknown
+            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0021: Expected O, but got Unknown
+            //IL_0022: Unknown result type (might be due to invalid IL or missing references)
+            //IL_002c: Expected O, but got Unknown
+            //IL_002d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0037: Expected O, but got Unknown
+            //IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+            //IL_00ff: Expected O, but got Unknown
+            //IL_010c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0116: Expected O, but got Unknown
+            //IL_0158: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0162: Expected O, but got Unknown
+            //IL_017b: Unknown result type (might be due to invalid IL or missing references)
             panelDropbox = new Panel();
             labelDropbox = new Label();
             checkBoxSaveSameName = new CheckBox();
@@ -94,9 +112,9 @@ namespace MCDzienny.Plugins
             groupBoxOptions.SuspendLayout();
             SuspendLayout();
             panelDropbox.AllowDrop = true;
-            panelDropbox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panelDropbox.Anchor = (AnchorStyles)15;
             panelDropbox.BackColor = Color.PaleGoldenrod;
-            panelDropbox.BorderStyle = BorderStyle.FixedSingle;
+            panelDropbox.BorderStyle = (BorderStyle)1;
             panelDropbox.Controls.Add(labelDropbox);
             panelDropbox.Location = new Point(124, 87);
             panelDropbox.Name = "panelDropbox";
@@ -105,18 +123,18 @@ namespace MCDzienny.Plugins
             panelDropbox.DragDrop += panelDropbox_DragDrop;
             panelDropbox.DragEnter += panelDropbox_DragEnter;
             labelDropbox.BackColor = Color.FromArgb(220, 255, 220);
-            labelDropbox.Dock = DockStyle.Fill;
-            labelDropbox.Font = new Font("Microsoft Sans Serif", 14.25f, FontStyle.Italic, GraphicsUnit.Point, 238);
+            labelDropbox.Dock = (DockStyle)5;
+            labelDropbox.Font = new Font("Microsoft Sans Serif", 14.25f, (FontStyle)2, (GraphicsUnit)3, 238);
             labelDropbox.Location = new Point(0, 0);
             labelDropbox.Margin = new Padding(5);
             labelDropbox.Name = "labelDropbox";
             labelDropbox.Size = new Size(248, 205);
             labelDropbox.TabIndex = 0;
             labelDropbox.Text = "Drag and drop a dat file or files here";
-            labelDropbox.TextAlign = ContentAlignment.MiddleCenter;
+            labelDropbox.TextAlign = (ContentAlignment)32;
             checkBoxSaveSameName.AutoSize = true;
             checkBoxSaveSameName.Checked = true;
-            checkBoxSaveSameName.CheckState = CheckState.Checked;
+            checkBoxSaveSameName.CheckState = (CheckState)1;
             checkBoxSaveSameName.Enabled = false;
             checkBoxSaveSameName.Location = new Point(6, 19);
             checkBoxSaveSameName.Name = "checkBoxSaveSameName";
@@ -124,7 +142,7 @@ namespace MCDzienny.Plugins
             checkBoxSaveSameName.TabIndex = 1;
             checkBoxSaveSameName.Text = "Save under the same name";
             checkBoxSaveSameName.UseVisualStyleBackColor = true;
-            groupBoxOptions.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxOptions.Anchor = (AnchorStyles)14;
             groupBoxOptions.Controls.Add(checkBoxLoadAfterImport);
             groupBoxOptions.Controls.Add(checkBoxSaveSameName);
             groupBoxOptions.Location = new Point(31, 317);
@@ -135,7 +153,7 @@ namespace MCDzienny.Plugins
             groupBoxOptions.Text = "Options:";
             checkBoxLoadAfterImport.AutoSize = true;
             checkBoxLoadAfterImport.Checked = true;
-            checkBoxLoadAfterImport.CheckState = CheckState.Checked;
+            checkBoxLoadAfterImport.CheckState = (CheckState)1;
             checkBoxLoadAfterImport.Location = new Point(6, 42);
             checkBoxLoadAfterImport.Name = "checkBoxLoadAfterImport";
             checkBoxLoadAfterImport.Size = new Size(163, 17);
@@ -143,7 +161,7 @@ namespace MCDzienny.Plugins
             checkBoxLoadAfterImport.Text = "Load a map(s) after importing";
             checkBoxLoadAfterImport.UseVisualStyleBackColor = true;
             AutoScaleDimensions = new SizeF(6f, 13f);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = (AutoScaleMode)1;
             BackColor = Color.White;
             Controls.Add(groupBoxOptions);
             Controls.Add(panelDropbox);

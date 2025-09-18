@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -6,22 +6,16 @@ using MCDzienny.Plugins;
 
 namespace MCDzienny
 {
-    // Token: 0x020001EC RID: 492
     public class PluginControlRemovePlugin : UserControl
     {
-        // Token: 0x0400072B RID: 1835
-        private Button buttonAddPlugin;
 
-        // Token: 0x0400072D RID: 1837
-        private Container components;
+        Button buttonAddPlugin;
 
-        // Token: 0x0400072A RID: 1834
-        private Label label1;
+        Container components;
+        Label label1;
 
-        // Token: 0x0400072C RID: 1836
-        private ListBox listBoxPlugins;
+        ListBox listBoxPlugins;
 
-        // Token: 0x06000D9C RID: 3484 RVA: 0x0004D374 File Offset: 0x0004B574
         public PluginControlRemovePlugin()
         {
             InitializeComponent();
@@ -29,34 +23,40 @@ namespace MCDzienny
             Server.Plugins.AvailablePlugins.CollectionChanged += AvailablePlugins_CollectionChanged;
         }
 
-        // Token: 0x06000D9D RID: 3485 RVA: 0x0004D3A4 File Offset: 0x0004B5A4
-        private void AvailablePlugins_CollectionChanged(object sender, EventArgs e)
+        void AvailablePlugins_CollectionChanged(object sender, EventArgs e)
         {
             LoadPluginsList();
         }
 
-        // Token: 0x06000D9E RID: 3486 RVA: 0x0004D3AC File Offset: 0x0004B5AC
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null) components.Dispose();
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
             base.Dispose(disposing);
         }
 
-        // Token: 0x06000D9F RID: 3487 RVA: 0x0004D3CC File Offset: 0x0004B5CC
-        private void InitializeComponent()
+        void InitializeComponent()
         {
+            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+            //IL_000b: Expected O, but got Unknown
+            //IL_000c: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0016: Expected O, but got Unknown
+            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0021: Expected O, but got Unknown
             label1 = new Label();
             buttonAddPlugin = new Button();
             listBoxPlugins = new ListBox();
             SuspendLayout();
-            label1.Anchor = AnchorStyles.Top;
+            label1.Anchor = (AnchorStyles)1;
             label1.AutoSize = true;
             label1.Location = new Point(165, 12);
             label1.Name = "label1";
             label1.Size = new Size(153, 13);
             label1.TabIndex = 3;
             label1.Text = "Select a plugin for the removal:";
-            buttonAddPlugin.Anchor = AnchorStyles.Bottom;
+            buttonAddPlugin.Anchor = (AnchorStyles)2;
             buttonAddPlugin.Location = new Point(166, 342);
             buttonAddPlugin.Name = "buttonAddPlugin";
             buttonAddPlugin.Size = new Size(150, 23);
@@ -64,7 +64,7 @@ namespace MCDzienny
             buttonAddPlugin.Text = "Remove Plugin";
             buttonAddPlugin.UseVisualStyleBackColor = true;
             buttonAddPlugin.Click += buttonRemovePlugin_Click;
-            listBoxPlugins.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
+            listBoxPlugins.Anchor = (AnchorStyles)3;
             listBoxPlugins.FormattingEnabled = true;
             listBoxPlugins.Location = new Point(166, 33);
             listBoxPlugins.Name = "listBoxPlugins";
@@ -81,26 +81,27 @@ namespace MCDzienny
             PerformLayout();
         }
 
-        // Token: 0x06000DA0 RID: 3488 RVA: 0x0004D5E0 File Offset: 0x0004B7E0
-        private void ctlMain_Load(object sender, EventArgs e)
-        {
-        }
+        void ctlMain_Load(object sender, EventArgs e) {}
 
-        // Token: 0x06000DA1 RID: 3489 RVA: 0x0004D5E4 File Offset: 0x0004B7E4
-        private void LoadPluginsList()
+        void LoadPluginsList()
         {
             listBoxPlugins.Items.Clear();
             Server.Plugins.AvailablePlugins.ForEach(delegate(AvailablePlugin p)
             {
-                if (!p.IsCore) listBoxPlugins.Items.Add(p.Instance.Name);
+                if (!p.IsCore)
+                {
+                    listBoxPlugins.Items.Add(p.Instance.Name);
+                }
             });
         }
 
-        // Token: 0x06000DA2 RID: 3490 RVA: 0x0004D614 File Offset: 0x0004B814
-        private void buttonRemovePlugin_Click(object sender, EventArgs e)
+        void buttonRemovePlugin_Click(object sender, EventArgs e)
         {
-            var selectedItem = listBoxPlugins.SelectedItem;
-            if (selectedItem != null) Server.Plugins.RemovePluginByName(selectedItem.ToString());
+            object selectedItem = listBoxPlugins.SelectedItem;
+            if (selectedItem != null)
+            {
+                Server.Plugins.RemovePluginByName(selectedItem.ToString());
+            }
         }
     }
 }

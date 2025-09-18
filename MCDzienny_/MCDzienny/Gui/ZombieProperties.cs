@@ -1,21 +1,45 @@
-﻿using System;
+using System;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MCDzienny.Gui
 {
-    // Token: 0x02000157 RID: 343
-    public partial class ZombieProperties : Form
+    public class ZombieProperties : Form
     {
-        // Token: 0x060009E5 RID: 2533 RVA: 0x00034AB8 File Offset: 0x00032CB8
+        IContainer components;
+
         public ZombieProperties()
         {
             InitializeComponent();
         }
 
-        // Token: 0x060009E6 RID: 2534 RVA: 0x00034AC8 File Offset: 0x00032CC8
-        private void ZombieProperties_FormClosed(object sender, EventArgs e)
+        void ZombieProperties_FormClosed(object sender, EventArgs e)
         {
             Window.zombieSettingsPrevLoaded = false;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        void InitializeComponent()
+        {
+            //IL_0055: Unknown result type (might be due to invalid IL or missing references)
+            //IL_005f: Expected O, but got Unknown
+            SuspendLayout();
+            AutoScaleDimensions = new SizeF(6f, 13f);
+            AutoScaleMode = (AutoScaleMode)1;
+            ClientSize = new Size(451, 457);
+            Name = "ZombieProperties";
+            Text = "ZombieProperties";
+            FormClosed += ZombieProperties_FormClosed;
+            ResumeLayout(false);
         }
     }
 }
